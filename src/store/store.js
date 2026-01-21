@@ -19,6 +19,8 @@ import dataReducer from "../redux/slices/add_by_admin/dataSlice";
 import objectiveReducer from "../redux/slices/objective/objectiveSlice";
 import activityLogReducer from "../redux/slices/activityLog/activityLogSlice";
 import organizationReducer from "../redux/slices/add_by_admin/organizationSlice";
+import authReducer from "../redux/slices/auth/authSlice";
+import userReducer from "../redux/slices/user/userSlice";
 
 const store = configureStore({
   reducer: {
@@ -42,6 +44,8 @@ const store = configureStore({
     objectives: objectiveReducer,
     activityLog: activityLogReducer,
     organization: organizationReducer,
+    auth: authReducer,
+    user: userReducer,
   },
 });
 

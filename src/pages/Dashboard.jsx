@@ -6,7 +6,14 @@ import {
   FaHome,
   FaStar,
   FaCalendarAlt,
+  FaClipboardList,
+  FaUserFriends,
+  FaHandsHelping,
   FaLayerGroup,
+  FaDonate,
+  FaChild,
+  FaPaintBrush,
+  FaTheaterMasks,
 } from "react-icons/fa";
 import { FiActivity } from "react-icons/fi";
 
@@ -63,7 +70,7 @@ const getColorById = (arr, id) => arr[id % arr.length];
 const firstCard = [
   {
     id: 1,
-    icon1: FaHome,
+    icon1: FaClipboardList,
     title: "Enquiry List",
     desc: "Daily Ganga Aarti schedule and bookings management.",
     link: "/enquiry/enquiry-list",
@@ -73,7 +80,7 @@ const firstCard = [
   },
   {
     id: 2,
-    icon1: FaUsers,
+    icon1: FaUserFriends,
     title: "Member List",
     desc: "Registered pilgrims and visitor records.",
     link: "/member/member-list",
@@ -83,7 +90,7 @@ const firstCard = [
   },
   {
     id: 3,
-    icon1: FaCalendarAlt,
+    icon1: FaHandsHelping,
     title: "Volunteers List",
     desc: "Upcoming religious events and festivals.",
     link: "/volunteer/volunteer-list",
@@ -103,7 +110,7 @@ const firstCard = [
   },
   {
     id: 5,
-    icon1: FaStar,
+    icon1: FaDonate,
     title: "TGMY",
     desc: "Donation records and transaction history.",
     link: "/donations",
@@ -113,7 +120,7 @@ const firstCard = [
   },
   {
     id: 6,
-    icon1: FiActivity,
+    icon1: FaChild,
     title: "Baccho Ki Rangshala",
     desc: "Daily & monthly activity reports.",
     link: "/reports",
@@ -123,7 +130,7 @@ const firstCard = [
   },
   {
     id: 7,
-    icon1: FaUsers,
+    icon1: FaPaintBrush,
     title: "Painting Competition",
     desc: "Volunteer registration and assignments.",
     link: "/volunteers",
@@ -133,7 +140,7 @@ const firstCard = [
   },
   {
     id: 8,
-    icon1: FaHome,
+    icon1: FaTheaterMasks,
     title: "Nukkad Natak",
     desc: "Ghat locations and infrastructure details.",
     link: "/locations",
@@ -329,69 +336,7 @@ const Dashboard = () => {
       <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
         <h2 className="text-lg font-medium text-gray-800">Dashboard</h2>
       </div>
-      {/* <div>
-        <h4 className=" text-gray-600 text-[15px] font-medium">Lists</h4>
-        <hr className="w-full border border-gray-300" />
-      </div> */}
-      {/* CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {firstCard.map((card) => {
-          const Icon = card.icon1;
 
-          const bg = getColorById(cardBgGradients, card.id);
-          const iconBg = getColorById(iconBgColors, card.id);
-          const textColor = getColorById(textColors, card.id);
-
-          return (
-            <div
-              key={card.id}
-              className={`
-          bg-gradient-to-br ${bg}
-          rounded-md px-3 py-1
-          shadow-sm hover:shadow-xl
-          transition-all duration-300
-          flex flex-col justify-between
-        `}
-            >
-              {/* TOP */}
-              <div className="flex items-center gap-4">
-                {/* ICON */}
-                <div
-                  className={`w-7 h-7 rounded-xl ${iconBg}
-            flex items-center justify-center text-white shadow-md`}
-                >
-                  <Icon size={16} />
-                </div>
-
-                {/* TITLE */}
-                <h4 className={`text-sm font-medium ${textColor}`}>
-                  {card.title}
-                </h4>
-              </div>
-
-              {/* DESCRIPTION */}
-              <p className="text-[13px] text-gray-600 mt-1 leading-relaxed">
-                {card.desc}
-              </p>
-
-              {/* BUTTON → LINK */}
-              <Link
-                to={card.link}
-                className="
-           flex justify-end
-             text-sm font-medium
-             hover:text-blue-600
-             text-blue-500
-          hover:underline
-            transition
-          "
-              >
-                View List →
-              </Link>
-            </div>
-          );
-        })}
-      </div>
       {/* <div>
         <h4 className=" text-gray-600 text-[15px] font-medium">All Charts</h4>
         <hr className="w-full border border-gray-300" />
@@ -785,6 +730,60 @@ const Dashboard = () => {
             </table>
           </div>
         </div>
+      </div>
+      <div>
+        <h4 className=" text-gray-600 text-[15px] font-medium">All Cards</h4>
+        <hr className="w-full border border-gray-300" />
+      </div>
+      {/* CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {firstCard.map((card) => {
+          const Icon = card.icon1;
+
+          const bg = getColorById(cardBgGradients, card.id);
+          const iconBg = getColorById(iconBgColors, card.id);
+          const textColor = getColorById(textColors, card.id);
+
+          return (
+            <Link
+              key={card.id}
+              to={card.link}
+              className={`
+          bg-gradient-to-br ${bg}
+          rounded-xl py-2 px-6
+          border border-gray-200
+          shadow-sm hover:shadow-xl
+          hover:border-blue-300
+          transform hover:-translate-y-1 hover:scale-105
+          transition-all duration-300 ease-in-out
+          flex flex-col justify-between
+          cursor-pointer
+        `}
+            >
+              {/* TOP */}
+              <div className="flex items-center gap-4 mb-2">
+                {/* ICON */}
+                <div
+                  className={`w-11 h-11 rounded-full ${iconBg}
+              flex items-center justify-center text-white shadow-md
+              bg-gradient-to-tr from-white/20 to-white/0`}
+                >
+                  <Icon size={22} />
+                </div>
+
+                {/* TITLE */}
+                <h4 className={`text-[15px] font-semibold ${textColor}`}>
+                  {card.title}
+                </h4>
+              </div>
+
+              {/* DESCRIPTION */}
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {card.desc}
+              </p>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

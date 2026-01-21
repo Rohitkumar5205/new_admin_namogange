@@ -1,35 +1,63 @@
-import React, { useState } from "react";
-// import logo from "../../assets/logo1.jpg";
-// import { User, Lock, Phone } from "lucide-react";
-import { FiUser, FiLock, FiPhone } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { FiUser, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { showError, showSuccess } from "../../utils/toastService";
+import { showSuccess, showError } from "../../utils/toastService";
+import {
+  loginWithPasswordThunk,
+  resendOtpThunk,
+  verifyOtpThunk,
+} from "../../redux/slices/auth/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [step, setStep] = useState("login"); // login → otp
+  const { loading, otpStep, userIdForOtp } = useSelector((state) => state.auth);
+
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
 
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [timer, setTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Handle Input Change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // OTP Change
+  useEffect(() => {
+    if (otpStep) {
+      setTimer(30);
+      setCanResend(false);
+
+      const interval = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [otpStep]);
+
   const handleOtpChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
+
     const updated = [...otp];
     updated[index] = value;
     setOtp(updated);
 
-    if (value && index < 3) {
-      document.getElementById(`otp-${index + 1}`).focus();
+    if (value && index < 5) {
+      document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
@@ -45,23 +73,70 @@ const Login = () => {
       return;
     }
 
-    // After validation → Go to OTP Screen
-    showSuccess("Login Successful, Please Enter OTP");
-    setStep("otp");
+    dispatch(
+      loginWithPasswordThunk({
+        username: form.username,
+        password: form.password,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        showSuccess("OTP sent successfully");
+      })
+      .catch((err) => {
+        showError(err);
+      });
   };
 
   const handleOtpSubmit = (e) => {
     e.preventDefault();
 
-    if (otp.join("").length !== 4) {
-      showError("Please enter 4-digit OTP");
+    const enteredOtp = otp.join("");
+
+    if (enteredOtp.length !== 6) {
+      showError("Please enter 6-digit OTP");
       return;
     }
 
-    showSuccess("OTP Verified Successfully");
-    navigate("/dashboard");
+    dispatch(
+      verifyOtpThunk({
+        user_id: userIdForOtp,
+        otp: enteredOtp,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        showSuccess("OTP Verified Successfully");
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        showError(err);
+        setOtp(["", "", "", "", "", ""]); // ✅ clear OTP on error
+      });
   };
 
+  const handleResendOtp = () => {
+    if (!canResend) return;
+
+    dispatch(
+      resendOtpThunk({
+        user_id: userIdForOtp,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        showSuccess("OTP resent successfully");
+        setTimer(30);
+        setCanResend(false);
+      })
+      .catch((err) => {
+        showError(err);
+      });
+  };
+
+  // ======================
+  // UI
+  // ======================
   return (
     <div className="w-full h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white shadow-md border border-gray-200 rounded-md px-8 pb-10 pt-6 w-[90%] max-w-sm">
@@ -74,17 +149,19 @@ const Login = () => {
           />
         </div>
 
-        <h1 className="text-2xl font-semibold text-gray-800 text-center mb-1 tracking-wider ">
+        <h1 className="text-2xl font-semibold text-gray-800 text-center mb-1 tracking-wider">
           Namo Gange
         </h1>
 
-        {step === "login" ? (
+        {/* ======================
+            LOGIN SCREEN
+        ====================== */}
+        {!otpStep ? (
           <>
             <p className="text-sm text-gray-500 text-center mb-3">
               Please login to continue
             </p>
 
-            {/* LOGIN FORM */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Username */}
               <div>
@@ -100,7 +177,6 @@ const Login = () => {
                     onChange={handleChange}
                     placeholder="Enter username"
                     className="w-full py-2 text-sm outline-none"
-                    required
                   />
                 </div>
               </div>
@@ -112,33 +188,43 @@ const Login = () => {
                 </label>
                 <div className="flex items-center border px-3 rounded">
                   <FiLock className="text-gray-500 w-4 h-4 mr-2" />
+
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     value={form.password}
                     onChange={handleChange}
                     placeholder="Enter password"
                     className="w-full py-2 text-sm outline-none"
-                    required
                   />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                  </button>
                 </div>
               </div>
 
-              {/* Login Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-blue-600 text-white py-2 text-sm 
                 font-semibold rounded hover:bg-blue-700 transition"
               >
-                Login
+                {loading ? "Please wait..." : "Login"}
               </button>
             </form>
           </>
         ) : (
+          /* ======================
+              OTP SCREEN
+          ====================== */
           <>
-            {/* OTP Screen */}
             <p className="text-sm text-gray-600 text-center mb-4">
-              Please enter 4-digit OTP sent to your registered number
+              Please enter 6-digit OTP sent to your registered number
             </p>
 
             <form onSubmit={handleOtpSubmit}>
@@ -158,11 +244,29 @@ const Login = () => {
 
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-blue-600 text-white py-2 mt-6 text-sm 
                 font-semibold rounded hover:bg-blue-700 transition"
               >
-                Verify OTP
+                {loading ? "Verifying..." : "Verify OTP"}
               </button>
+
+              <div className="text-center mt-4 text-sm text-gray-600">
+                {canResend ? (
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    className="text-blue-600 font-semibold hover:underline"
+                  >
+                    Resend OTP
+                  </button>
+                ) : (
+                  <span>
+                    Resend OTP in{" "}
+                    <span className="font-semibold">{timer}s</span>
+                  </span>
+                )}
+              </div>
             </form>
           </>
         )}

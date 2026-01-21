@@ -1,40 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    first_name: "Rohit",
-    last_name: "Kumar",
-    mobile: "9876543210",
-    email: "rohit@test.com",
-    username: "rohit01",
-    designation: "Manager",
-    department: "IT",
-    role: "Admin",
-    status: "Active",
-  },
-  {
-    id: 2,
-    first_name: "Amit",
-    last_name: "Sharma",
-    mobile: "9123456789",
-    email: "amit@test.com",
-    username: "amit02",
-    designation: "Executive",
-    department: "Sales",
-    role: "User",
-    status: "Inactive",
-  },
-];
+import { showSuccess, showError } from "../../utils/toastService";
+import {
+  createUserThunk,
+  getAllUsersThunk,
+  updateUserThunk,
+  deleteUserThunk,
+} from "../../redux/slices/user/userSlice";
 
 const User = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { users, loading } = useSelector((state) => state.user);
+  console.log("Users..:", users);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     first_name: "",
     last_name: "",
     mobile: "",
@@ -48,12 +32,28 @@ const User = () => {
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+  const [search, setSearch] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const currentUserId = "66ec23d89309636c42738591"; // Placeholder
+
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllUsersThunk());
+  }, [dispatch]);
+
+  const filteredData = (users || []).filter(
+    (item) =>
+      (item.first_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (item.last_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (item.username || "").toLowerCase().includes(search.toLowerCase()) ||
+      (item.email || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       first_name: "",
       last_name: "",
       mobile: "",
@@ -69,14 +69,13 @@ const User = () => {
     setIsEdit(false);
   };
 
-  /* ===== PAGINATION STATE (SAME) ===== */
-  const itemsPerPage = 5;
+  /* ===== PAGINATION STATE ===== */
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = filteredData.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -97,42 +96,91 @@ const User = () => {
     const { name, value } = e.target;
 
     // only numbers for mobile
-    if (name === "mobile" && !/^\d*$/.test(value)) return;
+    if (name === "mobile" && value && !/^\d*$/.test(value)) return;
 
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirm_password) {
-      alert("Password and Confirm Password do not match");
+    if (!isEdit && formData.password !== formData.confirm_password) {
+      showError("Password and Confirm Password do not match");
       return;
     }
 
-    if (isEdit) {
-      setData(data.map((d) => (d.id === formData.id ? formData : d)));
-      alert("User updated successfully ✅");
-    } else {
-      setData([...data, { ...formData, id: Date.now() }]);
-      alert("User added successfully ✅");
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "mobile",
+      "email",
+      "username",
+      "designation",
+      "department",
+      "role",
+    ];
+    if (!isEdit) {
+      requiredFields.push("password", "confirm_password");
+    }
+    for (const field of requiredFields) {
+      if (!formData[field] || !formData[field].trim()) {
+        showError(`${field.replace("_", " ")} is required`);
+        return;
+      }
     }
 
-    setFormData({
-      id: null,
-      first_name: "",
-      last_name: "",
-      mobile: "",
-      email: "",
-      username: "",
-      password: "",
-      confirm_password: "",
-      designation: "",
-      department: "",
-      role: "",
-      status: "Active",
-    });
-    setIsEdit(false);
+    setIsSubmitting(true);
+    try {
+      const userData = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        mobile: formData.mobile,
+        email: formData.email,
+        username: formData.username,
+        designation: formData.designation,
+        department: formData.department,
+        role: formData.role,
+        status: formData.status,
+      };
+
+      if (isEdit) {
+        if (formData.password) {
+          userData.password = formData.password;
+        }
+        await dispatch(
+          updateUserThunk({
+            id: formData._id,
+            data: { ...userData, updated_by: currentUserId },
+          })
+        ).unwrap();
+        showSuccess("User updated successfully");
+      } else {
+        userData.password = formData.password;
+        await dispatch(
+          createUserThunk({
+            ...userData,
+            created_by: currentUserId,
+            updated_by: currentUserId,
+          })
+        ).unwrap();
+        showSuccess("User added successfully");
+      }
+      dispatch(getAllUsersThunk());
+      resetForm();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      dispatch(deleteUserThunk({ id, user_id: currentUserId })).then(() => {
+        showSuccess("User deleted successfully");
+        dispatch(getAllUsersThunk());
+      });
+    }
   };
 
   return (
@@ -237,7 +285,7 @@ const User = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              required
+              required={!isEdit}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
             />
           </div>
@@ -251,7 +299,7 @@ const User = () => {
               placeholder="Confirm Password"
               value={formData.confirm_password}
               onChange={handleChange}
-              required
+              required={!isEdit}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
             />
           </div>
@@ -322,32 +370,66 @@ const User = () => {
             </select>
           </div>
 
-          <div className=" flex justify-end gap-6  mt-6">
+          <div className=" flex justify-end gap-6  mt-6 md:col-span-4">
             <button
               type="button"
               onClick={resetForm}
-              className="px-5 py-1 text-sm border border-gray-300 rounded"
+              disabled={isSubmitting}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className={`px-6 py-1 text-sm rounded text-white ${
-                isEdit ? "bg-blue-600" : "bg-green-600"
-              }`}
+              disabled={isSubmitting}
+              className={`px-6 py-1.5 text-sm rounded text-white ${
+                isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isEdit ? "Update User" : "Add User"}
+              {isSubmitting
+                ? "Processing..."
+                : isEdit
+                ? "Update User"
+                : "Add User"}
             </button>
           </div>
         </form>
       </div>
 
-      {/* ================= TABLE (DESIGN SAME) ================= */}
+      {/* ================= TABLE ================= */}
       <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-3 border-b border-gray-200">
+        <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
           <h3 className="text-base font-medium text-gray-800">Users List</h3>
-        </div>{" "}
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
+          >
+            {[5, 10, 25, 50].map((n) => (
+              <option key={n} value={n}>
+                Show {n} Entries
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
+          />
+        </div>
         <table className="w-full text-sm text-left text-gray-600">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -360,85 +442,87 @@ const User = () => {
             </tr>
           </thead>
           <tbody>
-            {currentData.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{startIndex + index + 1}</td>
-                <td className="px-4 py-3">
-                  {item.first_name} {item.last_name}
+            {loading && users?.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  Loading...
                 </td>
-                <td className="px-4 py-3">{item.username}</td>
-                <td className="px-4 py-3">{item.role}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full ${
-                      item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 flex gap-3">
-                  <button
-                    className="relative text-sm text-blue-600 transition
+              </tr>
+            ) : (
+              currentData.map((item, index) => (
+                <tr
+                  key={item._id}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">{startIndex + index + 1}</td>
+                  <td className="px-4 py-3">
+                    {item.first_name} {item.last_name}
+                  </td>
+                  <td className="px-4 py-3">{item.username}</td>
+                  <td className="px-4 py-3">{item.role}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${
+                        item.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 flex gap-3">
+                    <button
+                      className="relative text-sm text-blue-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-blue-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                    onClick={() => navigate(`/users/user/${item.id}`)}
-                  >
-                    View
-                  </button>
+                      onClick={() => navigate(`/users/user/${item._id}`)}
+                    >
+                      View
+                    </button>
 
-                  <button
-                    className="relative text-sm text-green-600 transition
+                    <button
+                      className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                    onClick={() => {
-                      setFormData(item);
-                      setIsEdit(true);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    Edit
-                  </button>
+                      onClick={() => {
+                        setFormData({
+                          ...item,
+                          password: "",
+                          confirm_password: "",
+                        });
+                        setIsEdit(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      Edit
+                    </button>
 
-                  <button
-                    className="relative text-sm text-red-600 transition
+                    <button
+                      className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Are you sure you want to delete this banner?"
-                        )
-                      ) {
-                        setData(data.filter((d) => d.id !== item.id));
-                        alert("Banner deleted successfully ❌");
-                        console.log("DELETED ID 👉", item.id);
-                      }
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      onClick={() => handleDelete(item._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-        {/* ================= PAGINATION (SAME) ================= */}
+        {/* ================= PAGINATION ================= */}
         <div className="flex justify-between items-center p-4">
           <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
+            Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
+            of {filteredData.length}
           </span>
           <div className="flex space-x-1">
             <button
@@ -458,7 +542,9 @@ hover:after:w-full"
                   key={p}
                   onClick={() => setCurrentPage(p)}
                   className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p ? "bg-blue-50 text-blue-600" : ""
+                    currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
                   }`}
                 >
                   {p}
