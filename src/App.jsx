@@ -74,13 +74,16 @@ import AddPainting from "./pages/painting-competition/AddPainting";
 import AddNatak from "./pages/nukkad-natak/AddNatak";
 import NatakList from "./pages/nukkad-natak/NatakList";
 import Objective from "./pages/objective/Objective";
+import Login from "./pages/auth/Login";
 
 function App() {
   return (
     <BrowserRouter>
-      <AdminLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
+      <Routes>
+        <Route path="/" element={<Login />} />
+
+        <Route element={<AdminLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/home-banner" element={<HomeBanner />} />
           <Route path="/media/photos-gallery" element={<PhotosGallery />} />
           <Route path="/media/videos-gallery" element={<VideosGallery />} />
@@ -219,9 +222,9 @@ function App() {
           <Route path="/nukkad-natak/add-natak" element={<AddNatak />} />
           <Route path="/nukkad-natak/natak-list" element={<NatakList />} />
           <Route path="/objective" element={<Objective />} />
-        </Routes>
-        <ToastContainer />
-      </AdminLayout>
+        </Route>
+      </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

@@ -43,7 +43,7 @@ export default function Sidebar() {
     {
       section: "MAIN",
       items: [
-        { label: "Dashboard", path: "/", icon: MdDashboard },
+        { label: "Dashboard", path: "/dashboard", icon: MdDashboard },
         {
           label: "Home Banner",
           icon: FiSliders,
