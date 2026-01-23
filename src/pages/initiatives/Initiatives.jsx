@@ -1,42 +1,42 @@
-import React, { useState } from "react";
-import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "Clean Ganga",
-    link: "https://example.com/ganga",
-    status: "Active",
-    image: "/placeholder.png",
-    descShort: "Initiative for clean Ganga",
-    descLong: "Detailed description about Clean Ganga initiative.",
-  },
-  {
-    id: 2,
-    title: "Tree Plantation",
-    link: "https://example.com/trees",
-    status: "Inactive",
-    image: "/placeholder.png",
-    descShort: "Planting trees across the city",
-    descLong: "Detailed description about Tree Plantation.",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Editor } from "primereact/editor";
+import { useDispatch, useSelector } from "react-redux";
+import adminBanner from "../../assets/banners/bg.jpg";
+import {
+  createInitiative,
+  getAllInitiatives,
+  updateInitiative,
+  deleteInitiative,
+} from "../../redux/slices/initiativeSlice";
+import { showSuccess, showError } from "../../utils/toastService";
 
 const Initiatives = () => {
-  /* ===== FORM STATE ===== */
+  const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     title: "",
     link: "",
+    slug: "",
     image: null,
-    descShort: "",
-    descLong: "",
+    meta_keywords: "",
+    meta_desc: "",
+    desc: "",
+    created_by: "",
+    updated_by: "",
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+  // redux logic
+  const { initiatives, loading } = useSelector((state) => state.initiative);
+  console.log("initiatives..", initiatives);
+
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllInitiatives());
+  }, [dispatch]);
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 5;
@@ -45,62 +45,111 @@ const Initiatives = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "title") {
+      const slug = value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      setFormData({ ...formData, title: value, slug: slug });
+    } else {
+      setFormData({ ...formData, [name]: files ? files[0] : value });
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (isEdit) {
-      // UPDATE
-      const updated = data.map((item) =>
-        item.id === formData.id
-          ? {
-              ...formData,
-              image:
-                typeof formData.image === "string"
-                  ? formData.image
-                  : URL.createObjectURL(formData.image),
-            }
-          : item
-      );
-
-      setData(updated);
-      alert("Initiatives updated successfully ✅");
-      console.log("UPDATED 👉", formData);
-    } else {
-      // ADD
-      const newBanner = {
-        ...formData,
-        id: Date.now(),
-        image: formData.image
-          ? URL.createObjectURL(formData.image)
-          : "/placeholder.png",
-      };
-
-      setData([...data, newBanner]);
-      alert("Initiatives added successfully ✅");
-      console.log("ADDED 👉", newBanner);
-    }
-
-    // RESET FORM
+  const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       title: "",
       link: "",
-      status: "Active",
+      slug: "",
       image: null,
-      descShort: "",
-      descLong: "",
+      meta_keywords: "",
+      meta_desc: "",
+      desc: "",
+      created_by: "",
+      updated_by: "",
+      status: "Active",
     });
     setIsEdit(false);
   };
 
+  const handleCancel = () => {
+    resetForm();
+  };
+
+  const handleDelete = (id) => {
+    const currentUserId = authUser?.id || null;
+    dispatch(deleteInitiative({ id: id, user_id: currentUserId })).then(() => {
+      showSuccess("Initiative deleted successfully");
+      dispatch(getAllInitiatives());
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.title?.trim()) {
+      showError("Title is required.");
+      return;
+    }
+
+    if (!formData.slug?.trim()) {
+      showError("Slug is required.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const dataToSend = new FormData();
+    dataToSend.append("title", formData.title);
+    dataToSend.append("slug", formData.slug);
+    dataToSend.append("link", formData.link);
+    dataToSend.append("status", formData.status);
+    dataToSend.append("meta_keywords", formData.meta_keywords);
+    dataToSend.append("meta_desc", formData.meta_desc);
+    dataToSend.append("desc", formData.desc);
+
+    if (formData.image instanceof File) {
+      dataToSend.append("image", formData.image);
+    }
+
+    const currentUserId = authUser?.id || null;
+    const currentUserName = authUser?.username || "";
+
+    try {
+      if (isEdit) {
+        dataToSend.append("updated_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
+        await dispatch(
+          updateInitiative({ id: formData._id, formData: dataToSend })
+        ).unwrap();
+        showSuccess("Initiative updated successfully");
+      } else {
+        dataToSend.append("created_by", currentUserName);
+        dataToSend.append("updated_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
+        await dispatch(createInitiative(dataToSend)).unwrap();
+        showSuccess("Initiative added successfully");
+      }
+
+      await dispatch(getAllInitiatives()).unwrap();
+      resetForm();
+      setCurrentPage(1);
+    } catch (err) {
+      console.error(err);
+      showError("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(initiatives?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = initiatives?.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -119,14 +168,32 @@ const Initiatives = () => {
   return (
     <div className="space-y-6">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Initiatives Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update Initiatives content including title, link, description
-          and status.
-        </p>
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Initiatives Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update Initiatives content including title, link,
+                description and status.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ================= FORM ================= */}
@@ -137,7 +204,7 @@ const Initiatives = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          className="grid grid-cols-1 md:grid-cols-4 gap-3"
         >
           {/* TITLE */}
           <div>
@@ -151,6 +218,21 @@ const Initiatives = () => {
               onChange={handleChange}
               placeholder="Enter banner title"
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+          {/* SLUG */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Slug <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="slug"
+              value={formData.slug}
+              onChange={handleChange}
+              placeholder="Enter slug"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               required
             />
           </div>
@@ -176,39 +258,10 @@ const Initiatives = () => {
               Image
             </label>
             <input
+              key={formData._id || "new"}
               type="file"
               name="image"
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* SHORT DESC */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Short Description
-            </label>
-            <input
-              type="text"
-              name="descShort"
-              value={formData.descShort}
-              onChange={handleChange}
-              placeholder="Enter short description"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* LONG DESC */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Long Description
-            </label>
-            <textarea
-              name="descLong"
-              value={formData.descLong}
-              onChange={handleChange}
-              placeholder="Enter long description"
-              rows={1}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -227,37 +280,83 @@ const Initiatives = () => {
               <option value="Inactive">Inactive</option>
             </select>
           </div>
+          {/* META KEYWORD */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Keyword
+            </label>
+            <input
+              type="text"
+              name="meta_keywords"
+              value={formData.meta_keywords}
+              onChange={handleChange}
+              placeholder="Enter meta keywords"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          {/* META DESCRIPTION */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Description
+            </label>
+            <textarea
+              name="meta_desc"
+              value={formData.meta_desc}
+              onChange={handleChange}
+              placeholder="Enter meta description"
+              rows={1}
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Desc  */}
+          <div className="md:col-span-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+
+            <Editor
+              value={formData.desc}
+              onTextChange={(e) =>
+                setFormData({ ...formData, desc: e.htmlValue })
+              }
+              style={{
+                height: "160px",
+                borderRadius: "4px", // rounded
+                borderBottom: "1px solid #e5e7eb", // border-gray-200
+                overflow: "hidden", // corners properly clip ho
+              }}
+              className="w-full text-sm outline-none"
+            />
+          </div>
 
           {/* ACTION BUTTONS */}
-          <div className="md:col-span-3 flex justify-end gap-3 mt-2">
+          <div className="md:col-span-4 flex justify-end gap-3 mt-2">
             <button
               type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  title: "",
-                  link: "",
-                  status: "Active",
-                  image: null,
-                  descShort: "",
-                  descLong: "",
-                });
-                setIsEdit(false);
-              }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Cancel
             </button>
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className={`px-6 py-1.5 text-sm rounded text-white ${
                 isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-              }`}
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isEdit ? "Update Initiatives" : "Add Initiatives"}
+              {isSubmitting
+                ? "Processing..."
+                : isEdit
+                ? "Update Initiatives"
+                : "Add Initiatives"}{" "}
             </button>
           </div>
         </form>
@@ -284,84 +383,95 @@ const Initiatives = () => {
           </thead>
 
           <tbody>
-            {currentData.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{item.id}.</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3 text-blue-600 underline">
-                  {item.link}
+            {loading && initiatives?.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  Loading...
                 </td>
-                <td className="px-4 py-3">
-                  <img
-                    src={item.image || "/placeholder.png"}
-                    alt="Banner"
-                    className="h-10 w-20 object-cover rounded border border-gray-300"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium
+              </tr>
+            ) : (
+              currentData?.map((item, index) => (
+                <tr
+                  key={item._id}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                  <td className="px-4 py-3 font-medium">{item.title}</td>
+                  <td className="px-4 py-3 text-blue-600 underline">
+                    {item.link}
+                  </td>
+                  <td className="px-4 py-3">
+                    <img
+                      src={item.image || "/placeholder.png"}
+                      alt="Initiative"
+                      className="h-10 w-20 object-cover rounded border border-gray-300"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium
           ${
             item.status === "Active"
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="relative text-sm text-green-600 transition
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <button
+                        className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
+                        onClick={() => {
+                          setFormData({
+                            _id: item._id,
+                            title: item.title,
+                            link: item.link,
+                            slug: item.slug,
+                            image: item.image,
+                            meta_keywords: item.meta_keywords,
+                            meta_desc: item.meta_desc,
+                            desc: item.desc,
+                            created_by: item.created_by,
+                            updated_by: item.updated_by,
+                            status: item.status,
+                          });
+                          setIsEdit(true);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      className="relative text-sm text-red-600 transition
+                      <button
+                        className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Banner deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        onClick={() => handleDelete(item._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
         {/* ================= PAGINATION ================= */}
         <div className="flex justify-between items-center p-4">
           <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
+            Showing {startIndex + 1}–
+            {Math.min(endIndex, initiatives?.length || 0)} of{" "}
+            {initiatives?.length || 0}
           </span>
 
           <div className="flex space-x-1">

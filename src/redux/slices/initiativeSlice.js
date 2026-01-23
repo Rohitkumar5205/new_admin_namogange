@@ -1,18 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance";
+import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 
 // ==============================
 // 1) CREATE INITIATIVE
 // ==============================
 export const createInitiative = createAsyncThunk(
   "initiative/create",
-  async (formData, { rejectWithValue }) => {
+  async (formData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.post("/initiatives/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
-
-      return res.data.initiative;
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Initiative created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
+          section: "Initiative",
+        })
+      );
+      return res?.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -27,7 +43,7 @@ export const getAllInitiatives = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await api.get("/initiatives");
-      return res.data.initiatives;
+      return res?.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -42,7 +58,7 @@ export const getInitiativeById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const res = await api.get(`/initiatives/${id}`);
-      return res.data.initiative;
+      return res?.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -54,13 +70,30 @@ export const getInitiativeById = createAsyncThunk(
 // ==============================
 export const updateInitiative = createAsyncThunk(
   "initiative/update",
-  async ({ id, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.put(`/initiatives/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      return res.data.initiative;
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Initiative updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
+          section: "Initiative",
+        })
+      );
+
+      return res?.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -72,9 +105,25 @@ export const updateInitiative = createAsyncThunk(
 // ==============================
 export const deleteInitiative = createAsyncThunk(
   "initiative/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
-      await api.delete(`/initiatives/${id}`);
+      await api.delete(`/initiatives/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id,
+          message: "Initiative deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
+          section: "Initiative",
+        })
+      );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

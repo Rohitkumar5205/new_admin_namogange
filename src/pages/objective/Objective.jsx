@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
 import { Editor } from "primereact/editor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -9,6 +8,7 @@ import {
   deleteObjectiveThunk,
 } from "../../redux/slices/objective/objectiveSlice";
 import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const Objective = () => {
   const dispatch = useDispatch();
@@ -29,6 +29,9 @@ const Objective = () => {
   // redux logic
   const { data, loading } = useSelector((state) => state.objectives);
   const [isEdit, setIsEdit] = useState(false);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+  // const currentUserId = authUser?.id || null;
+  // const currentUserName = authUser?.username || "";
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 5;
@@ -76,10 +79,10 @@ const Objective = () => {
   };
 
   const handleDelete = (id) => {
-    const currentUserId = "66ec23d89309636c42738591"; // Replace with actual user ID
+    const currentUserId = authUser?.id || null;
     dispatch(deleteObjectiveThunk({ id: id, user_id: currentUserId })).then(
       () => {
-        showSuccess("Objective deleted successfully ❌");
+        showSuccess("Objective deleted successfully ");
         dispatch(fetchObjectives());
       }
     );
@@ -122,34 +125,33 @@ const Objective = () => {
       dataToSend.append("image", formData.image);
     }
 
-    const currentUserId = "66ec23d89309636c42738591";
-
+    // const currentUserId = "66ec23d89309636c42738591";
+    const currentUserId = authUser?.id || null;
+    const currentUserName = authUser?.username || "";
     try {
       if (isEdit) {
-        dataToSend.append("updated_by", currentUserId);
+        dataToSend.append("updated_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
 
         await dispatch(
           updateObjectiveThunk({ id: formData._id, formData: dataToSend })
         ).unwrap();
 
-        showSuccess("Objective updated successfully ✅");
+        showSuccess("Objective updated successfully");
       } else {
-        dataToSend.append("created_by", currentUserId);
-        dataToSend.append("updated_by", currentUserId);
-
+        dataToSend.append("created_by", currentUserName);
+        dataToSend.append("updated_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
         await dispatch(createObjectiveThunk(dataToSend)).unwrap();
-
-        showSuccess("Objective added successfully ✅");
+        showSuccess("Objective added successfully");
       }
 
-      // 🔥 THIS WAS MISSING
       await dispatch(fetchObjectives()).unwrap();
-
-      // 🔥 RESET FORM + PAGINATION
       resetForm();
       setCurrentPage(1);
     } catch (err) {
       console.error(err);
+      showError("Something went wrong!");
     } finally {
       setIsSubmitting(false);
     }
@@ -178,14 +180,33 @@ const Objective = () => {
   return (
     <div className="space-y-6">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Objective Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update Objective content including title, slug, description and
-          status.
-        </p>
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                {" "}
+                Objective Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update Objective content including title, slug,
+                description and status.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ================= FORM ================= */}

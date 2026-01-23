@@ -19,18 +19,23 @@ export const fetchObjectives = createAsyncThunk(
 export const createObjectiveThunk = createAsyncThunk(
   "objectives/create",
   async (formData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.post("/objectives/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: formData.get("created_by"),
+          user_id: formData.get("user_id"),
           message: "Objective created",
-          // link: "/objectives",
-          // link: `${api.defaults.baseURL}/objective`,
           link: `${import.meta.env.VITE_API_FRONT_URL}/objective`,
           section: "Objective",
         })
@@ -47,14 +52,21 @@ export const createObjectiveThunk = createAsyncThunk(
 export const updateObjectiveThunk = createAsyncThunk(
   "objectives/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.put(`/objectives/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       dispatch(
         createActivityLogThunk({
-          user_id: formData.get("updated_by"),
+          user_id: formData.get("user_id"),
           message: "Objective updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/objective`,
           section: "Objective",
@@ -72,8 +84,14 @@ export const updateObjectiveThunk = createAsyncThunk(
 export const deleteObjectiveThunk = createAsyncThunk(
   "objectives/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
-      await api.delete(`/objectives/${id}`);
+      await api.delete(`/objectives/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       dispatch(
         createActivityLogThunk({

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import adminBanner from "../assets/banners/admin.png";
 import {
   FaUsers,
   FaHome,
@@ -15,7 +15,7 @@ import {
   FaPaintBrush,
   FaTheaterMasks,
 } from "react-icons/fa";
-import { FiActivity } from "react-icons/fi";
+import { FiActivity, FiGrid } from "react-icons/fi";
 
 import {
   BarChart,
@@ -331,13 +331,42 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="">
       {/* HEADER */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">Dashboard</h2>
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-between items-center px-6 py-4 h-full">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-md">
+              <FiGrid className="text-white w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">Dashboard</h2>
+              <p className="text-sm text-blue-100">
+                Welcome to Namo Gange Admin Panel
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="hidden sm:flex items-center bg-white/20 backdrop-blur px-4 py-1.5 rounded-full">
+            <span className="text-sm text-white font-medium">Admin Access</span>
+          </div> */}
+        </div>
       </div>
 
-      {/* <div>
+      <div className="space-y-3 p-5 ">
+        {/* <div>
         <h4 className=" text-gray-600 text-[15px] font-medium">All Charts</h4>
         <hr className="w-full border border-gray-300" />
       </div>
@@ -555,27 +584,27 @@ const Dashboard = () => {
         </div>
       </div> */}
 
-      {/* tab  */}
-      <div>
-        <div className="flex items-center justify-between">
-          {/* TITLE */}
-          <h4 className="text-gray-600 text-[15px] font-medium">
-            Users Activities
-          </h4>
+        {/* tab  */}
+        <div>
+          <div className="flex items-center justify-between">
+            {/* TITLE */}
+            <h4 className="text-gray-600 text-[15px] font-medium">
+              Users Activities
+            </h4>
 
-          {/* TABS */}
-          <div className="flex items-center gap-1 bg-gray-100 rounded-md p-1 mb-1">
-            {[
-              { key: "today", label: "Today" },
-              { key: "yesterday", label: "Yesterday" },
-              { key: "week", label: "This Week" },
-              { key: "month", label: "This Month" },
-              { key: "year", label: "This Year" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`
+            {/* TABS */}
+            <div className="flex items-center gap-1 bg-gray-100 rounded-md p-1 mb-1">
+              {[
+                { key: "today", label: "Today" },
+                { key: "yesterday", label: "Yesterday" },
+                { key: "week", label: "This Week" },
+                { key: "month", label: "This Month" },
+                { key: "year", label: "This Year" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`
             px-3 py-1 text-xs font-medium rounded-md
             transition-all duration-200
             ${
@@ -584,171 +613,171 @@ const Dashboard = () => {
                 : "text-gray-600 hover:bg-white hover:text-gray-800"
             }
           `}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <hr className="w-full border border-gray-300 " />
-      </div>
-
-      {/* STATS GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((item, i) => {
-          const Icon = item.icon;
-
-          const bg = getColorById(cardBgGradients, i);
-          const iconBg = getColorById(iconBgColors, i);
-          const textColor = getColorById(textColors, i);
-
-          return (
-            <div
-              key={i}
-              className={`rounded-md px-3 py-2   shadow-sm hover:shadow-xl
-              transition-all duration-300 transition bg-gradient-to-br ${bg}`}
-            >
-              <div className="flex items-center justify-between">
-                <div
-                  className={`w-7 h-7 rounded-xl ${iconBg}
-            flex items-center justify-center text-white shadow-md`}
                 >
-                  {" "}
-                  <Icon size={16} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-600">
-                    {item.title}
-                  </h4>
-                </div>
-                <div>
-                  <p className={`text-xl font-semibold ${textColor}`}>
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-
-              {/* <p className="text-sm text-gray-500">{item.desc}</p> */}
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          );
-        })}
-      </div>
-
-      {/* active table data   */}
-      <div className="w-full flex flex-row gap-4 mt-3">
-        {/* LEFT: ACTIVITY LOG */}
-        <div className="w-[55%]  bg-white rounded-md shadow-sm border border-gray-200">
-          {/* Header */}
-          <div className="px-4 py-2 border-b border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase">
-              Activity Log
-            </h4>
           </div>
 
-          {/* List */}
-          <ul className="divide-y divide-gray-100">
-            {activityLogs.map((item, i) => (
-              <li
+          <hr className="w-full border border-gray-300 " />
+        </div>
+
+        {/* STATS GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((item, i) => {
+            const Icon = item.icon;
+
+            const bg = getColorById(cardBgGradients, i);
+            const iconBg = getColorById(iconBgColors, i);
+            const textColor = getColorById(textColors, i);
+
+            return (
+              <div
                 key={i}
-                className="px-4 py-3 flex justify-between hover:bg-gray-50 transition"
+                className={`rounded-md px-3 py-2   shadow-sm hover:shadow-xl
+              transition-all duration-300 transition bg-gradient-to-br ${bg}`}
               >
-                <p className="text-sm text-blue-600 leading-relaxed max-w-[75%]">
-                  <span className="font-semibold">{item.user}</span> :{" "}
-                  {item.action}
-                </p>
-
-                <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {item.time}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* RIGHT: USER COUNT TABLE */}
-        <div className="w-[45%] bg-white rounded-md shadow-sm border border-gray-200">
-          {/* Header */}
-          <div className="px-4 py-2 border-b border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase">
-              User Summary
-            </h4>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600">
-                <tr>
-                  <th className="px-3 py-2 text-left">Users</th>
-                  <th className="px-2 py-2 text-center">EN</th>
-                  <th className="px-2 py-2 text-center">MB</th>
-                  <th className="px-2 py-2 text-center">VL</th>
-                  <th className="px-2 py-2 text-center">16TH</th>
-                  <th className="px-2 py-2 text-center">TGYM</th>
-                  <th className="px-2 py-2 text-center">BKR</th>
-                  <th className="px-2 py-2 text-center">PC</th>
-                  <th className="px-2 py-2 text-center">NN</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y">
-                {userStats.map((row, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-gray-200 hover:bg-gray-50"
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`w-7 h-7 rounded-xl ${iconBg}
+            flex items-center justify-center text-white shadow-md`}
                   >
-                    <td className="px-3 py-2 text-blue-600 font-medium">
-                      {row.name}
-                    </td>
-                    <td className="px-2 py-2 text-center">{row.NL}</td>
-                    <td className="px-2 py-2 text-center">{row.WC}</td>
-                    <td className="px-2 py-2 text-center">{row.HC}</td>
-                    <td className="px-2 py-2 text-center">{row.CC}</td>
-                    <td className="px-2 py-2 text-center">{row.NIC}</td>
-                    <td className="px-2 py-2 text-center">{row.TC}</td>
-                    <td className="px-2 py-2 text-center">{row.NP}</td>
-                    <td className="px-2 py-2 text-center">{row.PP}</td>
-                  </tr>
-                ))}
-              </tbody>
+                    {" "}
+                    <Icon size={16} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-600">
+                      {item.title}
+                    </h4>
+                  </div>
+                  <div>
+                    <p className={`text-xl font-semibold ${textColor}`}>
+                      {item.value}
+                    </p>
+                  </div>
+                </div>
 
-              {/* Footer */}
-              <tfoot className="border-t border-gray-200 bg-gray-50 font-semibold ">
-                <tr>
-                  <td className="px-3 py-2">Total</td>
-                  <td className="px-2 py-2 text-center">1</td>
-                  <td className="px-2 py-2 text-center">1</td>
-                  <td className="px-2 py-2 text-center">2</td>
-                  <td className="px-2 py-2 text-center">0</td>
-                  <td className="px-2 py-2 text-center">0</td>
-                  <td className="px-2 py-2 text-center">3</td>
-                  <td className="px-2 py-2 text-center">4</td>
-                  <td className="px-2 py-2 text-center">0</td>
-                </tr>
-              </tfoot>
-            </table>
+                {/* <p className="text-sm text-gray-500">{item.desc}</p> */}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* active table data   */}
+        <div className="w-full flex flex-row gap-4 mt-3">
+          {/* LEFT: ACTIVITY LOG */}
+          <div className="w-[55%]  bg-white rounded-md shadow-sm border border-gray-200">
+            {/* Header */}
+            <div className="px-4 py-2 border-b border-gray-200">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase">
+                Activity Log
+              </h4>
+            </div>
+
+            {/* List */}
+            <ul className="divide-y divide-gray-100">
+              {activityLogs.map((item, i) => (
+                <li
+                  key={i}
+                  className="px-4 py-3 flex justify-between hover:bg-gray-50 transition"
+                >
+                  <p className="text-sm text-blue-600 leading-relaxed max-w-[75%]">
+                    <span className="font-semibold">{item.user}</span> :{" "}
+                    {item.action}
+                  </p>
+
+                  <span className="text-xs text-gray-500 whitespace-nowrap">
+                    {item.time}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* RIGHT: USER COUNT TABLE */}
+          <div className="w-[45%] bg-white rounded-md shadow-sm border border-gray-200">
+            {/* Header */}
+            <div className="px-4 py-2 border-b border-gray-200">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase">
+                User Summary
+              </h4>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Users</th>
+                    <th className="px-2 py-2 text-center">EN</th>
+                    <th className="px-2 py-2 text-center">MB</th>
+                    <th className="px-2 py-2 text-center">VL</th>
+                    <th className="px-2 py-2 text-center">16TH</th>
+                    <th className="px-2 py-2 text-center">TGYM</th>
+                    <th className="px-2 py-2 text-center">BKR</th>
+                    <th className="px-2 py-2 text-center">PC</th>
+                    <th className="px-2 py-2 text-center">NN</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y">
+                  {userStats.map((row, i) => (
+                    <tr
+                      key={i}
+                      className="border-t border-gray-200 hover:bg-gray-50"
+                    >
+                      <td className="px-3 py-2 text-blue-600 font-medium">
+                        {row.name}
+                      </td>
+                      <td className="px-2 py-2 text-center">{row.NL}</td>
+                      <td className="px-2 py-2 text-center">{row.WC}</td>
+                      <td className="px-2 py-2 text-center">{row.HC}</td>
+                      <td className="px-2 py-2 text-center">{row.CC}</td>
+                      <td className="px-2 py-2 text-center">{row.NIC}</td>
+                      <td className="px-2 py-2 text-center">{row.TC}</td>
+                      <td className="px-2 py-2 text-center">{row.NP}</td>
+                      <td className="px-2 py-2 text-center">{row.PP}</td>
+                    </tr>
+                  ))}
+                </tbody>
+
+                {/* Footer */}
+                <tfoot className="border-t border-gray-200 bg-gray-50 font-semibold ">
+                  <tr>
+                    <td className="px-3 py-2">Total</td>
+                    <td className="px-2 py-2 text-center">1</td>
+                    <td className="px-2 py-2 text-center">1</td>
+                    <td className="px-2 py-2 text-center">2</td>
+                    <td className="px-2 py-2 text-center">0</td>
+                    <td className="px-2 py-2 text-center">0</td>
+                    <td className="px-2 py-2 text-center">3</td>
+                    <td className="px-2 py-2 text-center">4</td>
+                    <td className="px-2 py-2 text-center">0</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h4 className=" text-gray-600 text-[15px] font-medium">All Cards</h4>
-        <hr className="w-full border border-gray-300" />
-      </div>
-      {/* CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {firstCard.map((card) => {
-          const Icon = card.icon1;
+        <div>
+          <h4 className=" text-gray-600 text-[15px] font-medium">All Cards</h4>
+          <hr className="w-full border border-gray-300" />
+        </div>
+        {/* CARDS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {firstCard.map((card) => {
+            const Icon = card.icon1;
 
-          const bg = getColorById(cardBgGradients, card.id);
-          const iconBg = getColorById(iconBgColors, card.id);
-          const textColor = getColorById(textColors, card.id);
+            const bg = getColorById(cardBgGradients, card.id);
+            const iconBg = getColorById(iconBgColors, card.id);
+            const textColor = getColorById(textColors, card.id);
 
-          return (
-            <Link
-              key={card.id}
-              to={card.link}
-              className={`
+            return (
+              <Link
+                key={card.id}
+                to={card.link}
+                className={`
           bg-gradient-to-br ${bg}
           rounded-xl py-2 px-6
           border border-gray-200
@@ -759,31 +788,32 @@ const Dashboard = () => {
           flex flex-col justify-between
           cursor-pointer
         `}
-            >
-              {/* TOP */}
-              <div className="flex items-center gap-4 mb-2">
-                {/* ICON */}
-                <div
-                  className={`w-11 h-11 rounded-full ${iconBg}
+              >
+                {/* TOP */}
+                <div className="flex items-center gap-4 mb-2">
+                  {/* ICON */}
+                  <div
+                    className={`w-10 h-10 rounded-full ${iconBg}
               flex items-center justify-center text-white shadow-md
               bg-gradient-to-tr from-white/20 to-white/0`}
-                >
-                  <Icon size={22} />
+                  >
+                    <Icon size={22} />
+                  </div>
+
+                  {/* TITLE */}
+                  <h4 className={`text-[15px] font-semibold ${textColor}`}>
+                    {card.title}
+                  </h4>
                 </div>
 
-                {/* TITLE */}
-                <h4 className={`text-[15px] font-semibold ${textColor}`}>
-                  {card.title}
-                </h4>
-              </div>
-
-              {/* DESCRIPTION */}
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {card.desc}
-              </p>
-            </Link>
-          );
-        })}
+                {/* DESCRIPTION */}
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {card.desc}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

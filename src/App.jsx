@@ -75,153 +75,170 @@ import AddNatak from "./pages/nukkad-natak/AddNatak";
 import NatakList from "./pages/nukkad-natak/NatakList";
 import Objective from "./pages/objective/Objective";
 import Login from "./pages/auth/Login";
+import ProtectedRoute from "./layouts/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-
-        <Route element={<AdminLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/home-banner" element={<HomeBanner />} />
-          <Route path="/media/photos-gallery" element={<PhotosGallery />} />
-          <Route path="/media/videos-gallery" element={<VideosGallery />} />
-          <Route
-            path="/add_by_admin/add-occupation"
-            element={<AddOccupation />}
-          />
-          <Route
-            path="/add_by_admin/organization"
-            element={<AddOrganization />}
-          />
-          <Route path="/add_by_admin/designation" element={<Designation />} />
-          <Route path="/add_by_admin/department" element={<Department />} />
-          <Route path="/add_by_admin/category" element={<Category />} />
-          <Route path="/add_by_admin/profession" element={<Profession />} />
-          <Route path="/add_by_admin/university" element={<University />} />
-          <Route path="/add_by_admin/status" element={<Status />} />
-          <Route path="/add_by_admin/enquiry" element={<Enquire />} />
-          <Route path="/add_by_admin/data" element={<Data />} />
-          <Route
-            path="/add_by_admin/coordinator"
-            element={<CoordinatorStatus />}
-          />
-          <Route path="/add_by_admin/event" element={<Event />} />
-          <Route path="/add_by_admin/source" element={<Source />} />
-          <Route path="/add_by_admin/target" element={<Target />} />
-          <Route path="/add_by_admin/bank" element={<Bank />} />
-          <Route
-            path="/add_by_admin/image-category"
-            element={<ImageCategory />}
-          />
-          <Route path="/users/user" element={<User />} />
-          <Route path="/users/user/:id" element={<ActivityLog />} />
-          {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
-          <Route path="/member/add-member" element={<AddMember />} />
-          <Route path="/member/member-list" element={<ListMember />} />
-          <Route path="/volunteer/add-volunteer" element={<AddVolunteer />} />
-          <Route path="/volunteer/volunteer-list" element={<ListVolunteer />} />
-          <Route path="/initiatives" element={<Initiatives />} />
-          <Route
-            path="/trust-bodies/add-trust-bodies"
-            element={<AddTrustBodies />}
-          />
-          <Route
-            path="/trust-bodies/trust-bodies-list"
-            element={<TrustBodiesList />}
-          />
-          <Route path="/news/add-news-updates" element={<AddNewsUpdates />} />
-          <Route path="/news/news-updates-list" element={<NewsUpdatesList />} />
-          <Route path="/news-letters" element={<NewsLetters />} />
-          <Route path="/blogs/add-blog" element={<AddBlog />} />
-          <Route path="/blogs/blog-list" element={<BlogList />} />
-          <Route path="/faq" element={<Faq />} />
-          <Route path="/collage/add-college" element={<AddCollege />} />
-          <Route path="/collage/college-list" element={<CollegeList />} />
-          <Route path="/enquiry/enquiry-list" element={<EnquiryList />} />
-          <Route path="/support/support-list" element={<SupportList />} />
-          <Route path="/donation/add-donation" element={<AddDonation />} />
-          <Route path="/donation/donation-list" element={<DonationList />} />
-          <Route
-            path="/16th-ags-section/web-enquiry"
-            element={<WebEnquiry />}
-          />
-          <Route
-            path="/16th-ags-section/delegate-list"
-            element={<Delegates />}
-          />
-          <Route path="/16th-ags-section/new-data" element={<NewData />} />
-          <Route path="/16th-ags-section/warm-data" element={<WarmData />} />
-          <Route path="/16th-ags-section/hot-data" element={<HotData />} />
-          <Route path="/16th-ags-section/cold-data" element={<ColdData />} />
-          <Route
-            path="/16th-ags-section/master-delegate-data"
-            element={<MasterDelegateData />}
-          />
-          <Route
-            path="/16th-ags-section/ags-add-data"
-            element={<AGSAddData />}
-          />
-          <Route
-            path="/16th-ags-section/ags-edit-data"
-            element={<AGSEditData />}
-          />
-          <Route
-            path="/16th-ags-section/ags-overview"
-            element={<AgsOverview />}
-          />
-          <Route
-            path="/16th-ags-section/ags-payment"
-            element={<AgsPayment />}
-          />
-          <Route path="/16th-ags-section/receipt" element={<Receipt />} />
-          <Route path="/tgym/add-contestant" element={<AddNewContestants />} />
-          <Route path="/tgym/edit-contestant" element={<EditContestant />} />
-          <Route
-            path="/tgym/general-contestant"
-            element={<GeneralContestant />}
-          />
-          <Route path="/tgym/tgym-overview" element={<TgymOverview />} />
-          <Route path="/tgym/tgym-payment" element={<TgymPayment />} />
-          <Route
-            path="/tgym/follow-up-contestant"
-            element={<FollowUpContestant />}
-          />
-          <Route path="/tgym/hot-contestant" element={<HotContestant />} />
-          <Route
-            path="/tgym/audition-contestant"
-            element={<AuditionContestant />}
-          />
-          <Route path="/tgym/video-contestant" element={<VideoContestant />} />
-          <Route
-            path="/tgym/finale-contestant"
-            element={<FinaleContestant />}
-          />
-          <Route
-            path="/tgym/master-contestant"
-            element={<MasterContestants />}
-          />
-          <Route path="/tgym/not-intr-contestant" element={<NotInterested />} />
-          <Route
-            path="/baccho-ki-rangshala/add-rangshala"
-            element={<AddRangshala />}
-          />
-          <Route
-            path="/baccho-ki-rangshala/rangshala-list"
-            element={<RangshalaList />}
-          />
-          <Route
-            path="/painting-competition/add-painting"
-            element={<AddPainting />}
-          />
-          <Route
-            path="/painting-competition/painting-list"
-            element={<PaintingList />}
-          />
-          <Route path="/nukkad-natak/add-natak" element={<AddNatak />} />
-          <Route path="/nukkad-natak/natak-list" element={<NatakList />} />
-          <Route path="/objective" element={<Objective />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/home-banner" element={<HomeBanner />} />
+            <Route path="/media/photos-gallery" element={<PhotosGallery />} />
+            <Route path="/media/videos-gallery" element={<VideosGallery />} />
+            <Route
+              path="/add_by_admin/add-occupation"
+              element={<AddOccupation />}
+            />
+            <Route
+              path="/add_by_admin/organization"
+              element={<AddOrganization />}
+            />
+            <Route path="/add_by_admin/designation" element={<Designation />} />
+            <Route path="/add_by_admin/department" element={<Department />} />
+            <Route path="/add_by_admin/category" element={<Category />} />
+            <Route path="/add_by_admin/profession" element={<Profession />} />
+            <Route path="/add_by_admin/university" element={<University />} />
+            <Route path="/add_by_admin/status" element={<Status />} />
+            <Route path="/add_by_admin/enquiry" element={<Enquire />} />
+            <Route path="/add_by_admin/data" element={<Data />} />
+            <Route
+              path="/add_by_admin/coordinator"
+              element={<CoordinatorStatus />}
+            />
+            <Route path="/add_by_admin/event" element={<Event />} />
+            <Route path="/add_by_admin/source" element={<Source />} />
+            <Route path="/add_by_admin/target" element={<Target />} />
+            <Route path="/add_by_admin/bank" element={<Bank />} />
+            <Route
+              path="/add_by_admin/image-category"
+              element={<ImageCategory />}
+            />
+            <Route path="/users/user" element={<User />} />
+            <Route path="/users/user/:id" element={<ActivityLog />} />
+            {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
+            <Route path="/member/add-member" element={<AddMember />} />
+            <Route path="/member/member-list" element={<ListMember />} />
+            <Route path="/volunteer/add-volunteer" element={<AddVolunteer />} />
+            <Route
+              path="/volunteer/volunteer-list"
+              element={<ListVolunteer />}
+            />
+            <Route path="/initiatives" element={<Initiatives />} />
+            <Route
+              path="/trust-bodies/add-trust-bodies"
+              element={<AddTrustBodies />}
+            />
+            <Route
+              path="/trust-bodies/trust-bodies-list"
+              element={<TrustBodiesList />}
+            />
+            <Route path="/news/add-news-updates" element={<AddNewsUpdates />} />
+            <Route
+              path="/news/news-updates-list"
+              element={<NewsUpdatesList />}
+            />
+            <Route path="/news-letters" element={<NewsLetters />} />
+            <Route path="/blogs/add-blog" element={<AddBlog />} />
+            <Route path="/blogs/blog-list" element={<BlogList />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/collage/add-college" element={<AddCollege />} />
+            <Route path="/collage/college-list" element={<CollegeList />} />
+            <Route path="/enquiry/enquiry-list" element={<EnquiryList />} />
+            <Route path="/support/support-list" element={<SupportList />} />
+            <Route path="/donation/add-donation" element={<AddDonation />} />
+            <Route path="/donation/donation-list" element={<DonationList />} />
+            <Route
+              path="/16th-ags-section/web-enquiry"
+              element={<WebEnquiry />}
+            />
+            <Route
+              path="/16th-ags-section/delegate-list"
+              element={<Delegates />}
+            />
+            <Route path="/16th-ags-section/new-data" element={<NewData />} />
+            <Route path="/16th-ags-section/warm-data" element={<WarmData />} />
+            <Route path="/16th-ags-section/hot-data" element={<HotData />} />
+            <Route path="/16th-ags-section/cold-data" element={<ColdData />} />
+            <Route
+              path="/16th-ags-section/master-delegate-data"
+              element={<MasterDelegateData />}
+            />
+            <Route
+              path="/16th-ags-section/ags-add-data"
+              element={<AGSAddData />}
+            />
+            <Route
+              path="/16th-ags-section/ags-edit-data"
+              element={<AGSEditData />}
+            />
+            <Route
+              path="/16th-ags-section/ags-overview"
+              element={<AgsOverview />}
+            />
+            <Route
+              path="/16th-ags-section/ags-payment"
+              element={<AgsPayment />}
+            />
+            <Route path="/16th-ags-section/receipt" element={<Receipt />} />
+            <Route
+              path="/tgym/add-contestant"
+              element={<AddNewContestants />}
+            />
+            <Route path="/tgym/edit-contestant" element={<EditContestant />} />
+            <Route
+              path="/tgym/general-contestant"
+              element={<GeneralContestant />}
+            />
+            <Route path="/tgym/tgym-overview" element={<TgymOverview />} />
+            <Route path="/tgym/tgym-payment" element={<TgymPayment />} />
+            <Route
+              path="/tgym/follow-up-contestant"
+              element={<FollowUpContestant />}
+            />
+            <Route path="/tgym/hot-contestant" element={<HotContestant />} />
+            <Route
+              path="/tgym/audition-contestant"
+              element={<AuditionContestant />}
+            />
+            <Route
+              path="/tgym/video-contestant"
+              element={<VideoContestant />}
+            />
+            <Route
+              path="/tgym/finale-contestant"
+              element={<FinaleContestant />}
+            />
+            <Route
+              path="/tgym/master-contestant"
+              element={<MasterContestants />}
+            />
+            <Route
+              path="/tgym/not-intr-contestant"
+              element={<NotInterested />}
+            />
+            <Route
+              path="/baccho-ki-rangshala/add-rangshala"
+              element={<AddRangshala />}
+            />
+            <Route
+              path="/baccho-ki-rangshala/rangshala-list"
+              element={<RangshalaList />}
+            />
+            <Route
+              path="/painting-competition/add-painting"
+              element={<AddPainting />}
+            />
+            <Route
+              path="/painting-competition/painting-list"
+              element={<PaintingList />}
+            />
+            <Route path="/nukkad-natak/add-natak" element={<AddNatak />} />
+            <Route path="/nukkad-natak/natak-list" element={<NatakList />} />
+            <Route path="/objective" element={<Objective />} />
+          </Route>
         </Route>
       </Routes>
       <ToastContainer />

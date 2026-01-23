@@ -8,15 +8,22 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createBanner = createAsyncThunk(
   "banner/create",
   async (formData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.post("/banner/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: formData.get("created_by"),
+          user_id: formData.get("user_id"),
           message: "Home Banner created",
           // link: "/objectives",
           // link: `${api.defaults.baseURL}/objective`,
@@ -67,14 +74,21 @@ export const getBannerById = createAsyncThunk(
 export const updateBanner = createAsyncThunk(
   "banner/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.put(`/banner/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       dispatch(
         createActivityLogThunk({
-          user_id: formData.get("updated_by"),
+          user_id: formData.get("user_id"),
           message: "Home banner updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banner`,
           section: "Home Banner",
@@ -93,8 +107,14 @@ export const updateBanner = createAsyncThunk(
 export const deleteBanner = createAsyncThunk(
   "banner/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
-      await api.delete(`/banner/${id}`);
+      await api.delete(`/banner/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       dispatch(
         createActivityLogThunk({
