@@ -3,16 +3,16 @@ import api from "../../api/axiosInstance";
 import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 /* ==============================
-   CREATE STATUS OPTION
+   CREATE EVENT
 ============================== */
-export const createStatusOption = createAsyncThunk(
-  "statusOption/create",
+export const createEvent = createAsyncThunk(
+  "event/create",
   async (data, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.post("/status-option/create", data, {
+      const res = await api.post("/events/create", data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -23,13 +23,13 @@ export const createStatusOption = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: data.user_id,
-          message: "Status option created",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
-          section: "Status Option",
+          message: "Event created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
+          section: "Event",
         })
       );
 
-      return res.data.data;
+      return res.data.data; // ✅ VERY IMPORTANT
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -37,13 +37,13 @@ export const createStatusOption = createAsyncThunk(
 );
 
 /* ==============================
-   GET ALL STATUS OPTIONS
+   GET ALL EVENTS
 ============================== */
-export const getAllStatusOptions = createAsyncThunk(
-  "statusOption/getAll",
+export const getAllEvents = createAsyncThunk(
+  "event/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/status-option");
+      const res = await api.get("/events");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -52,13 +52,13 @@ export const getAllStatusOptions = createAsyncThunk(
 );
 
 /* ==============================
-   GET STATUS OPTION BY ID
+   GET EVENT BY ID
 ============================== */
-export const getStatusOptionById = createAsyncThunk(
-  "statusOption/getById",
+export const getEventById = createAsyncThunk(
+  "event/getById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/status-option/${id}`);
+      const res = await api.get(`/events/${id}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -67,16 +67,16 @@ export const getStatusOptionById = createAsyncThunk(
 );
 
 /* ==============================
-   UPDATE STATUS OPTION
+   UPDATE EVENT
 ============================== */
-export const updateStatusOption = createAsyncThunk(
-  "statusOption/update",
+export const updateEvent = createAsyncThunk(
+  "event/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.put(`/status-option/${id}`, data, {
+      const res = await api.put(`/events/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -86,9 +86,9 @@ export const updateStatusOption = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: data.user_id,
-          message: "Status option updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
-          section: "Status Option",
+          message: "Event updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
+          section: "Event",
         })
       );
 
@@ -100,16 +100,16 @@ export const updateStatusOption = createAsyncThunk(
 );
 
 /* ==============================
-   DELETE STATUS OPTION
+   DELETE EVENT
 ============================== */
-export const deleteStatusOption = createAsyncThunk(
-  "statusOption/delete",
+export const deleteEvent = createAsyncThunk(
+  "event/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      await api.delete(`/status-option/${id}`, {
+      await api.delete(`/events/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -118,9 +118,9 @@ export const deleteStatusOption = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Status option deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
-          section: "Status Option",
+          message: "Event deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
+          section: "Event",
         })
       );
 
@@ -134,11 +134,11 @@ export const deleteStatusOption = createAsyncThunk(
 /* ==============================
    SLICE
 ============================== */
-const statusOptionSlice = createSlice({
-  name: "statusOption",
+const eventSlice = createSlice({
+  name: "event",
   initialState: {
-    statusOptions: [],
-    singleStatusOption: null,
+    events: [],
+    singleEvent: null,
     loading: false,
     error: null,
   },
@@ -146,50 +146,58 @@ const statusOptionSlice = createSlice({
   extraReducers: (builder) => {
     builder
       /* CREATE */
-      .addCase(createStatusOption.pending, (state) => {
+      .addCase(createEvent.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createStatusOption.fulfilled, (state, action) => {
+      .addCase(createEvent.fulfilled, (state, action) => {
         state.loading = false;
-        state.statusOptions.unshift(action.payload);
+        state.events.unshift(action.payload);
       })
-      .addCase(createStatusOption.rejected, (state, action) => {
+      .addCase(createEvent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET ALL */
-      .addCase(getAllStatusOptions.pending, (state) => {
+      .addCase(getAllEvents.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllStatusOptions.fulfilled, (state, action) => {
+      .addCase(getAllEvents.fulfilled, (state, action) => {
         state.loading = false;
-        state.statusOptions = action.payload;
+        state.events = action.payload;
       })
-      .addCase(getAllStatusOptions.rejected, (state, action) => {
+      .addCase(getAllEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET BY ID */
-      .addCase(getStatusOptionById.fulfilled, (state, action) => {
-        state.singleStatusOption = action.payload;
+      .addCase(getEventById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getEventById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleEvent = action.payload;
+      })
+      .addCase(getEventById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       /* UPDATE */
-      .addCase(updateStatusOption.fulfilled, (state, action) => {
-        state.statusOptions = state.statusOptions.map((s) =>
-          s._id === action.payload._id ? action.payload : s
+      .addCase(updateEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.events = state.events.map((e) =>
+          e._id === action.payload._id ? action.payload : e
         );
       })
 
       /* DELETE */
-      .addCase(deleteStatusOption.fulfilled, (state, action) => {
-        state.statusOptions = state.statusOptions.filter(
-          (s) => s._id !== action.payload
-        );
+      .addCase(deleteEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.events = state.events.filter((e) => e._id !== action.payload);
       });
   },
 });
 
-export default statusOptionSlice.reducer;
+export default eventSlice.reducer;

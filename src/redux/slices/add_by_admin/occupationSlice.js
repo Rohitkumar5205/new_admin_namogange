@@ -7,14 +7,14 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 ============================== */
 export const createOccupation = createAsyncThunk(
   "occupation/create",
-  async (formData, { dispatch, rejectWithValue }) => {
+  async (payload, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post("/occupations/create", formData);
+      const res = await api.post("/occupations/create", payload);
 
-      // 🔹 activity log
+      // 🔹 ACTIVITY LOG (initiative jaisa)
       dispatch(
         createActivityLogThunk({
-          user_id: formData.created_by,
+          user_id: payload.user_id,
           message: "Occupation created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/occupations`,
           section: "Occupation",
@@ -23,7 +23,9 @@ export const createOccupation = createAsyncThunk(
 
       return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to create occupation"
+      );
     }
   }
 );
@@ -38,7 +40,9 @@ export const getAllOccupations = createAsyncThunk(
       const res = await api.get("/occupations");
       return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch occupations"
+      );
     }
   }
 );
@@ -52,18 +56,21 @@ export const updateOccupation = createAsyncThunk(
     try {
       const res = await api.put(`/occupations/${id}`, data);
 
+      // 🔹 ACTIVITY LOG
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Occupation updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/occupation`,
+          link: `${import.meta.env.VITE_API_FRONT_URL}/occupations`,
           section: "Occupation",
         })
       );
 
       return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update occupation"
+      );
     }
   }
 );
@@ -77,18 +84,21 @@ export const deleteOccupation = createAsyncThunk(
     try {
       await api.delete(`/occupations/${id}`);
 
+      // 🔹 ACTIVITY LOG
       dispatch(
         createActivityLogThunk({
           user_id,
           message: "Occupation deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/occupation`,
+          link: `${import.meta.env.VITE_API_FRONT_URL}/occupations`,
           section: "Occupation",
         })
       );
 
       return id;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to delete occupation"
+      );
     }
   }
 );
@@ -133,17 +143,33 @@ const occupationSlice = createSlice({
       })
 
       /* UPDATE */
+      .addCase(updateOccupation.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(updateOccupation.fulfilled, (state, action) => {
+        state.loading = false;
         state.occupations = state.occupations.map((o) =>
           o._id === action.payload._id ? action.payload : o
         );
       })
+      .addCase(updateOccupation.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       /* DELETE */
+      .addCase(deleteOccupation.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(deleteOccupation.fulfilled, (state, action) => {
+        state.loading = false;
         state.occupations = state.occupations.filter(
           (o) => o._id !== action.payload
         );
+      })
+      .addCase(deleteOccupation.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

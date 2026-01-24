@@ -9,12 +9,12 @@ export const createDesignation = createAsyncThunk(
   "designations/create",
   async (data, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post("/designations", data);
+      const res = await api.post("/designations/create", data);
 
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.created_by,
+          user_id: data.user_id,
           message: "Designation created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/designations`,
           section: "Designation",
@@ -55,7 +55,7 @@ export const updateDesignation = createAsyncThunk(
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Designation updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/designations`,
           section: "Designation",
@@ -161,7 +161,9 @@ const designationSlice = createSlice({
       })
       .addCase(deleteDesignation.fulfilled, (state, action) => {
         state.loading = false;
-        state.designations = state.designations.filter((item) => item._id !== action.payload);
+        state.designations = state.designations.filter(
+          (item) => item._id !== action.payload
+        );
       })
       .addCase(deleteDesignation.rejected, (state, action) => {
         state.loading = false;

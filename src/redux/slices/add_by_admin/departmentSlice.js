@@ -9,12 +9,12 @@ export const createDepartment = createAsyncThunk(
   "department/create",
   async (data, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post("/departments", data);
+      const res = await api.post("/departments/create", data);
 
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.created_by,
+          user_id: data.user_id,
           message: "Department created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/departments`,
           section: "Department",
@@ -55,7 +55,7 @@ export const updateDepartment = createAsyncThunk(
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Department updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/departments`,
           section: "Department",

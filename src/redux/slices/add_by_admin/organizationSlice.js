@@ -14,7 +14,7 @@ export const createOrganization = createAsyncThunk(
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: formData.created_by,
+          user_id: formData.user_id,
           message: "Organization created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/organizations`,
           section: "Organization",
@@ -54,7 +54,7 @@ export const updateOrganization = createAsyncThunk(
 
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Organization updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/organizations`,
           section: "Organization",

@@ -14,7 +14,7 @@ export const createCategory = createAsyncThunk(
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.created_by,
+          user_id: data.user_id,
           message: "Category created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/categories`,
           section: "Category",
@@ -55,7 +55,7 @@ export const updateCategory = createAsyncThunk(
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Category updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/categories`,
           section: "Category",

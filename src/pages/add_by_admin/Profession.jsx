@@ -7,11 +7,12 @@ import {
 } from "../../redux/slices/add_by_admin/professionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const Profession = () => {
   const dispatch = useDispatch();
   const { professions, loading } = useSelector((state) => state.profession);
-  console.log("professions...", professions);
+  // console.log("professions...", professions);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* ===== FORM STATE ===== */
@@ -22,7 +23,7 @@ const Profession = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const currentUserId = "66ec23d89309636c42738591";
+  const authUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     dispatch(getAllProfessions());
@@ -46,6 +47,9 @@ const Profession = () => {
     });
     setIsEdit(false);
   };
+  const handleCancel = () => {
+    resetForm();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,8 +58,9 @@ const Profession = () => {
       showError("Profession title is required.");
       return;
     }
-
     setIsSubmitting(true);
+    const currentUserId = authUser?.id || null;
+    const currentUserName = authUser?.username || "";
     try {
       if (isEdit) {
         await dispatch(
@@ -64,7 +69,8 @@ const Profession = () => {
             data: {
               name: formData.name,
               status: formData.status,
-              updated_by: currentUserId,
+              updated_by: currentUserName,
+              user_id: currentUserId,
             },
           })
         ).unwrap();
@@ -74,8 +80,8 @@ const Profession = () => {
           createProfession({
             name: formData.name,
             status: formData.status,
-            created_by: currentUserId,
-            updated_by: currentUserId,
+            created_by: currentUserName,
+            user_id: currentUserId,
           })
         ).unwrap();
         showSuccess("Profession added successfully ");
@@ -90,6 +96,7 @@ const Profession = () => {
   };
 
   const handleDelete = (id) => {
+    const currentUserId = authUser?.id || null;
     dispatch(deleteProfession({ id, user_id: currentUserId })).then(() => {
       showSuccess("Profession deleted successfully ");
       dispatch(getAllProfessions());
@@ -117,18 +124,36 @@ const Profession = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Profession Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update Profession content including title, image, link and
-          status.
-        </p>
-      </div>
 
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Profession Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update Profession content including title, image, link
+                and status.{" "}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* ================= FORM ================= */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -175,7 +200,7 @@ const Profession = () => {
           <div className="md:col-span-1 flex justify-end gap-3 mt-6">
             <button
               type="button"
-              onClick={resetForm}
+              onClick={handleCancel}
               disabled={isSubmitting}
               className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
                 isSubmitting ? "opacity-50 cursor-not-allowed" : ""

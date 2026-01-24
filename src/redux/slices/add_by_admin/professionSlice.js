@@ -9,12 +9,12 @@ export const createProfession = createAsyncThunk(
   "profession/create",
   async (data, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post("/professions", data);
+      const res = await api.post("/professions/create", data);
 
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.created_by,
+          user_id: data.user_id,
           message: "Profession created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/professions`,
           section: "Profession",
@@ -55,7 +55,7 @@ export const updateProfession = createAsyncThunk(
       // 🔹 Activity Log
       dispatch(
         createActivityLogThunk({
-          user_id: data.updated_by,
+          user_id: data.user_id,
           message: "Profession updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/professions`,
           section: "Profession",

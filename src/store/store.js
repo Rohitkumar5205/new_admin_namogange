@@ -6,7 +6,6 @@ import galleryReducer from "../redux/slices/mediaImageSlice";
 import galleryVideoReducer from "../redux/slices/galleryVideoSlice";
 import categoryImageReducer from "../redux/slices/add_by_admin/categoryImageSlice";
 import categoryVideoReducer from "../redux/slices/add_by_admin/categoryVideoSlice";
-import statusOptionReducer from "../redux/slices/add_by_admin/statusOptionSlice";
 import blogReducer from "../redux/slices/blog/blogSlice";
 import categoryReducer from "../redux/slices/add_by_admin/categorySlice";
 import occupationReducer from "../redux/slices/add_by_admin/occupationSlice";
@@ -21,6 +20,8 @@ import activityLogReducer from "../redux/slices/activityLog/activityLogSlice";
 import organizationReducer from "../redux/slices/add_by_admin/organizationSlice";
 import authReducer from "../redux/slices/auth/authSlice";
 import userReducer from "../redux/slices/user/userSlice";
+import eventReducer from "../redux/slices/add_by_admin/eventSlice";
+import statusOptionReducer from "../redux/slices/add_by_admin/statusOptionSlice";
 
 const store = configureStore({
   reducer: {
@@ -31,7 +32,6 @@ const store = configureStore({
     galleryVideo: galleryVideoReducer,
     categoryImage: categoryImageReducer,
     categoryVideo: categoryVideoReducer,
-    status: statusOptionReducer,
     blog: blogReducer,
     category: categoryReducer,
     occupation: occupationReducer,
@@ -46,6 +46,8 @@ const store = configureStore({
     organization: organizationReducer,
     auth: authReducer,
     user: userReducer,
+    event: eventReducer,
+    statusOption: statusOptionReducer,
   },
 });
 

@@ -1,95 +1,108 @@
-// import React from "react";
-
-// const Status = () => {
-//   return (
-//     <div>
-//       <h2>Status Page</h2>
-//     </div>
-//   );
-// };
-
-// export default Status;
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  { id: 1, title: "Farmer", status: "Active" },
-  { id: 2, title: "Teacher", status: "Active" },
-  { id: 3, title: "Businessman", status: "Inactive" },
-];
+import {
+  getAllStatusOptions,
+  createStatusOption,
+  updateStatusOption,
+  deleteStatusOption,
+} from "../../redux/slices/add_by_admin/statusOptionSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const Status = () => {
-  /* ===== FORM STATE ===== */
+  const dispatch = useDispatch();
+  const { statusOptions, loading } = useSelector((state) => state.statusOption);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
   const [formData, setFormData] = useState({
-    id: null,
-    title: "",
+    _id: null,
+    name: "",
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllStatusOptions());
+  }, [dispatch]);
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isEdit) {
-      // UPDATE
-      const updated = data.map((item) =>
-        item.id === formData.id
-          ? {
+    setIsSubmitting(true);
+    const currentUserId = authUser?.id || null;
+    const currentUserName = authUser?.username || "";
+
+    try {
+      if (isEdit) {
+        await dispatch(
+          updateStatusOption({
+            id: formData._id,
+            data: {
               ...formData,
-              image:
-                typeof formData.image === "string"
-                  ? formData.image
-                  : URL.createObjectURL(formData.image),
-            }
-          : item
-      );
-
-      setData(updated);
-      alert("Status updated successfully ✅");
-      console.log("UPDATED 👉", formData);
-    } else {
-      // ADD
-      const newBanner = {
-        ...formData,
-        id: Date.now(),
-        image: formData.image
-          ? URL.createObjectURL(formData.image)
-          : "/placeholder.png",
-      };
-
-      setData([...data, newBanner]);
-      alert("Status added successfully ✅");
-      console.log("ADDED 👉", newBanner);
+              name: formData.name,
+              status: formData.status,
+              updated_by: currentUserName,
+              user_id: currentUserId,
+            },
+          })
+        ).unwrap();
+        showSuccess("Status updated successfully ✅");
+      } else {
+        await dispatch(
+          createStatusOption({
+            ...formData,
+            name: formData.name,
+            status: formData.status,
+            created_by: currentUserName,
+            user_id: currentUserId,
+          })
+        ).unwrap();
+        showSuccess("Status added successfully ✅");
+      }
+      dispatch(getAllStatusOptions());
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      showError(err || "Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    // RESET FORM
+  const resetForm = () => {
     setFormData({
-      id: null,
-      title: "",
+      _id: null,
+      name: "",
       status: "Active",
     });
     setIsEdit(false);
   };
+  const handleDelete = (id) => {
+    const currentUserId = authUser?.id || null;
+    dispatch(deleteStatusOption({ id, user_id: currentUserId })).then(() => {
+      showSuccess("Status deleted successfully");
+      dispatch(getAllStatusOptions());
+    });
+  };
 
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil((statusOptions?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = statusOptions?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
@@ -108,15 +121,34 @@ const Status = () => {
   return (
     <div className="space-y-6">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Status Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update Status content including title, image, link and status.
-        </p>
-      </div>
 
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Status Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update Status content including title, image, link and
+                status.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* ================= FORM ================= */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -130,14 +162,14 @@ const Status = () => {
           {/* TITLE */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status Title <span className="text-red-500">*</span>
+              Status Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="Enter banner title"
+              placeholder="Enter status name"
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               required
             />
@@ -163,15 +195,11 @@ const Status = () => {
           <div className="md:col-span-1 flex justify-end gap-3 mt-6">
             <button
               type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  title: "",
-                  status: "Active",
-                });
-                setIsEdit(false);
-              }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              onClick={resetForm}
+              disabled={isSubmitting}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Cancel
             </button>
@@ -182,9 +210,13 @@ const Status = () => {
                 isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-              }`}
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isEdit ? "Update Status" : "Add Status"}
+              {isSubmitting
+                ? "Processing..."
+                : isEdit
+                ? "Update Status"
+                : "Add Status"}{" "}
             </button>
           </div>
         </form>
@@ -200,82 +232,87 @@ const Status = () => {
           <thead className="bg-gray-50 border-b  border-gray-200">
             <tr>
               <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Profession Title</th>
+              <th className="px-4 py-3">Status Name</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {currentData.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{item.id}.</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
+            {loading && statusOptions?.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  Loading...
+                </td>
+              </tr>
+            ) : (
+              currentData.map((item, i) => (
+                <tr
+                  key={item._id || i}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">{startIndex + i + 1}.</td>
+                  <td className="px-4 py-3 font-medium">{item.name}</td>
 
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium
           ${
             item.status === "Active"
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="relative text-sm text-green-600 transition
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <button
+                        className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
+                        onClick={() => {
+                          setFormData({
+                            _id: item._id,
+                            name: item.name,
+                            status: item.status,
+                          });
+                          setIsEdit(true);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      className="relative text-sm text-red-600 transition
+                      <button
+                        className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Banner deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        onClick={() => {
+                          handleDelete(item._id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
         {/* ================= PAGINATION ================= */}
         <div className="flex justify-between items-center p-4">
           <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
+            Showing {startIndex + 1}–
+            {Math.min(endIndex, statusOptions?.length || 0)} of{" "}
+            {statusOptions?.length || 0}
           </span>
 
           <div className="flex space-x-1">
