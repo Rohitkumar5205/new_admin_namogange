@@ -3,16 +3,16 @@ import api from "../../api/axiosInstance";
 import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 /* ==============================
-   CREATE ENQUIRY
+   CREATE SOURCE
 ============================== */
-export const createEnquiry = createAsyncThunk(
-  "enquiry/create",
+export const createSource = createAsyncThunk(
+  "source/create",
   async (data, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.post("/enquiries/create", data, {
+      const res = await api.post("/sources/create", data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -23,9 +23,9 @@ export const createEnquiry = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: data.user_id,
-          message: "Enquiry created",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          message: "Source created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
+          section: "Source",
         })
       );
 
@@ -37,13 +37,13 @@ export const createEnquiry = createAsyncThunk(
 );
 
 /* ==============================
-   GET ALL ENQUIRIES
+   GET ALL SOURCES
 ============================== */
-export const getAllEnquiries = createAsyncThunk(
-  "enquiry/getAll",
+export const getAllSources = createAsyncThunk(
+  "source/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/enquiries");
+      const res = await api.get("/sources");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -52,13 +52,13 @@ export const getAllEnquiries = createAsyncThunk(
 );
 
 /* ==============================
-   GET ENQUIRY BY ID
+   GET SOURCE BY ID
 ============================== */
-export const getEnquiryById = createAsyncThunk(
-  "enquiry/getById",
+export const getSourceById = createAsyncThunk(
+  "source/getById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/enquiries/${id}`);
+      const res = await api.get(`/sources/${id}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -67,16 +67,16 @@ export const getEnquiryById = createAsyncThunk(
 );
 
 /* ==============================
-   UPDATE ENQUIRY
+   UPDATE SOURCE
 ============================== */
-export const updateEnquiry = createAsyncThunk(
-  "enquiry/update",
+export const updateSource = createAsyncThunk(
+  "source/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.put(`/enquiries/${id}`, data, {
+      const res = await api.put(`/sources/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -86,9 +86,9 @@ export const updateEnquiry = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: data.user_id,
-          message: "Enquiry updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          message: "Source updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
+          section: "Source",
         })
       );
 
@@ -100,27 +100,25 @@ export const updateEnquiry = createAsyncThunk(
 );
 
 /* ==============================
-   DELETE ENQUIRY
+   DELETE SOURCE
 ============================== */
-export const deleteEnquiry = createAsyncThunk(
-  "enquiry/delete",
+export const deleteSource = createAsyncThunk(
+  "source/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      await api.delete(`/enquiries/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await api.delete(`/sources/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Enquiry deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          message: "Source deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
+          section: "Source",
         })
       );
 
@@ -134,11 +132,11 @@ export const deleteEnquiry = createAsyncThunk(
 /* ==============================
    SLICE
 ============================== */
-const enquirySlice = createSlice({
-  name: "enquiry",
+const sourceSlice = createSlice({
+  name: "source",
   initialState: {
-    enquiries: [],
-    singleEnquiry: null,
+    sources: [],
+    singleSource: null,
     loading: false,
     error: null,
   },
@@ -146,52 +144,52 @@ const enquirySlice = createSlice({
   extraReducers: (builder) => {
     builder
       /* CREATE */
-      .addCase(createEnquiry.pending, (state) => {
+      .addCase(createSource.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createEnquiry.fulfilled, (state, action) => {
+      .addCase(createSource.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries.unshift(action.payload);
+        state.sources.unshift(action.payload);
       })
-      .addCase(createEnquiry.rejected, (state, action) => {
+      .addCase(createSource.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET ALL */
-      .addCase(getAllEnquiries.pending, (state) => {
+      .addCase(getAllSources.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllEnquiries.fulfilled, (state, action) => {
+      .addCase(getAllSources.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = action.payload;
+        state.sources = action.payload;
       })
-      .addCase(getAllEnquiries.rejected, (state, action) => {
+      .addCase(getAllSources.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET BY ID */
-      .addCase(getEnquiryById.fulfilled, (state, action) => {
-        state.singleEnquiry = action.payload;
+      .addCase(getSourceById.fulfilled, (state, action) => {
+        state.singleSource = action.payload;
       })
 
       /* UPDATE */
-      .addCase(updateEnquiry.fulfilled, (state, action) => {
+      .addCase(updateSource.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = state.enquiries.map((e) =>
-          e._id === action.payload._id ? action.payload : e
+        state.sources = state.sources.map((s) =>
+          s._id === action.payload._id ? action.payload : s
         );
       })
 
       /* DELETE */
-      .addCase(deleteEnquiry.fulfilled, (state, action) => {
+      .addCase(deleteSource.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = state.enquiries.filter(
-          (e) => e._id !== action.payload
+        state.sources = state.sources.filter(
+          (s) => s._id !== action.payload
         );
       });
   },
 });
 
-export default enquirySlice.reducer;
+export default sourceSlice.reducer;

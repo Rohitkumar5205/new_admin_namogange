@@ -1,29 +1,20 @@
-import React, { useState } from "react";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    bank_name: "State Bank of India",
-    bank_branch: "Haridwar",
-    account_number: "123456789012",
-    ifsc_code: "SBIN0001234",
-    status: "Active",
-  },
-  {
-    id: 2,
-    bank_name: "HDFC Bank",
-    bank_branch: "Delhi",
-    account_number: "987654321098",
-    ifsc_code: "HDFC0000456",
-    status: "Inactive",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createBank,
+  getAllBanks,
+  updateBank,
+  deleteBank,
+} from "../../redux/slices/add_by_admin/bankSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const Bank = () => {
-  /* ===== FORM STATE ===== */
+  const dispatch = useDispatch();
+  const { banks, loading } = useSelector((state) => state.bank);
+  const authUser = JSON.parse(localStorage.getItem("user"));
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     bank_name: "",
     bank_branch: "",
     account_number: "",
@@ -31,12 +22,12 @@ const Bank = () => {
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* ===== FILTER & PAGINATION STATE ===== */
   const [statusFilter, setStatusFilter] = useState("All");
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [tableSearch, setTableSearch] = useState({
@@ -46,6 +37,13 @@ const Bank = () => {
     ifsc_code: "",
     status: "",
   });
+
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllBanks());
+  }, [dispatch]);
+
+  /* ===== HANDLERS ===== */
   const handleTableSearchChange = (e) => {
     const { name, value } = e.target;
     setTableSearch({ ...tableSearch, [name]: value });
@@ -61,19 +59,9 @@ const Bank = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (isEdit) {
-      setData(data.map((d) => (d.id === formData.id ? formData : d)));
-      alert("Bank updated successfully ✅");
-    } else {
-      setData([...data, { ...formData, id: Date.now() }]);
-      alert("Bank added successfully ✅");
-    }
-
+  const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       bank_name: "",
       bank_branch: "",
       account_number: "",
@@ -83,31 +71,82 @@ const Bank = () => {
     setIsEdit(false);
   };
 
-  const filteredData = data.filter((item) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const currentUserId = authUser?.id || null;
+    const currentUserName = authUser?.username || "";
+
+    try {
+      if (isEdit) {
+        await dispatch(
+          updateBank({
+            id: formData._id,
+            data: {
+              ...formData,
+              updated_by: currentUserName,
+              user_id: currentUserId,
+            },
+          })
+        ).unwrap();
+        showSuccess("Bank updated successfully");
+      } else {
+        await dispatch(
+          createBank({
+            ...formData,
+            created_by: currentUserName,
+            user_id: currentUserId,
+          })
+        ).unwrap();
+        showSuccess("Bank added successfully");
+      }
+      await dispatch(getAllBanks());
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      showError("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = (id) => {
+    const currentUserId = authUser?.id || null;
+
+    dispatch(deleteBank({ id, user_id: currentUserId })).then(() => {
+      showSuccess("Bank deleted successfully");
+      dispatch(getAllBanks());
+    });
+  };
+
+  /* ===== FILTER LOGIC ===== */
+  const safeBanks = banks || [];
+
+  const filteredData = safeBanks.filter((item) => {
     // STATUS FILTER (All / Active / Inactive)
     const statusMatch =
       statusFilter === "All" ? true : item.status === statusFilter;
 
     // TOP SEARCH
     const globalSearchMatch =
-      item.bank_name.toLowerCase().includes(search.toLowerCase()) ||
-      item.bank_branch.toLowerCase().includes(search.toLowerCase()) ||
-      item.ifsc_code.toLowerCase().includes(search.toLowerCase()) ||
-      item.account_number.includes(search);
+      item.bank_name?.toLowerCase().includes(search.toLowerCase()) ||
+      item.bank_branch?.toLowerCase().includes(search.toLowerCase()) ||
+      item.ifsc_code?.toLowerCase().includes(search.toLowerCase()) ||
+      item.account_number?.includes(search);
 
     // TABLE COLUMN SEARCH (BOTTOM ROW)
     const tableSearchMatch =
       item.bank_name
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(tableSearch.bank_name.toLowerCase()) &&
       item.bank_branch
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(tableSearch.bank_branch.toLowerCase()) &&
-      item.account_number.includes(tableSearch.account_number) &&
+      item.account_number?.includes(tableSearch.account_number) &&
       item.ifsc_code
-        .toLowerCase()
+        ?.toLowerCase()
         .includes(tableSearch.ifsc_code.toLowerCase()) &&
-      item.status.toLowerCase().includes(tableSearch.status.toLowerCase());
+      item.status?.toLowerCase().includes(tableSearch.status.toLowerCase());
 
     return statusMatch && globalSearchMatch && tableSearchMatch;
   });
@@ -133,376 +172,391 @@ const Bank = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Bank Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update bank account details.
-        </p>
-      </div>
-
-      {/* ================= FORM ================= */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-base font-medium text-gray-800 mb-4">
-          {isEdit ? "Update Bank" : "Add New Bank"}
-        </h3>
-
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
-        >
-          <div>
-            <label className="block text-sm font-medium text-gray-700  mb-1">
-              Bank Name *
-            </label>
-            <input
-              type="text"
-              name="bank_name"
-              placeholder="Enter Bank Name"
-              value={formData.bank_name}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700  mb-1">
-              Bank Branch *
-            </label>
-            <input
-              type="text"
-              name="bank_branch"
-              placeholder="Enter Bank Branch"
-              value={formData.bank_branch}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700  mb-1">
-              Account Number *
-            </label>
-            <input
-              type="text"
-              name="account_number"
-              placeholder="Enter Account Number"
-              value={formData.account_number}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700  mb-1">
-              IFSC *
-            </label>
-            <input
-              type="text"
-              name="ifsc_code"
-              placeholder="Enter IFSC Code"
-              value={formData.ifsc_code}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700  mb-1">
-              Status <span className="text-red-500">*</span>
-            </label>
-            <select
-              required
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          <div className="md:col-span-1 flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  bank_name: "",
-                  bank_branch: "",
-                  account_number: "",
-                  ifsc_code: "",
-                  status: "Active",
-                });
-                setIsEdit(false);
-              }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className={`px-6 py-1.5 text-sm rounded text-white ${
-                isEdit ? "bg-blue-600" : "bg-green-600"
-              }`}
-            >
-              {isEdit ? "Update Bank" : "Add Bank"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
-          <h3 className="text-base font-medium text-gray-800">Bank List</h3>
-
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          >
-            {[5, 10, 25, 50].map((n) => (
-              <option key={n} value={n}>
-                Show {n} Entries
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          />
-
-          <div className="flex gap-2">
-            {/* ALL */}
-            <button
-              onClick={() => {
-                setStatusFilter("All");
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-1 border shadow-md rounded text-sm
-      ${
-        statusFilter === "All"
-          ? "bg-blue-600 text-white border-blue-600"
-          : "border-gray-300 text-gray-700"
-      }`}
-            >
-              All
-            </button>
-
-            {/* ACTIVE */}
-            <button
-              onClick={() => {
-                setStatusFilter("Active");
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-1 border shadow-md rounded text-sm
-      ${
-        statusFilter === "Active"
-          ? "bg-green-600 text-white border-green-600"
-          : "border-gray-300 text-gray-700"
-      }`}
-            >
-              Active
-            </button>
-
-            {/* INACTIVE */}
-            <button
-              onClick={() => {
-                setStatusFilter("Inactive");
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-1 border shadow-md rounded text-sm
-      ${
-        statusFilter === "Inactive"
-          ? "bg-red-600 text-white border-red-600"
-          : "border-gray-300 text-gray-700"
-      }`}
-            >
-              Inactive
-            </button>
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-white/10"></div>
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Bank Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update bank account details.
+              </p>
+            </div>
           </div>
         </div>
+      </div>
+      <div className="space-y-3 p-5">
+        {/* ================= FORM ================= */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-base font-medium text-gray-800 mb-4">
+            {isEdit ? "Update Bank" : "Add New Bank"}
+          </h3>
 
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Bank Name</th>
-              <th className="px-4 py-3">Branch</th>
-              <th className="px-4 py-3">Account No</th>
-              <th className="px-4 py-3">IFSC</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700  mb-1">
+                Bank Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="bank_name"
+                placeholder="Enter Bank Name"
+                value={formData.bank_name}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
 
-          <tbody>
-            {currentData.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
+            <div>
+              <label className="block text-sm font-medium text-gray-700  mb-1">
+                Bank Branch <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="bank_branch"
+                placeholder="Enter Bank Branch"
+                value={formData.bank_branch}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700  mb-1">
+                Account Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="account_number"
+                placeholder="Enter Account Number"
+                value={formData.account_number}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700  mb-1">
+                IFSC <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="ifsc_code"
+                placeholder="Enter IFSC Code"
+                value={formData.ifsc_code}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700  mb-1">
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
               >
-                <td className="px-4 py-3">{startIndex + index + 1}.</td>
-                <td className="px-4 py-3">{item.bank_name}</td>
-                <td className="px-4 py-3">{item.bank_branch}</td>
-                <td className="px-4 py-3">{item.account_number}</td>
-                <td className="px-4 py-3">{item.ifsc_code}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full ${
-                      item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-3">
-                    <button
-                      className="text-green-600"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600"
-                      onClick={() =>
-                        setData(data.filter((d) => d.id !== item.id))
-                      }
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
 
-            {/* ===== SEARCH ROW (NO DESIGN CHANGE) ===== */}
-            <tr className="border-t border-gray-300">
-              <td className="px-2 py-1"></td>
+            <div className="md:col-span-1 flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Cancel
+              </button>
 
-              <td className="px-2 py-1">
-                <input
-                  placeholder="Search Bank Name"
-                  value={tableSearch.bank_name}
-                  onChange={handleTableSearchChange}
-                  name="bank_name"
-                  className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-sm"
-                />
-              </td>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isSubmitting
+                  ? "Processing..."
+                  : isEdit
+                  ? "Update Bank"
+                  : "Add Bank"}{" "}
+              </button>
+            </div>
+          </form>
+        </div>
 
-              <td className="px-2 py-1">
-                <input
-                  placeholder="Search Branch"
-                  value={tableSearch.bank_branch}
-                  onChange={handleTableSearchChange}
-                  name="bank_branch"
-                  className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-sm"
-                />
-              </td>
+        {/* ================= TABLE ================= */}
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between items-center">
+            <h3 className="text-base font-medium text-gray-800">Bank List</h3>
 
-              <td className="px-2 py-1">
-                <input
-                  placeholder="Search Account No"
-                  value={tableSearch.account_number}
-                  onChange={handleTableSearchChange}
-                  name="account_number"
-                  className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-sm"
-                />
-              </td>
+            <div className="flex gap-2 items-center">
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-300 shadow-sm rounded px-2 py-1 text-sm outline-none"
+              >
+                {[5, 10, 25, 50].map((n) => (
+                  <option key={n} value={n}>
+                    Show {n} Entries
+                  </option>
+                ))}
+              </select>
 
-              <td className="px-2 py-1">
-                <input
-                  placeholder="Search IFSC"
-                  value={tableSearch.ifsc_code}
-                  onChange={handleTableSearchChange}
-                  name="ifsc_code"
-                  className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-sm"
-                />
-              </td>
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-300 shadow-sm rounded px-2 py-1 text-sm outline-none"
+              />
+            </div>
 
-              <td className="px-2 py-1">
-                <input
-                  placeholder="Search Status"
-                  value={tableSearch.status}
-                  onChange={handleTableSearchChange}
-                  name="status"
-                  className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-sm"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center px-4 py-2 border-t border-gray-200">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
-            of {filteredData.length}
-          </span>
-
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
-
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
-              ) : (
+            <div className="flex gap-2">
+              {["All", "Active", "Inactive"].map((status) => (
                 <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
+                  key={status}
+                  onClick={() => {
+                    setStatusFilter(status);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-1 border shadow-sm rounded text-sm transition-colors
+                  ${
+                    statusFilter === status
+                      ? status === "Active"
+                        ? "bg-green-600 text-white border-green-600"
+                        : status === "Inactive"
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
                   }`}
                 >
-                  {p}
+                  {status}
                 </button>
-              )
-            )}
+              ))}
+            </div>
+          </div>
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3">S.No</th>
+                <th className="px-4 py-3">Bank Name</th>
+                <th className="px-4 py-3">Branch</th>
+                <th className="px-4 py-3">Account No</th>
+                <th className="px-4 py-3">IFSC</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading && banks?.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : currentData.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    No data found
+                  </td>
+                </tr>
+              ) : (
+                currentData.map((item, index) => (
+                  <tr
+                    key={item._id || index}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                    <td className="px-4 py-3">{item.bank_name}</td>
+                    <td className="px-4 py-3">{item.bank_branch}</td>
+                    <td className="px-4 py-3">{item.account_number}</td>
+                    <td className="px-4 py-3">{item.ifsc_code}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full font-medium ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-3">
+                        <button
+                          className="text-green-600 hover:underline"
+                          onClick={() => {
+                            setFormData({
+                              _id: item._id,
+                              bank_name: item.bank_name,
+                              bank_branch: item.bank_branch,
+                              account_number: item.account_number,
+                              ifsc_code: item.ifsc_code,
+                              status: item.status,
+                            });
+                            setIsEdit(true);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="text-red-600 hover:underline"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+
+              {/* ===== SEARCH ROW ===== */}
+              <tr className="border-t border-gray-300 bg-gray-50">
+                <td className="px-2 py-1"></td>
+
+                <td className="px-2 py-1">
+                  <input
+                    placeholder="Search Name"
+                    value={tableSearch.bank_name}
+                    onChange={handleTableSearchChange}
+                    name="bank_name"
+                    className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-xs"
+                  />
+                </td>
+
+                <td className="px-2 py-1">
+                  <input
+                    placeholder="Search Branch"
+                    value={tableSearch.bank_branch}
+                    onChange={handleTableSearchChange}
+                    name="bank_branch"
+                    className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-xs"
+                  />
+                </td>
+
+                <td className="px-2 py-1">
+                  <input
+                    placeholder="Search Acc No"
+                    value={tableSearch.account_number}
+                    onChange={handleTableSearchChange}
+                    name="account_number"
+                    className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-xs"
+                  />
+                </td>
+
+                <td className="px-2 py-1">
+                  <input
+                    placeholder="Search IFSC"
+                    value={tableSearch.ifsc_code}
+                    onChange={handleTableSearchChange}
+                    name="ifsc_code"
+                    className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-xs"
+                  />
+                </td>
+
+                <td className="px-2 py-1">
+                  <input
+                    placeholder="Search Status"
+                    value={tableSearch.status}
+                    onChange={handleTableSearchChange}
+                    name="status"
+                    className="w-full border border-gray-300 rounded outline-none px-2 py-1 text-xs"
+                  />
+                </td>
+
+                <td className="px-2 py-1"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* ================= PAGINATION ================= */}
+          <div className="flex justify-between items-center px-4 py-2 border-t border-gray-200">
+            <span className="text-sm text-gray-500">
+              Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
+              of {filteredData.length}
+            </span>
+
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg disabled:opacity-50"
+              >
+                Prev
+              </button>
+
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={i} className="px-3 h-8 border flex items-center">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

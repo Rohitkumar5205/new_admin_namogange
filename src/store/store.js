@@ -22,6 +22,10 @@ import authReducer from "../redux/slices/auth/authSlice";
 import userReducer from "../redux/slices/user/userSlice";
 import eventReducer from "../redux/slices/add_by_admin/eventSlice";
 import statusOptionReducer from "../redux/slices/add_by_admin/statusOptionSlice";
+import sourceReducer from "../redux/slices/add_by_admin/sourceSlice";
+import callTargetReducer from "../redux/slices/add_by_admin/callTargetSlice";
+import coordinatorStatusReducer from "../redux/slices/add_by_admin/coordinatorStatusSlice";
+import bankReducer from "../redux/slices/add_by_admin/bankSlice";
 
 const store = configureStore({
   reducer: {
@@ -48,6 +52,10 @@ const store = configureStore({
     user: userReducer,
     event: eventReducer,
     statusOption: statusOptionReducer,
+    source: sourceReducer,
+    callTarget: callTargetReducer,
+    coordinatorStatus: coordinatorStatusReducer,
+    bank: bankReducer,
   },
 });
 

@@ -78,7 +78,7 @@ const tableData = [
 
 const Table = () => {
   const [search, setSearch] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ===== FILTER ===== */

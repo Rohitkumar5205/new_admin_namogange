@@ -87,7 +87,7 @@ const tableData = [
 
 const TableToolbar = () => {
   const [search, setSearch] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({
     key: "",

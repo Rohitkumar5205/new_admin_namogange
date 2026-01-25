@@ -36,7 +36,7 @@ const Event = () => {
     dispatch(getAllEvents());
   }, [dispatch]);
   /* ===== PAGINATION STATE ===== */
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ===== HANDLERS ===== */
@@ -57,6 +57,7 @@ const Event = () => {
       description: "",
       status: "Active",
     });
+    setIsEdit(false);
   };
 
   const handleCancel = () => {
@@ -108,12 +109,15 @@ const Event = () => {
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const currentUserId = authUser?.id || null;
-    dispatch(deleteEvent({ id, user_id: currentUserId })).then(() => {
+    try {
+      await dispatch(deleteEvent({ id, user_id: currentUserId })).unwrap();
       showSuccess("Event deleted successfully");
       dispatch(getAllEvents());
-    });
+    } catch (error) {
+      showError("Failed to delete event");
+    }
   };
   /* ===== PAGINATION LOGIC ===== */
   const totalPages = Math.ceil((events?.length || 0) / itemsPerPage);
@@ -347,7 +351,7 @@ const Event = () => {
             <div className="md:col-span-4 flex justify-end gap-3 mt-4">
               <button
                 type="button"
-                onClick={resetForm}
+                onClick={handleCancel}
                 disabled={isSubmitting}
                 className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""

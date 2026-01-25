@@ -20,7 +20,7 @@ const AddOrganization = () => {
     status: "Active",
   });
   const [search, setSearch] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isEdit, setIsEdit] = useState(false);
 
   const authUser = JSON.parse(localStorage.getItem("user"));
@@ -35,7 +35,7 @@ const AddOrganization = () => {
   );
 
   /* ===== PAGINATION STATE ===== */
-  // const itemsPerPage = 5;
+  // const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ===== HANDLERS ===== */

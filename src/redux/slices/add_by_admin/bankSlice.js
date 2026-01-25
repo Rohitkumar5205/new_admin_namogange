@@ -3,16 +3,16 @@ import api from "../../api/axiosInstance";
 import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 /* ==============================
-   CREATE ENQUIRY
+   CREATE BANK
 ============================== */
-export const createEnquiry = createAsyncThunk(
-  "enquiry/create",
-  async (data, { dispatch, rejectWithValue }) => {
+export const createBank = createAsyncThunk(
+  "bank/create",
+  async (payload, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.post("/enquiries/create", data, {
+      const res = await api.post("/banks/create", payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -22,14 +22,14 @@ export const createEnquiry = createAsyncThunk(
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: data.user_id,
-          message: "Enquiry created",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          user_id: payload.user_id,
+          message: "Bank created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
+          section: "Bank",
         })
       );
 
-      return res.data.data;
+      return res.data.data; // 👈 VERY IMPORTANT
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -37,13 +37,13 @@ export const createEnquiry = createAsyncThunk(
 );
 
 /* ==============================
-   GET ALL ENQUIRIES
+   GET ALL BANKS
 ============================== */
-export const getAllEnquiries = createAsyncThunk(
-  "enquiry/getAll",
+export const getAllBanks = createAsyncThunk(
+  "bank/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/enquiries");
+      const res = await api.get("/banks");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -52,13 +52,13 @@ export const getAllEnquiries = createAsyncThunk(
 );
 
 /* ==============================
-   GET ENQUIRY BY ID
+   GET BANK BY ID
 ============================== */
-export const getEnquiryById = createAsyncThunk(
-  "enquiry/getById",
+export const getBankById = createAsyncThunk(
+  "bank/getById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/enquiries/${id}`);
+      const res = await api.get(`/banks/${id}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -67,28 +67,29 @@ export const getEnquiryById = createAsyncThunk(
 );
 
 /* ==============================
-   UPDATE ENQUIRY
+   UPDATE BANK
 ============================== */
-export const updateEnquiry = createAsyncThunk(
-  "enquiry/update",
+export const updateBank = createAsyncThunk(
+  "bank/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      const res = await api.put(`/enquiries/${id}`, data, {
+      const res = await api.put(`/banks/${id}`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
+      // ✅ activity log (FIXED)
       dispatch(
         createActivityLogThunk({
-          user_id: data.user_id,
-          message: "Enquiry updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          user_id: data.user_id, // ✅ payload ❌ -> data ✅
+          message: "Bank updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
+          section: "Bank",
         })
       );
 
@@ -100,27 +101,28 @@ export const updateEnquiry = createAsyncThunk(
 );
 
 /* ==============================
-   DELETE ENQUIRY
+   DELETE BANK
 ============================== */
-export const deleteEnquiry = createAsyncThunk(
-  "enquiry/delete",
+export const deleteBank = createAsyncThunk(
+  "bank/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
-      await api.delete(`/enquiries/${id}`, {
+      await api.delete(`/banks/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
+      // 🔹 activity log
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Enquiry deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
-          section: "Enquiry",
+          message: "Bank deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
+          section: "Bank",
         })
       );
 
@@ -134,64 +136,67 @@ export const deleteEnquiry = createAsyncThunk(
 /* ==============================
    SLICE
 ============================== */
-const enquirySlice = createSlice({
-  name: "enquiry",
+const bankSlice = createSlice({
+  name: "bank",
   initialState: {
-    enquiries: [],
-    singleEnquiry: null,
+    banks: [],
+    singleBank: null,
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    resetSingleBank: (state) => {
+      state.singleBank = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       /* CREATE */
-      .addCase(createEnquiry.pending, (state) => {
+      .addCase(createBank.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createEnquiry.fulfilled, (state, action) => {
+      .addCase(createBank.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries.unshift(action.payload);
+        state.banks.unshift(action.payload);
       })
-      .addCase(createEnquiry.rejected, (state, action) => {
+      .addCase(createBank.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET ALL */
-      .addCase(getAllEnquiries.pending, (state) => {
+      .addCase(getAllBanks.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllEnquiries.fulfilled, (state, action) => {
+      .addCase(getAllBanks.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = action.payload;
+        state.banks = action.payload;
       })
-      .addCase(getAllEnquiries.rejected, (state, action) => {
+      .addCase(getAllBanks.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET BY ID */
-      .addCase(getEnquiryById.fulfilled, (state, action) => {
-        state.singleEnquiry = action.payload;
+      .addCase(getBankById.fulfilled, (state, action) => {
+        state.singleBank = action.payload;
       })
 
       /* UPDATE */
-      .addCase(updateEnquiry.fulfilled, (state, action) => {
+      .addCase(updateBank.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = state.enquiries.map((e) =>
-          e._id === action.payload._id ? action.payload : e
+        state.banks = state.banks.map((b) =>
+          b._id === action.payload._id ? action.payload : b
         );
       })
 
       /* DELETE */
-      .addCase(deleteEnquiry.fulfilled, (state, action) => {
+      .addCase(deleteBank.fulfilled, (state, action) => {
         state.loading = false;
-        state.enquiries = state.enquiries.filter(
-          (e) => e._id !== action.payload
-        );
+        state.banks = state.banks.filter((b) => b._id !== action.payload);
       });
   },
 });
 
-export default enquirySlice.reducer;
+export const { resetSingleBank } = bankSlice.actions;
+export default bankSlice.reducer;

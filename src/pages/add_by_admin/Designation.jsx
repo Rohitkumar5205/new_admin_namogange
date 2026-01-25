@@ -29,7 +29,7 @@ const Designation = () => {
   const authUser = JSON.parse(localStorage.getItem("user"));
 
   /* ===== PAGINATION STATE ===== */
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ===== HANDLERS ===== */

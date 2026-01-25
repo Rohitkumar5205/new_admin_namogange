@@ -34,7 +34,7 @@ const User = () => {
 
   const [isEdit, setIsEdit] = useState(false);
   const [search, setSearch] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const authUser = JSON.parse(localStorage.getItem("user"));
   const currentUserId = authUser?.id || null;
   // const currentUserId = "66ec23d89309636c42738591"; // Placeholder
