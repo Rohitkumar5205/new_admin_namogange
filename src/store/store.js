@@ -26,6 +26,7 @@ import sourceReducer from "../redux/slices/add_by_admin/sourceSlice";
 import callTargetReducer from "../redux/slices/add_by_admin/callTargetSlice";
 import coordinatorStatusReducer from "../redux/slices/add_by_admin/coordinatorStatusSlice";
 import bankReducer from "../redux/slices/add_by_admin/bankSlice";
+import testimonialReducer from "../redux/slices/testimonial/testimonialSlice";
 
 const store = configureStore({
   reducer: {
@@ -56,6 +57,7 @@ const store = configureStore({
     callTarget: callTargetReducer,
     coordinatorStatus: coordinatorStatusReducer,
     bank: bankReducer,
+    testimonials: testimonialReducer,
   },
 });
 

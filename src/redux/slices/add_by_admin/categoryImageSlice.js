@@ -1,14 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axiosInstance";
+import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 export const createCategoryImage = createAsyncThunk(
   "categoryImage/create",
-  async (formData, { rejectWithValue }) => {
+  async (formData, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.post("/category-image/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // backend: { success, message, categoryImage }
+      // Activity Log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Category Image created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
+          section: "CategoryImage",
+        })
+      );
       return res.data.categoryImage;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -44,12 +54,21 @@ export const getCategoryImageById = createAsyncThunk(
 
 export const updateCategoryImage = createAsyncThunk(
   "categoryImage/update",
-  async ({ id, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.put(`/category-image/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // backend: { success, message, data }
+      // Activity Log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Category Image updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
+          section: "CategoryImage",
+        })
+      );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -59,10 +78,19 @@ export const updateCategoryImage = createAsyncThunk(
 
 export const deleteCategoryImage = createAsyncThunk(
   "categoryImage/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     try {
       await api.delete(`/category-image/${id}`);
       // backend: { success, message }
+      // Activity Log
+      dispatch(
+        createActivityLogThunk({
+          user_id: user_id,
+          message: "Category Image deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
+          section: "CategoryImage",
+        })
+      );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

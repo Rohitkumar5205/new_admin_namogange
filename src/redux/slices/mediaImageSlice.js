@@ -1,16 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance";
+import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 
 // ==============================
 // 1) CREATE GALLERY IMAGE
 // ==============================
 export const createGallery = createAsyncThunk(
   "gallery/create",
-  async (formData, { rejectWithValue }) => {
+  async (formData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.post("/galleryImage/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Gallery Image created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
+          section: "Gallery Image",
+        })
+      );
       return res.data.gallery;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -53,11 +70,27 @@ export const getGalleryById = createAsyncThunk(
 // ==============================
 export const updateGallery = createAsyncThunk(
   "gallery/update",
-  async ({ id, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.put(`/galleryImage/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Gallery Image updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
+          section: "Gallery Image",
+        })
+      );
       return res.data.gallery;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -70,9 +103,24 @@ export const updateGallery = createAsyncThunk(
 // ==============================
 export const deleteGallery = createAsyncThunk(
   "gallery/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
-      await api.delete(`/galleryImage/${id}`);
+      await api.delete(`/galleryImage/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // 🔹 activity log
+      dispatch(
+        createActivityLogThunk({
+          user_id,
+          message: "Gallery Image deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
+          section: "Gallery Image",
+        })
+      );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

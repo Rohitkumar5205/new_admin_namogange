@@ -74,6 +74,7 @@ import AddPainting from "./pages/painting-competition/AddPainting";
 import AddNatak from "./pages/nukkad-natak/AddNatak";
 import NatakList from "./pages/nukkad-natak/NatakList";
 import Objective from "./pages/objective/Objective";
+import Testimonial from "./pages/testimonial/Testimonial";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./layouts/ProtectedRoute";
 
@@ -238,6 +239,7 @@ function App() {
             <Route path="/nukkad-natak/add-natak" element={<AddNatak />} />
             <Route path="/nukkad-natak/natak-list" element={<NatakList />} />
             <Route path="/objective" element={<Objective />} />
+            <Route path="/testimonial" element={<Testimonial />} />
           </Route>
         </Route>
       </Routes>

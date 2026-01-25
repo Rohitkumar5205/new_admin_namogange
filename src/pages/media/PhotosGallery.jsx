@@ -1,29 +1,14 @@
-import React, { useState } from "react";
-import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createGallery,
+  getAllGallery,
+  updateGallery,
+  deleteGallery,
+} from "../../redux/slices/mediaImageSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import { getAllCategoryImages } from "../../redux/slices/add_by_admin/categoryImageSlice";
 
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "Ann Sewa – Free Food Distribution",
-    date: "2025-01-10",
-    category: "Ann Sewa",
-    orderBy: 1,
-    location: "Haridwar",
-    image: "/images/banner1.jpg",
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Community Kitchen",
-    date: "2025-01-12",
-    category: "Ann Sewa",
-    orderBy: 2,
-    location: "Varanasi",
-    image: "/images/banner2.jpg",
-    status: "Inactive",
-  },
-];
 const CATEGORY_OPTIONS = [
   "Ann Sewa",
   "NGO Farms",
@@ -33,9 +18,15 @@ const CATEGORY_OPTIONS = [
 ];
 
 const PhotosGallery = () => {
+  const dispatch = useDispatch();
+  const { gallery, loading } = useSelector((state) => state.gallery);
+  const { categoryImages } = useSelector((state) => state.categoryImage);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     title: "",
     date: "",
     category: "",
@@ -45,8 +36,13 @@ const PhotosGallery = () => {
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllGallery());
+    dispatch(getAllCategoryImages());
+  }, [dispatch]);
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
@@ -58,34 +54,46 @@ const PhotosGallery = () => {
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
-    if (isEdit) {
-      // UPDATE
-      const updatedData = data.map((item) =>
-        item.id === formData.id ? { ...formData } : item
-      );
-      setData(updatedData);
-      alert("Banner updated successfully ✅");
-      console.log("UPDATED DATA 👉", formData);
-    } else {
-      // ADD
-      const newEntry = {
-        ...formData,
-        id: Date.now(),
-        image: formData.image
-          ? URL.createObjectURL(formData.image)
-          : "/placeholder.png",
-      };
-      setData([...data, newEntry]);
-      alert("Banner added successfully ✅");
-      console.log("ADDED DATA 👉", newEntry);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const dataToSend = new FormData();
+    dataToSend.append("title", formData.title);
+    dataToSend.append("date", formData.date);
+    dataToSend.append("category", formData.category);
+    dataToSend.append("orderBy", formData.orderBy);
+    dataToSend.append("location", formData.location);
+    dataToSend.append("status", formData.status);
+    if (formData.image instanceof File) {
+      dataToSend.append("image", formData.image);
     }
 
-    // RESET
+    const currentUserId = authUser?.id || null;
+    dataToSend.append("user_id", currentUserId);
+
+    try {
+      if (isEdit) {
+        await dispatch(
+          updateGallery({ id: formData._id, formData: dataToSend })
+        ).unwrap();
+        showSuccess("Gallery updated successfully");
+      } else {
+        await dispatch(createGallery(dataToSend)).unwrap();
+        showSuccess("Gallery added successfully");
+      }
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      showError("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       title: "",
       date: "",
       category: "",
@@ -98,10 +106,10 @@ const PhotosGallery = () => {
   };
 
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil((gallery?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = gallery?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
@@ -172,7 +180,7 @@ const PhotosGallery = () => {
           {/* CATEGORY */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
+              Image Category
             </label>
             <select
               name="category"
@@ -181,9 +189,9 @@ const PhotosGallery = () => {
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
             >
               <option value="">Select Category</option>
-              {CATEGORY_OPTIONS.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+              {categoryImages?.map((cat) => (
+                <option key={cat._id} value={cat.title}>
+                  {cat.title}
                 </option>
               ))}
             </select>
@@ -256,33 +264,27 @@ const PhotosGallery = () => {
           <div className="md:col-span-2 flex justify-end gap-3 mt-6">
             <button
               type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  title: "",
-                  date: "",
-                  category: "",
-                  orderBy: "",
-                  location: "",
-                  image: null,
-                  status: "Active",
-                });
-                setIsEdit(false);
-              }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              onClick={resetForm}
+              disabled={isSubmitting}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className={`px-6 py-1.5 text-sm rounded text-white ${
-                isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
+              disabled={isSubmitting}
+              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isEdit ? "Update Image" : "Add Image"}
+              {isSubmitting
+                ? "Processing..."
+                : isEdit
+                  ? "Update Image"
+                  : "Add Image"}
             </button>
           </div>
         </form>
@@ -302,7 +304,7 @@ const PhotosGallery = () => {
               <th className="px-4 py-3">S.No</th>
               <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Category</th>
+              <th className="px-4 py-3">Image Category</th>
               <th className="px-4 py-3">Order</th>
               <th className="px-4 py-3">Location</th>
               <th className="px-4 py-3">Image</th>
@@ -312,73 +314,99 @@ const PhotosGallery = () => {
           </thead>
 
           <tbody>
-            {currentData.map((item, index) => (
-              <tr key={item.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3">{index + 1}</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3">{item.date}</td>
-                <td className="px-4 py-3">{item.category}</td>
-                <td className="px-4 py-3">{item.orderBy}</td>
-                <td className="px-4 py-3">{item.location}</td>
-                <td className="px-4 py-3">
-                  <img
-                    src={item.image}
-                    className="h-10 w-20 object-cover rounded border"
-                    alt="img"
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full ${
-                      item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-3">
-                    <button
-                      className="text-green-600"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="text-red-600"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Banner deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
+            {loading && gallery?.length === 0 ? (
+              <tr>
+                <td colSpan="9" className="text-center py-4">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentData.map((item, index) => (
+                <tr key={item._id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3">{index + 1}</td>
+                  <td className="px-4 py-3 font-medium">{item.title}</td>
+                  <td className="px-4 py-3">
+                    {item.date
+                      ? new Date(item.date).toLocaleDateString("en-GB")
+                      : ""}
+                  </td>
+                  <td className="px-4 py-3">{item.category}</td>
+                  <td className="px-4 py-3">{item.orderBy}</td>
+                  <td className="px-4 py-3">{item.location}</td>
+                  <td className="px-4 py-3">
+                    <img
+                      src={item.image || "/placeholder.png"}
+                      className="h-10 w-20 object-cover rounded border"
+                      alt="img"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-3">
+                      <button
+                        className="text-green-600"
+                        onClick={() => {
+                          setFormData({
+                            _id: item._id,
+                            title: item.title,
+                            date: item.date ? item.date.split("T")[0] : "",
+                            category: item.category,
+                            orderBy: item.orderBy,
+                            location: item.location,
+                            image: item.image,
+                            status: item.status,
+                          });
+                          setIsEdit(true);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="text-red-600"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to delete this gallery?"
+                            )
+                          ) {
+                            const currentUserId = authUser?.id || null;
+                            dispatch(
+                              deleteGallery({
+                                id: item._id,
+                                user_id: currentUserId,
+                              })
+                            ).then(() => {
+                              showSuccess("Gallery deleted successfully");
+                            });
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
         {/* ================= PAGINATION ================= */}
         <div className="flex justify-between items-center p-4">
           <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
+            Showing {startIndex + 1}–{Math.min(endIndex, gallery?.length || 0)}{" "}
+            of {gallery?.length || 0}
           </span>
 
           <div className="flex space-x-1">
@@ -399,11 +427,10 @@ const PhotosGallery = () => {
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                  }`}
+                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : ""
+                    }`}
                 >
                   {p}
                 </button>

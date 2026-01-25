@@ -50,6 +50,7 @@ export default function Sidebar() {
           path: "/home-banner",
         },
         { label: "Objective", path: "/objective", icon: MdCorporateFare },
+        { label: "Testimonial", path: "/testimonial", icon: MdCorporateFare },
         { label: "Initiatives", path: "/initiatives", icon: MdCorporateFare },
         {
           label: "Media",
@@ -321,10 +322,9 @@ export default function Sidebar() {
                               key={child.path}
                               onClick={() => navigate(child.path)}
                               className={`flex items-center gap-3 px-4 py-1 rounded cursor-pointer text-sm
-                                ${
-                                  isActive(child.path)
-                                    ? "bg-blue-50 text-[#0C55A0] font-medium"
-                                    : "text-gray-700 hover:bg-gray-100"
+                                ${isActive(child.path)
+                                  ? "bg-blue-50 text-[#0C55A0] font-medium"
+                                  : "text-gray-700 hover:bg-gray-100"
                                 }`}
                             >
                               {/* <ChildIcon size={14} /> */}
@@ -344,10 +344,9 @@ export default function Sidebar() {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 px-4 py-1.5 rounded cursor-pointer text-sm
-                    ${
-                      isActive(item.path)
-                        ? "bg-blue-50 text-[#0C55A0] font-medium"
-                        : "text-gray-700 hover:bg-gray-100"
+                    ${isActive(item.path)
+                      ? "bg-blue-50 text-[#0C55A0] font-medium"
+                      : "text-gray-700 hover:bg-gray-100"
                     }`}
                 >
                   <Icon />
