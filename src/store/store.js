@@ -29,6 +29,8 @@ import bankReducer from "../redux/slices/add_by_admin/bankSlice";
 import testimonialReducer from "../redux/slices/testimonial/testimonialSlice";
 import trustBodyReducer from "../redux/slices/trustbody/trustBodySlice";
 import publishedReducer from "../redux/slices/add_by_admin/publishedSlice";
+import recentUpdateReducer from "../redux/slices/recentUpdate/recentUpdateSlice";
+import newsLetterReducer from "../redux/slices/newsletter/newsLetterSlice";
 
 const store = configureStore({
   reducer: {
@@ -62,6 +64,8 @@ const store = configureStore({
     testimonials: testimonialReducer,
     trustBody: trustBodyReducer,
     published: publishedReducer,
+    recentUpdate: recentUpdateReducer,
+    newsletter: newsLetterReducer,
   },
 });
 

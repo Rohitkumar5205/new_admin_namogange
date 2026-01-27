@@ -1,46 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "Ganga Cleaning Drive",
-    published_by: "Admin",
-    date: "2023-10-01",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-  },
-  {
-    id: 2,
-    title: "Tree Plantation Drive",
-    published_by: "Admin",
-    date: "2023-10-01",
-    image: "/placeholder.png",
-    status: "Inactive",
-    description: "Description here...",
-  },
-  {
-    id: 3,
-    title: "Clean Water Drive",
-    published_by: "Admin",
-    date: "2023-10-01",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllRecentUpdates,
+  deleteRecentUpdate,
+} from "../../redux/slices/recentUpdate/recentUpdateSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const NewsUpdatesList = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState(tableData);
+  const dispatch = useDispatch();
+  const { recentUpdates, loading } = useSelector(
+    (state) => state.recentUpdate || {}
+  );
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    dispatch(getAllRecentUpdates());
+  }, [dispatch]);
+
   /* ===== FILTER DATA ===== */
-  const filteredData = data.filter(
+  const filteredData = (recentUpdates || []).filter(
     (item) =>
       item.title.toLowerCase().includes(search.toLowerCase()) ||
       item.published_by.toLowerCase().includes(search.toLowerCase())
@@ -66,9 +51,9 @@ const NewsUpdatesList = () => {
     return pages;
   };
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
+      {/* <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
         <h2 className="text-lg font-medium text-gray-800">
           Lists News Updates Management
         </h2>
@@ -79,168 +64,214 @@ const NewsUpdatesList = () => {
           {" "}
           Add News Updates
         </button>
-      </div>
+      </div> */}
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
 
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
-          <h3 className="text-base font-medium text-gray-800">
-            News Updates List
-          </h3>
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          >
-            {[5, 10, 25, 50].map((n) => (
-              <option key={n} value={n}>
-                Show {n} Entries
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          />
+        {/* Content */}
+        <div className="relative flex justify-between items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Lists News Updates Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update Trust Bodies content including title, image, link
+                and status.{" "}
+              </p>
+            </div>
+          </div>
+          <div>
+            <button
+              onClick={() => navigate("/news/add-news-updates")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+            >
+              {" "}
+              Add News Updates
+            </button>
+          </div>
         </div>
+      </div>
+      <div className="space-y-3 p-5">
+        {/* ================= TABLE ================= */}
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
+            <h3 className="text-base font-medium text-gray-800">
+              News Updates List
+            </h3>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
+            >
+              {[5, 10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  Show {n} Entries
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
+            />
+          </div>
 
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b  border-gray-200">
-            <tr>
-              <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">Published By</th>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Image</th>{" "}
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b  border-gray-200">
+              <tr>
+                <th className="px-4 py-3">S.No</th>
+                <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Published By</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Image</th>{" "}
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Action</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {currentData.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{item.id}.</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3">{item.published_by}</td>
-                <td className="px-4 py-3">{item.date}</td>
-                <td className="px-4 py-3">
-                  <img
-                    src={item.image}
-                    className="h-10 w-20 object-cover rounded border"
-                    alt="img"
-                  />
-                </td>
+            <tbody>
+              {loading && (!recentUpdates || recentUpdates.length === 0) ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : (
+                currentData.map((item, index) => (
+                  <tr
+                    key={item._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                    <td className="px-4 py-3 font-medium">{item.title}</td>
+                    <td className="px-4 py-3">{item.published_by}</td>
+                    <td className="px-4 py-3">{item.date}</td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={item.image}
+                        className="h-10 w-20 object-cover rounded border"
+                        alt="img"
+                      />
+                    </td>
 
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full font-medium
           ${
             item.status === "Active"
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="relative text-sm text-green-600 transition
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <button
+                          className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        navigate("/news/add-news-updates");
-                      }}
-                    >
-                      Edit
-                    </button>
+                          onClick={() => {
+                            navigate("/news/add-news-updates", { state: item });
+                          }}
+                        >
+                          Edit
+                        </button>
 
-                    <button
-                      className="relative text-sm text-red-600 transition
+                        <button
+                          className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("News Update deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                          onClick={() => {
+                            dispatch(
+                              deleteRecentUpdate({
+                                id: item._id,
+                                user_id: authUser?.id,
+                              })
+                            ).then(() => {
+                              showSuccess("News Update deleted successfully ");
+                            });
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
 
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center p-4">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
-            of {filteredData.length}
-          </span>
+          {/* ================= PAGINATION ================= */}
+          <div className="flex justify-between items-center p-4">
+            <span className="text-sm text-gray-500">
+              Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
+              of {filteredData.length}
+            </span>
 
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
+              >
+                Prev
+              </button>
 
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={i} className="px-3 h-8 border">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
