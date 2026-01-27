@@ -1,15 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance";
+import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 
-/* ===========================
-   CREATE GALLERY VIDEO
-=========================== */
+// CREATE
 export const createGalleryVideo = createAsyncThunk(
   "galleryVideo/create",
-  async (data, { rejectWithValue }) => {
+  async (videoData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) return rejectWithValue("No token provided");
     try {
-      const res = await api.post("/gallery-video/create", data); 
-      // backend: { success, message, video }
+      const res = await api.post("/gallery-video/create", videoData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(
+        createActivityLogThunk({
+          user_id: videoData.user_id,
+          message: "Gallery Video created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
+          section: "Gallery Video",
+        })
+      );
       return res.data.video;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -49,15 +59,24 @@ export const getGalleryVideoById = createAsyncThunk(
   }
 );
 
-/* ===========================
-   UPDATE VIDEO
-=========================== */
+// UPDATE
 export const updateGalleryVideo = createAsyncThunk(
   "galleryVideo/update",
-  async ({ id, data }, { rejectWithValue }) => {
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) return rejectWithValue("No token provided");
     try {
-      const res = await api.put(`/gallery-video/${id}`, data);
-      // backend: { success, message, video }
+      const res = await api.put(`/gallery-video/${id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.user_id,
+          message: "Gallery Video updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
+          section: "Gallery Video",
+        })
+      );
       return res.data.video;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -65,14 +84,24 @@ export const updateGalleryVideo = createAsyncThunk(
   }
 );
 
-/* ===========================
-   DELETE VIDEO
-=========================== */
+// DELETE
 export const deleteGalleryVideo = createAsyncThunk(
   "galleryVideo/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) return rejectWithValue("No token provided");
     try {
-      await api.delete(`/gallery-video/${id}`);
+      await api.delete(`/gallery-video/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(
+        createActivityLogThunk({
+          user_id,
+          message: "Gallery Video deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
+          section: "Gallery Video",
+        })
+      );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -86,60 +115,44 @@ export const deleteGalleryVideo = createAsyncThunk(
 
 const galleryVideoSlice = createSlice({
   name: "galleryVideo",
-
   initialState: {
     videos: [],
     singleVideo: null,
     loading: false,
     error: null,
   },
-
   reducers: {},
-
   extraReducers: (builder) => {
+    const thunks = [
+      createGalleryVideo,
+      getAllGalleryVideos,
+      getGalleryVideoById,
+      updateGalleryVideo,
+      deleteGalleryVideo,
+    ];
+    thunks.forEach((thunk) => {
+      builder
+        .addCase(thunk.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(thunk.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        });
+    });
+
     builder
-      // CREATE
-      .addCase(createGalleryVideo.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(createGalleryVideo.fulfilled, (state, action) => {
         state.loading = false;
         state.videos.unshift(action.payload);
-      })
-      .addCase(createGalleryVideo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // GET ALL
-      .addCase(getAllGalleryVideos.pending, (state) => {
-        state.loading = true;
       })
       .addCase(getAllGalleryVideos.fulfilled, (state, action) => {
         state.loading = false;
         state.videos = action.payload;
       })
-      .addCase(getAllGalleryVideos.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // GET BY ID
-      .addCase(getGalleryVideoById.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(getGalleryVideoById.fulfilled, (state, action) => {
         state.loading = false;
         state.singleVideo = action.payload;
-      })
-      .addCase(getGalleryVideoById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // UPDATE
-      .addCase(updateGalleryVideo.pending, (state) => {
-        state.loading = true;
       })
       .addCase(updateGalleryVideo.fulfilled, (state, action) => {
         state.loading = false;
@@ -147,24 +160,9 @@ const galleryVideoSlice = createSlice({
           v._id === action.payload._id ? action.payload : v
         );
       })
-      .addCase(updateGalleryVideo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      // DELETE
-      .addCase(deleteGalleryVideo.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(deleteGalleryVideo.fulfilled, (state, action) => {
         state.loading = false;
-        state.videos = state.videos.filter(
-          (v) => v._id !== action.payload
-        );
-      })
-      .addCase(deleteGalleryVideo.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.videos = state.videos.filter((v) => v._id !== action.payload);
       });
   },
 });

@@ -1,14 +1,30 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axiosInstance";
+import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 /* ================= CREATE BLOG ================= */
 export const createBlog = createAsyncThunk(
   "blog/create",
-  async (formData, { rejectWithValue }) => {
+  async (formData, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.post("/blog/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Blog created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
+          section: "Blog",
+        })
+      );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -45,11 +61,26 @@ export const getBlogById = createAsyncThunk(
 /* ================= UPDATE BLOG ================= */
 export const updateBlog = createAsyncThunk(
   "blog/update",
-  async ({ id, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
       const res = await api.put(`/blog/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "Blog updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
+          section: "Blog",
+        })
+      );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -60,9 +91,23 @@ export const updateBlog = createAsyncThunk(
 /* ================= DELETE BLOG ================= */
 export const deleteBlog = createAsyncThunk(
   "blog/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No token provided");
+    }
     try {
-      await api.delete(`/blog/${id}`);
+      await api.delete(`/blog/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(
+        createActivityLogThunk({
+          user_id,
+          message: "Blog deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
+          section: "Blog",
+        })
+      );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
