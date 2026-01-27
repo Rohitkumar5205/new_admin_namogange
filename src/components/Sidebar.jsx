@@ -75,7 +75,7 @@ export default function Sidebar() {
           ],
         },
         {
-          label: "News Updates",
+          label: "Resent Updates",
           icon: FaRegBuilding,
           children: [
             { label: "Add News Updates", path: "/news/add-news-updates" },
@@ -238,6 +238,7 @@ export default function Sidebar() {
             { label: "Add Enquiry", path: "/add_by_admin/enquiry" },
             { label: "Add Data", path: "/add_by_admin/data" },
             { label: "Add Target", path: "/add_by_admin/target" },
+            { label: "Add Published", path: "/add_by_admin/published" },
             {
               label: "Add Coordinator Status",
               path: "/add_by_admin/coordinator",
@@ -322,9 +323,10 @@ export default function Sidebar() {
                               key={child.path}
                               onClick={() => navigate(child.path)}
                               className={`flex items-center gap-3 px-4 py-1 rounded cursor-pointer text-sm
-                                ${isActive(child.path)
-                                  ? "bg-blue-50 text-[#0C55A0] font-medium"
-                                  : "text-gray-700 hover:bg-gray-100"
+                                ${
+                                  isActive(child.path)
+                                    ? "bg-blue-50 text-[#0C55A0] font-medium"
+                                    : "text-gray-700 hover:bg-gray-100"
                                 }`}
                             >
                               {/* <ChildIcon size={14} /> */}
@@ -344,9 +346,10 @@ export default function Sidebar() {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 px-4 py-1.5 rounded cursor-pointer text-sm
-                    ${isActive(item.path)
-                      ? "bg-blue-50 text-[#0C55A0] font-medium"
-                      : "text-gray-700 hover:bg-gray-100"
+                    ${
+                      isActive(item.path)
+                        ? "bg-blue-50 text-[#0C55A0] font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
                     }`}
                 >
                   <Icon />

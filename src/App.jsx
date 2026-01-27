@@ -77,6 +77,7 @@ import Objective from "./pages/objective/Objective";
 import Testimonial from "./pages/testimonial/Testimonial";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./layouts/ProtectedRoute";
+import Published from "./pages/add_by_admin/Published";
 
 function App() {
   return (
@@ -117,6 +118,7 @@ function App() {
               path="/add_by_admin/image-category"
               element={<ImageCategory />}
             />
+            <Route path="/add_by_admin/published" element={<Published />} />
             <Route path="/users/user" element={<User />} />
             <Route path="/users/user/:id" element={<ActivityLog />} />
             {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
