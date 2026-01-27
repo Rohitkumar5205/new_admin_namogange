@@ -1,327 +1,146 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "Ganga Cleaning Drive",
-    slug: "ganga-cleaning-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "ganga, cleaning",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 2,
-    title: "Tree Plantation Drive",
-    slug: "tree-plantation-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Inactive",
-    description: "Description here...",
-    meta_keyword: "tree, plantation",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 3,
-    title: "Clean Water Drive",
-    slug: "clean-water-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "clean, water",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 4,
-    title: "Ganga Cleaning Drive",
-    slug: "ganga-cleaning-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "ganga, cleaning",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 5,
-    title: "Tree Plantation Drive",
-    slug: "tree-plantation-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Inactive",
-    description: "Description here...",
-    meta_keyword: "tree, plantation",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 6,
-    title: "Clean Water Drive",
-    slug: "clean-water-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "clean, water",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 7,
-    title: "Ganga Cleaning Drive",
-    slug: "ganga-cleaning-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "ganga, cleaning",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 8,
-    title: "Tree Plantation Drive",
-    slug: "tree-plantation-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Inactive",
-    description: "Description here...",
-    meta_keyword: "tree, plantation",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 9,
-    title: "Clean Water Drive",
-    slug: "clean-water-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "clean, water",
-    meta_description: "Meta description here...",
-  },
-  {
-    id: 10,
-    title: "Ganga Cleaning Drive",
-    slug: "ganga-cleaning-drive",
-    category: "Environment",
-    image: "/placeholder.png",
-    status: "Active",
-    description: "Description here...",
-    meta_keyword: "ganga, cleaning",
-    meta_description: "Meta description here...",
-  },
-];
+import { getAllBlogs, deleteBlog } from "../../redux/slices/blog/blogSlice";
+import { showSuccess } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const BlogList = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [data, setData] = useState(tableData);
+  const { blogs, loading } = useSelector((state) => state.blog);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
+  // Pagination
+  const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [search, setSearch] = useState("");
 
-  /* ===== FILTER DATA ===== */
-  const filteredData = data.filter(
-    (item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.category.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(getAllBlogs());
+  }, [dispatch]);
 
-  /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
+      dispatch(deleteBlog({ id, user_id: authUser?.id })).then(() => {
+        showSuccess("Blog deleted successfully");
+      });
+    }
+  };
+
+  const handleEdit = (blog) => {
+    navigate("/blogs/add-blog", { state: { blog } });
+  };
+
+  // Pagination Logic
+  const totalPages = Math.ceil((blogs?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = filteredData.slice(startIndex, endIndex);
+  const currentData = blogs?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 3;
-
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
-      for (let i = 1; i <= maxVisible; i++) pages.push(i);
-      pages.push("...");
+      pages.push(1);
+      if (currentPage > 2) pages.push("...");
+      if (currentPage > 1 && currentPage < totalPages) pages.push(currentPage);
+      if (currentPage < totalPages - 1) pages.push("...");
       pages.push(totalPages);
     }
     return pages;
   };
+
   return (
-    <div className="space-y-6">
-      {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Blog List Management
-        </h2>
-        <button
-          onClick={() => navigate("/blogs/add-blog")}
-          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-        >
-          {" "}
-          Add Blog
-        </button>
+    <div className="">
+      {/* Header */}
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-white/10"></div>
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex flex-col text-center">
+            <h2 className="text-xl font-semibold text-white text-center">
+              Blog List
+            </h2>
+            <p className="text-sm text-blue-100">Manage all blog posts.</p>
+          </div>
+        </div>
       </div>
 
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
-          <h3 className="text-base font-medium text-gray-800">Blog List</h3>
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          >
-            {[5, 10, 25, 50].map((n) => (
-              <option key={n} value={n}>
-                Show {n} Entries
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          />
-        </div>
-
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b  border-gray-200">
-            <tr>
-              <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">Slug</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Image</th>{" "}
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {currentData.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{item.id}.</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3">{item.slug}</td>
-                <td className="px-4 py-3">{item.category}</td>
-                <td className="px-4 py-3">
-                  <img
-                    src={item.image}
-                    className="h-10 w-20 object-cover rounded border"
-                    alt="img"
-                  />
-                </td>
-
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="relative text-sm text-green-600 transition
-after:absolute after:left-0 after:-bottom-0.5
-after:h-[1.5px] after:w-0 after:bg-green-600
-after:transition-all after:duration-300
-hover:after:w-full"
-                      onClick={() => {
-                        navigate("/blogs/add-blog");
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="relative text-sm text-red-600 transition
-after:absolute after:left-0 after:-bottom-0.5
-after:h-[1.5px] after:w-0 after:bg-red-600
-after:transition-all after:duration-300
-hover:after:w-full"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Blog deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+      {/* Table */}
+      <div className="space-y-3 p-5">
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 py-3 border-b border-gray-200 flex justify-between items-center">
+            <h3 className="text-base font-medium text-gray-800">All Blogs</h3>
+            <button
+              onClick={() => navigate("/blogs/add-blog")}
+              className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+            >
+              Add New Blog
+            </button>
+          </div>
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3">S.No</th>
+                <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Author</th>
+                <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Image</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center p-4">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
-            of {filteredData.length}
-          </span>
-
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
-
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
+            </thead>
+            <tbody>
+              {loading && blogs?.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
               ) : (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
+                currentData.map((blog, index) => (
+                  <tr key={blog._id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                    <td className="px-4 py-3 font-medium">{blog.title}</td>
+                    <td className="px-4 py-3">{blog.author}</td>
+                    <td className="px-4 py-3">{blog.category}</td>
+                    <td className="px-4 py-3">
+                      <img src={blog.image || "/placeholder.png"} alt={blog.title} className="h-10 w-10 object-cover rounded border" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 text-xs rounded-full font-medium ${blog.status === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {blog.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => handleEdit(blog)} className="text-green-600 hover:underline">Edit</button>
+                        <button onClick={() => handleDelete(blog._id)} className="text-red-600 hover:underline">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+          {/* Pagination */}
+          <div className="flex justify-between items-center p-4">
+            <span className="text-sm text-gray-500">Showing {startIndex + 1}–{Math.min(endIndex, blogs?.length || 0)} of {blogs?.length || 0}</span>
+            <div className="flex space-x-1">
+              <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1} className="px-3 h-8 text-gray-600 border border-gray-300 rounded-l-lg hover:bg-gray-50">Prev</button>
+              {getPageNumbers().map((p, i) => p === "..." ? (<span key={i} className="px-3 h-8 border">…</span>) : (<button key={p} onClick={() => setCurrentPage(p)} className={`px-3 h-8 border ${currentPage === p ? "bg-blue-50 text-blue-600" : "hover:bg-gray-50"}`}>{p}</button>))}
+              <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="px-3 h-8 text-gray-600 border border-gray-300 rounded-r-lg hover:bg-gray-50">Next</button>
+            </div>
           </div>
         </div>
       </div>

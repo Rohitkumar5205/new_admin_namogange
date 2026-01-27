@@ -1,52 +1,40 @@
-import React, { useState } from "react";
-import { MdVisibility, MdEdit, MdDelete } from "react-icons/md";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "Ann Sewa – Free Food Distribution",
-    date: "2025-01-10",
-    category: "Ann Sewa",
-    orderBy: 1,
-    location: "Haridwar",
-    image: "/images/banner1.jpg",
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Community Kitchen",
-    date: "2025-01-12",
-    category: "Ann Sewa",
-    orderBy: 2,
-    location: "Varanasi",
-    image: "/images/banner2.jpg",
-    status: "Inactive",
-  },
-];
-const CATEGORY_OPTIONS = [
-  "Ann Sewa",
-  "NGO Farms",
-  "Moksha Sewa",
-  "Education",
-  "Health Care",
-];
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createGalleryVideo,
+  getAllGalleryVideos,
+  updateGalleryVideo,
+  deleteGalleryVideo,
+} from "../../redux/slices/galleryVideoSlice";
+import { getAllCategoryVideos } from "../../redux/slices/add_by_admin/categoryVideoSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const VideosGallery = () => {
+  const dispatch = useDispatch();
+  const { videos: galleryVideos, loading } = useSelector((state) => state.galleryVideo);
+  const { list: categoryVideos } = useSelector((state) => state.categoryVideo);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     title: "",
     date: "",
     category: "",
     orderBy: "",
     location: "",
-    videoLink: "",
+    video_link: "",
     status: "Active",
   });
-
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    dispatch(getAllGalleryVideos());
+    dispatch(getAllCategoryVideos());
+  }, [dispatch]);
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
@@ -58,56 +46,60 @@ const VideosGallery = () => {
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  const newEntry = {
-    ...formData,
-    id: Date.now(),
-  };
-  const updatedData = data.map((item) =>
-    item.id === formData.id ? { ...formData } : item
-  );
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (isEdit) {
-      // UPDATE
-      const updatedData = data.map((item) =>
-        item.id === formData.id ? { ...formData } : item
-      );
-      setData(updatedData);
-      alert("Banner updated successfully ✅");
-      console.log("UPDATED DATA 👉", formData);
-    } else {
-      // ADD
-      const newEntry = {
-        ...formData,
-        id: Date.now(),
-        videoLink: formData.videoLink,
-      };
-      setData([...data, newEntry]);
-      alert("Banner added successfully ✅");
-      console.log("ADDED DATA 👉", newEntry);
-    }
-
-    // RESET
+  const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       title: "",
       date: "",
       category: "",
       orderBy: "",
       location: "",
-      image: null,
+      video_link: "",
       status: "Active",
     });
     setIsEdit(false);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const dataToSend = {
+      title: formData.title,
+      date: formData.date,
+      category: formData.category,
+      orderBy: formData.orderBy,
+      location: formData.location,
+      video_link: formData.video_link,
+      status: formData.status,
+      user_id: authUser?.id || null,
+    };
+
+    try {
+      if (isEdit) {
+        await dispatch(
+          updateGalleryVideo({ id: formData._id, formData: dataToSend })
+        ).unwrap();
+        showSuccess("Video Gallery updated successfully");
+      } else {
+        await dispatch(createGalleryVideo(dataToSend)).unwrap();
+        showSuccess("Video Gallery added successfully");
+      }
+      await dispatch(getAllGalleryVideos()).unwrap();
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      showError("Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil((galleryVideos?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = galleryVideos?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
@@ -124,318 +116,359 @@ const VideosGallery = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Videos Gallery Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update videos gallery content including title, image, link and
-          status.
-        </p>
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Videos Gallery Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update videos gallery content including title, image, link and
+                status.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
+      <div className="space-y-3 p-5 ">
 
-      {/* ================= FORM ================= */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-base font-medium text-gray-800 mb-4">
-          {isEdit ? "Update Video Gallery" : "Add Video Gallery"}
-        </h3>
+        {/* ================= FORM ================= */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-base font-medium text-gray-800 mb-4">
+            {isEdit ? "Update Video Gallery" : "Add Video Gallery"}
+          </h3>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
-        >
-          {/* TITLE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-              required
-            />
-          </div>
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          >
+            {/* TITLE */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                required
+              />
+            </div>
 
-          {/* DATE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            />
-          </div>
+            {/* DATE */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              />
+            </div>
 
-          {/* CATEGORY */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            >
-              <option value="">Select Category</option>
-              {CATEGORY_OPTIONS.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* CATEGORY */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              >
+                <option value="">Select Category</option>
+                {categoryVideos?.map((cat) => (
+                  <option key={cat._id} value={cat.category}>
+                    {cat.category}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* ORDER BY (1–50) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Order By
-            </label>
-            <select
-              name="orderBy"
-              value={formData.orderBy}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            >
-              <option value="">Select Order</option>
-              {Array.from({ length: 50 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* ORDER BY (1–50) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Order By
+              </label>
+              <select
+                name="orderBy"
+                value={formData.orderBy}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              >
+                <option value="">Select Order</option>
+                {Array.from({ length: 50 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* LOCATION */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            />
-          </div>
+            {/* LOCATION */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              />
+            </div>
 
-          {/* IMAGE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Video Link <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="videoLink"
-              value={formData.videoLink}
-              required
-              onChange={handleChange}
-              placeholder="https://youtube.com/embed/xxxx"
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            />
-          </div>
+            {/* VIDEO LINK */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Video Link <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="video_link"
+                value={formData.video_link}
+                required
+                onChange={handleChange}
+                placeholder="https://youtube.com/embed/xxxx"
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              />
+            </div>
 
-          {/* STATUS */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
+            {/* STATUS */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
 
-          {/* ACTION BUTTONS */}
-          <div className="md:col-span-2 flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  title: "",
-                  date: "",
-                  category: "",
-                  orderBy: "",
-                  location: "",
-                  image: null,
-                  status: "Active",
-                });
-                setIsEdit(false);
-              }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
-            >
-              Cancel
-            </button>
+            {/* ACTION BUTTONS */}
+            <div className="md:col-span-2 flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+              >
+                Cancel
+              </button>
 
-            <button
-              type="submit"
-              className={`px-6 py-1.5 text-sm rounded-md text-white ${
-                isEdit
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-6 py-1.5 text-sm rounded-md text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-              }`}
-            >
-              {isEdit ? "Update Image" : "Add Image"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-3 border-b border-gray-200">
-          <h3 className="text-base font-medium text-gray-800">
-            Video Gallery List
-          </h3>
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isSubmitting
+                  ? "Processing..."
+                  : isEdit
+                    ? "Update Video"
+                    : "Add Video"}
+              </button>
+            </div>
+          </form>
         </div>
 
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Order</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">Video Link</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
+        {/* ================= TABLE ================= */}
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 py-3 border-b border-gray-200">
+            <h3 className="text-base font-medium text-gray-800">
+              Video Gallery List
+            </h3>
+          </div>
 
-          <tbody>
-            {currentData.map((item, index) => (
-              <tr key={item.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3">{index + 1}</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3">{item.date}</td>
-                <td className="px-4 py-3">{item.category}</td>
-                <td className="px-4 py-3">{item.orderBy}</td>
-                <td className="px-4 py-3">{item.location}</td>
-                <td className="px-4 py-3">
-                  {item.videoLink ? (
-                    <iframe
-                      src={item.videoLink}
-                      title="video"
-                      className="w-32 h-20 rounded border"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-xs">No Video</span>
-                  )}
-                </td>
-
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full ${
-                      item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-3">
-                    <button
-                      className="text-green-600"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="text-red-600"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Banner deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3">S.No</th>
+                <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Order</th>
+                <th className="px-4 py-3">Location</th>
+                <th className="px-4 py-3">Video Link</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
 
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center p-4">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
-          </span>
-
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
-
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
+            <tbody>
+              {loading && galleryVideos?.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
               ) : (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
+                currentData.map((item, index) => (
+                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3 font-medium">{item.title}</td>
+                    <td className="px-4 py-3">
+                      {item.date
+                        ? new Date(item.date).toLocaleDateString("en-GB")
+                        : ""}
+                    </td>
+                    <td className="px-4 py-3">{item.category}</td>
+                    <td className="px-4 py-3">{item.orderBy}</td>
+                    <td className="px-4 py-3">{item.location}</td>
+                    <td className="px-4 py-3">
+                      {item.video_link ? (
+                        <iframe
+                          src={item.video_link}
+                          title="video"
+                          className="w-32 h-20 rounded border"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <span className="text-gray-400 text-xs">No Video</span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                          }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-3">
+                        <button
+                          className="text-green-600"
+                          onClick={() => {
+                            setFormData({
+                              _id: item._id,
+                              title: item.title,
+                              date: item.date ? item.date.split("T")[0] : "",
+                              category: item.category,
+                              orderBy: item.orderBy,
+                              location: item.location,
+                              video_link: item.video_link,
+                              status: item.status,
+                            });
+                            setIsEdit(true);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          className="text-red-600"
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to delete this video?"
+                              )
+                            ) {
+                              const currentUserId = authUser?.id || null;
+                              dispatch(
+                                deleteGalleryVideo({
+                                  id: item._id,
+                                  user_id: currentUserId,
+                                })
+                              ).then(() => {
+                                showSuccess("Video Gallery deleted successfully");
+                                dispatch(getAllGalleryVideos());
+                              });
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* ================= PAGINATION ================= */}
+          <div className="flex justify-between items-center p-4">
+            <span className="text-sm text-gray-500">
+              Showing {startIndex + 1}–{Math.min(endIndex, galleryVideos?.length || 0)}{" "}
+              of {galleryVideos?.length || 0}
+            </span>
+
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
+              >
+                Prev
+              </button>
+
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={i} className="px-3 h-8 border">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
                       ? "bg-blue-50 text-blue-600 font-semibold"
                       : ""
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
+                      }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

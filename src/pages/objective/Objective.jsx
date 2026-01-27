@@ -229,7 +229,7 @@ const Objective = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Enter banner title"
+                placeholder="Enter Objective title"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
               />
@@ -335,9 +335,8 @@ const Objective = () => {
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
@@ -345,17 +344,16 @@ const Objective = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-1 text-sm rounded text-white ${
-                  isEdit
+                className={`px-6 py-1 text-sm rounded text-white ${isEdit
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Objective"
-                  : "Add Objective"}{" "}
+                    ? "Update Objective"
+                    : "Add Objective"}{" "}
               </button>
             </div>
           </form>
@@ -407,11 +405,10 @@ const Objective = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
@@ -488,11 +485,10 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
                         ? "bg-blue-50 text-blue-600 font-semibold"
                         : ""
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>

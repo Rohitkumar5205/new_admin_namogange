@@ -31,6 +31,7 @@ import trustBodyReducer from "../redux/slices/trustbody/trustBodySlice";
 import publishedReducer from "../redux/slices/add_by_admin/publishedSlice";
 import recentUpdateReducer from "../redux/slices/recentUpdate/recentUpdateSlice";
 import newsLetterReducer from "../redux/slices/newsletter/newsLetterSlice";
+import faqReducer from "../redux/slices/faq/faqSlice";
 
 const store = configureStore({
   reducer: {
@@ -66,6 +67,7 @@ const store = configureStore({
     published: publishedReducer,
     recentUpdate: recentUpdateReducer,
     newsletter: newsLetterReducer,
+    faq: faqReducer,
   },
 });
 

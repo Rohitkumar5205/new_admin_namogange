@@ -8,6 +8,7 @@ import {
 } from "../../redux/slices/mediaImageSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { getAllCategoryImages } from "../../redux/slices/add_by_admin/categoryImageSlice";
+import adminBanner from "../../assets/banners/bg.jpg";
 
 const CATEGORY_OPTIONS = [
   "Ann Sewa",
@@ -126,9 +127,9 @@ const PhotosGallery = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
+      {/* <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
         <h2 className="text-lg font-medium text-gray-800">
           Photos Gallery Management
         </h2>
@@ -136,314 +137,343 @@ const PhotosGallery = () => {
           Add or update photos gallery content including title, image, link and
           status.
         </p>
+      </div> */}
+      <div
+        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        style={{
+          backgroundImage: `url(${adminBanner})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Photos Gallery Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update photos gallery content including title, image, link and
+                status.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ================= FORM ================= */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-base font-medium text-gray-800 mb-4">
-          {isEdit ? "Update Image Gallery" : "Add Image Gallery"}
-        </h3>
-
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
-        >
-          {/* TITLE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-              required
-            />
-          </div>
-
-          {/* DATE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            />
-          </div>
-
-          {/* CATEGORY */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Image Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            >
-              <option value="">Select Category</option>
-              {categoryImages?.map((cat) => (
-                <option key={cat._id} value={cat.title}>
-                  {cat.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* ORDER BY (1–50) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Order By
-            </label>
-            <select
-              name="orderBy"
-              value={formData.orderBy}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            >
-              <option value="">Select Order</option>
-              {Array.from({ length: 50 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* LOCATION */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            />
-          </div>
-
-          {/* IMAGE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Image
-            </label>
-            <input
-              type="file"
-              name="image"
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            />
-          </div>
-
-          {/* STATUS */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          {/* ACTION BUTTONS */}
-          <div className="md:col-span-2 flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              onClick={resetForm}
-              disabled={isSubmitting}
-              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              {isSubmitting
-                ? "Processing..."
-                : isEdit
-                  ? "Update Image"
-                  : "Add Image"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-3 border-b border-gray-200">
-          <h3 className="text-base font-medium text-gray-800">
-            Image Gallery List
+      <div className="space-y-3 p-5 ">
+        {/* ================= FORM ================= */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-base font-medium text-gray-800 mb-4">
+            {isEdit ? "Update Image Gallery" : "Add Image Gallery"}
           </h3>
+
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          >
+            {/* TITLE */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                required
+              />
+            </div>
+
+            {/* DATE */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              />
+            </div>
+
+            {/* CATEGORY */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              >
+                <option value="">Select Category</option>
+                {categoryImages?.map((cat) => (
+                  <option key={cat._id} value={cat.title}>
+                    {cat.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* ORDER BY (1–50) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Order By
+              </label>
+              <select
+                name="orderBy"
+                value={formData.orderBy}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              >
+                <option value="">Select Order</option>
+                {Array.from({ length: 50 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* LOCATION */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              />
+            </div>
+
+            {/* IMAGE */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image
+              </label>
+              <input
+                type="file"
+                name="image"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              />
+            </div>
+
+            {/* STATUS */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="md:col-span-2 flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isSubmitting
+                  ? "Processing..."
+                  : isEdit
+                    ? "Update Image"
+                    : "Add Image"}
+              </button>
+            </div>
+          </form>
         </div>
 
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-4 py-3">S.No</th>
-              <th className="px-4 py-3">Title</th>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Image Category</th>
-              <th className="px-4 py-3">Order</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">Image</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
-            </tr>
-          </thead>
+        {/* ================= TABLE ================= */}
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 py-3 border-b border-gray-200">
+            <h3 className="text-base font-medium text-gray-800">
+              Image Gallery List
+            </h3>
+          </div>
 
-          <tbody>
-            {loading && gallery?.length === 0 ? (
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <td colSpan="9" className="text-center py-4">
-                  Loading...
-                </td>
+                <th className="px-4 py-3">S.No</th>
+                <th className="px-4 py-3">Title</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Image Category</th>
+                <th className="px-4 py-3">Order</th>
+                <th className="px-4 py-3">Location</th>
+                <th className="px-4 py-3">Image</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Action</th>
               </tr>
-            ) : (
-              currentData.map((item, index) => (
-                <tr key={item._id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3 font-medium">{item.title}</td>
-                  <td className="px-4 py-3">
-                    {item.date
-                      ? new Date(item.date).toLocaleDateString("en-GB")
-                      : ""}
-                  </td>
-                  <td className="px-4 py-3">{item.category}</td>
-                  <td className="px-4 py-3">{item.orderBy}</td>
-                  <td className="px-4 py-3">{item.location}</td>
-                  <td className="px-4 py-3">
-                    <img
-                      src={item.image || "/placeholder.png"}
-                      className="h-10 w-20 object-cover rounded border"
-                      alt="img"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                        }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-3">
-                      <button
-                        className="text-green-600"
-                        onClick={() => {
-                          setFormData({
-                            _id: item._id,
-                            title: item.title,
-                            date: item.date ? item.date.split("T")[0] : "",
-                            category: item.category,
-                            orderBy: item.orderBy,
-                            location: item.location,
-                            image: item.image,
-                            status: item.status,
-                          });
-                          setIsEdit(true);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        Edit
-                      </button>
+            </thead>
 
-                      <button
-                        className="text-red-600"
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "Are you sure you want to delete this gallery?"
-                            )
-                          ) {
-                            const currentUserId = authUser?.id || null;
-                            dispatch(
-                              deleteGallery({
-                                id: item._id,
-                                user_id: currentUserId,
-                              })
-                            ).then(() => {
-                              showSuccess("Gallery deleted successfully");
-                            });
-                          }
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
+            <tbody>
+              {loading && gallery?.length === 0 ? (
+                <tr>
+                  <td colSpan="9" className="text-center py-4">
+                    Loading...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center p-4">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, gallery?.length || 0)}{" "}
-            of {gallery?.length || 0}
-          </span>
-
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
-
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
               ) : (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : ""
-                    }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
+                currentData.map((item, index) => (
+                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3 font-medium">{item.title}</td>
+                    <td className="px-4 py-3">
+                      {item.date
+                        ? new Date(item.date).toLocaleDateString("en-GB")
+                        : ""}
+                    </td>
+                    <td className="px-4 py-3">{item.category}</td>
+                    <td className="px-4 py-3">{item.orderBy}</td>
+                    <td className="px-4 py-3">{item.location}</td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={item.image || "/placeholder.png"}
+                        className="h-10 w-20 object-cover rounded border"
+                        alt="img"
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                          }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-3">
+                        <button
+                          className="text-green-600"
+                          onClick={() => {
+                            setFormData({
+                              _id: item._id,
+                              title: item.title,
+                              date: item.date ? item.date.split("T")[0] : "",
+                              category: item.category,
+                              orderBy: item.orderBy,
+                              location: item.location,
+                              image: item.image,
+                              status: item.status,
+                            });
+                            setIsEdit(true);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Edit
+                        </button>
 
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+                        <button
+                          className="text-red-600"
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to delete this gallery?"
+                              )
+                            ) {
+                              const currentUserId = authUser?.id || null;
+                              dispatch(
+                                deleteGallery({
+                                  id: item._id,
+                                  user_id: currentUserId,
+                                })
+                              ).then(() => {
+                                showSuccess("Gallery deleted successfully");
+                              });
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* ================= PAGINATION ================= */}
+          <div className="flex justify-between items-center p-4">
+            <span className="text-sm text-gray-500">
+              Showing {startIndex + 1}–{Math.min(endIndex, gallery?.length || 0)}{" "}
+              of {gallery?.length || 0}
+            </span>
+
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
+              >
+                Prev
+              </button>
+
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={i} className="px-3 h-8 border">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
