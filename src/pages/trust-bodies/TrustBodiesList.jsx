@@ -49,7 +49,7 @@ const TrustBodiesList = () => {
     return pages;
   };
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
 
       <div
@@ -88,7 +88,7 @@ const TrustBodiesList = () => {
           </div>
         </div>
       </div>
-
+      <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
       <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
         {/* <div className="px-5 py-3 border-b border-gray-200">
@@ -271,6 +271,7 @@ hover:after:w-full"
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

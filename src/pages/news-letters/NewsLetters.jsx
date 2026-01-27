@@ -1,31 +1,19 @@
-import React, { useState } from "react";
-
-/* ===== TABLE DATA ===== */
-const tableData = [
-  {
-    id: 1,
-    title: "January Edition",
-    month_year: "2025-01",
-    order_by: 1,
-    image: "/placeholder.png",
-    pdf: "newsletter_jan.pdf",
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "February Edition",
-    month_year: "2025-02",
-    order_by: 2,
-    image: "/placeholder.png",
-    pdf: "newsletter_feb.pdf",
-    status: "Active",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { showSuccess, showError } from "../../utils/toastService";
+import { getAllCategories } from "../../redux/slices/add_by_admin/categorySlice";
+import adminBanner from "../../assets/banners/bg.jpg";
+import {
+  createNewsLetter,
+  getAllNewsLetters,
+  updateNewsLetter,
+  deleteNewsLetter,
+} from "../../redux/slices/newsletter/newsLetterSlice";
 
 const NewsLetters = () => {
-  /* ===== FORM STATE ===== */
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    id: null,
+    _id: null,
     title: "",
     month_year: "",
     order_by: "",
@@ -34,12 +22,21 @@ const NewsLetters = () => {
     status: "Active",
   });
 
-  const [data, setData] = useState(tableData);
   const [isEdit, setIsEdit] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { newsletters, loading } = useSelector(
+    (state) => state.newsletter || {}
+  );
+  console.log("newsletters", newsletters);
+  const authUser = JSON.parse(localStorage.getItem("user"));
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    dispatch(getAllNewsLetters());
+  }, [dispatch]);
 
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
@@ -47,58 +44,83 @@ const NewsLetters = () => {
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (isEdit) {
-      // UPDATE
-      const updated = data.map((item) =>
-        item.id === formData.id
-          ? {
-              ...formData,
-              image:
-                typeof formData.image === "string"
-                  ? formData.image
-                  : formData.image
-                  ? URL.createObjectURL(formData.image)
-                  : null,
-              pdf: formData.pdf ? formData.pdf.name : "doc.pdf",
-            }
-          : item
-      );
-
-      setData(updated);
-      alert("News Letters updated successfully ✅");
-      console.log("UPDATED 👉", formData);
-    } else {
-      // ADD
-      const newBanner = {
-        ...formData,
-        id: Date.now(),
-        image: formData.image
-          ? URL.createObjectURL(formData.image)
-          : "/placeholder.png",
-      };
-
-      setData([...data, newBanner]);
-      alert("News Letters added successfully ✅");
-      console.log("ADDED 👉", newBanner);
-    }
-
-    // RESET FORM
+  const resetForm = () => {
     setFormData({
-      id: null,
+      _id: null,
       title: "",
+      month_year: "",
+      order_by: "",
+      image: null,
+      pdf: null,
       status: "Active",
     });
     setIsEdit(false);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const currentUserId = authUser?.id;
+    const currentUserName = authUser?.username;
+    e.preventDefault();
+
+    const data = new FormData();
+
+    data.append("title", formData.title);
+    data.append("monthYear", formData.month_year);
+    data.append("order_by", formData.order_by);
+    data.append("status", formData.status);
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
+    }
+
+    if (formData.pdf instanceof File) {
+      data.append("pdf", formData.pdf);
+    }
+    if (currentUserId) data.append("user_id", currentUserId);
+    if (currentUserName) {
+      data.append(isEdit ? "updated_by" : "created_by", currentUserName);
+    }
+    setIsSubmitting(true);
+    try {
+      if (isEdit) {
+        await dispatch(updateNewsLetter({ id: formData._id, data })).unwrap();
+        showSuccess("News Letters updated successfully ✅");
+      } else {
+        await dispatch(createNewsLetter(data)).unwrap();
+        showSuccess("News Letters added successfully ✅");
+      }
+      dispatch(getAllNewsLetters());
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      showError(err?.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deleteNewsLetter({ id, user_id: authUser?.id }))
+      .unwrap()
+      .then(() => {
+        showSuccess("News Letter deleted successfully");
+        dispatch(getAllNewsLetters());
+      })
+      .catch((err) => {
+        showError(err?.message || "Failed to delete");
+      });
+  };
+
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const currentList = Array.isArray(newsletters)
+    ? newsletters
+    : Array.isArray(newsletters?.data)
+    ? newsletters.data
+    : [];
+  const totalPages = Math.ceil(currentList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = currentList.slice(startIndex, endIndex);
 
   const getPageNumbers = () => {
     const pages = [];
@@ -236,18 +258,8 @@ const NewsLetters = () => {
           <div className="md:col-span-2 flex justify-end gap-3 mt-6">
             <button
               type="button"
-              onClick={() => {
-                setFormData({
-                  id: null,
-                  title: "",
-                  month_year: "",
-                  order_by: "",
-                  image: null,
-                  pdf: null,
-                  status: "Active",
-                });
-                setIsEdit(false);
-              }}
+              onClick={resetForm}
+              disabled={loading}
               className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
             >
               Cancel
@@ -255,13 +267,20 @@ const NewsLetters = () => {
 
             <button
               type="submit"
+              disabled={loading || isSubmitting}
               className={`px-6 py-1.5 text-sm rounded text-white ${
                 isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
+              } ${
+                loading || isSubmitting ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              {isEdit ? "Update News Letters" : "Add News Letters"}
+              {loading || isSubmitting
+                ? "Processing..."
+                : isEdit
+                ? "Update News Letters"
+                : "Add News Letters"}{" "}
             </button>
           </div>
         </form>
@@ -290,86 +309,108 @@ const NewsLetters = () => {
           </thead>
 
           <tbody>
-            {currentData.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">{item.id}.</td>
-                <td className="px-4 py-3 font-medium">{item.title}</td>
-                <td className="px-4 py-3">{item.month_year}</td>
-                <td className="px-4 py-3">{item.order_by}</td>
-                <td className="px-4 py-3">
-                  <img
-                    src={item.image}
-                    alt="img"
-                    className="w-20 h-10 object-cover rounded border"
-                  />
+            {loading ? (
+              <tr>
+                <td colSpan="8" className="text-center py-4">
+                  Loading...
                 </td>
-                <td className="px-4 py-3 text-blue-600 underline">
-                  {item.pdf}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium
+              </tr>
+            ) : currentData?.length > 0 ? (
+              currentData.map((item, index) => (
+                <tr
+                  key={item._id}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                  <td className="px-4 py-3 font-medium">{item.title}</td>
+                  <td className="px-4 py-3">{item.monthYear}</td>
+                  <td className="px-4 py-3">{item.order_by}</td>
+                  <td className="px-4 py-3">
+                    <img
+                      src={item.image || "/placeholder.png"}
+                      alt="img"
+                      className="w-20 h-10 object-cover rounded border"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-blue-600 underline truncate max-w-xs">
+                    {item.pdf ? (
+                      <a
+                        href={item.pdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View PDF
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium
           ${
             item.status === "Active"
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      className="relative text-sm text-green-600 transition
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <button
+                        className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        setFormData(item);
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
+                        onClick={() => {
+                          setFormData({
+                            _id: item._id,
+                            title: item.title,
+                            month_year: item.monthYear,
+                            order_by: item.order_by,
+                            image: item.image,
+                            pdf: item.pdf,
+                            status: item.status,
+                          });
+                          setIsEdit(true);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      className="relative text-sm text-red-600 transition
+                      <button
+                        className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this banner?"
-                          )
-                        ) {
-                          setData(data.filter((d) => d.id !== item.id));
-                          alert("Banner deleted successfully ❌");
-                          console.log("DELETED ID 👉", item.id);
-                        }
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                        onClick={() => handleDelete(item._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-4">
+                  No Data Found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 
         {/* ================= PAGINATION ================= */}
         <div className="flex justify-between items-center p-4">
           <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, data.length)} of{" "}
-            {data.length}
+            Showing {startIndex + 1}–{Math.min(endIndex, currentList.length)} of{" "}
+            {currentList.length}
           </span>
 
           <div className="flex space-x-1">
