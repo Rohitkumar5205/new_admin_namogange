@@ -229,7 +229,7 @@ const Objective = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Enter Objective title"
+                placeholder="Enter objective title"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
               />
@@ -345,8 +345,8 @@ const Objective = () => {
                 type="submit"
                 disabled={isSubmitting}
                 className={`px-6 py-1 text-sm rounded text-white ${isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
                   } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
@@ -486,8 +486,8 @@ hover:after:w-full"
                     key={p}
                     onClick={() => setCurrentPage(p)}
                     className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
                       }`}
                   >
                     {p}
