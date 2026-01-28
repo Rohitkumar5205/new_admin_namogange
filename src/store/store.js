@@ -33,6 +33,7 @@ import recentUpdateReducer from "../redux/slices/recentUpdate/recentUpdateSlice"
 import newsLetterReducer from "../redux/slices/newsletter/newsLetterSlice";
 import faqReducer from "../redux/slices/faq/faqSlice";
 import enquiryListReducer from "../redux/slices/enquiry-list/enquiryListSlice";
+import achievementReducer from "../redux/slices/achievements/achievementSlice";
 import supportReducer from "../redux/slices/support/supportSlice";
 
 const store = configureStore({
@@ -71,6 +72,7 @@ const store = configureStore({
     newsletter: newsLetterReducer,
     faq: faqReducer,
     enquiryList: enquiryListReducer,
+    achievements: achievementReducer,
     support: supportReducer,
   },
 });
