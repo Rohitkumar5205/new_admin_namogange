@@ -165,6 +165,7 @@ const VideosGallery = () => {
               <input
                 type="text"
                 name="title"
+                placeholder="Enter title"
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
@@ -234,6 +235,7 @@ const VideosGallery = () => {
               <input
                 type="text"
                 name="location"
+                placeholder="Enter location"
                 value={formData.location}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"

@@ -1,53 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { showSuccess } from "../../utils/toastService";
 import CommonTable from "../../components/CommonTable";
+import { getAllSupports } from "../../redux/slices/support/supportSlice";
 
-const data = [
-  {
-    id: 1,
-    full_name: "Rahul Verma",
-    email: "rahul@example.com",
-    mobile: "9876543210",
-    dob: "1990-05-15",
-    support_type: "Donation",
-    address: "123, Green Park",
-    city: "New Delhi",
-    state: "Delhi",
-    preferred_contribution: "Monetary",
-  },
-  {
-    id: 2,
-    full_name: "Amit Sharma",
-    email: "amit@example.com",
-    mobile: "9876543211",
-    dob: "1985-08-20",
-    support_type: "Volunteer",
-    address: "456, Blue Street",
-    city: "Mumbai",
-    state: "Maharashtra",
-    preferred_contribution: "Non-Monetary",
-  },
-];
 const columns = [
   {
-    key: "full_name",
+    key: "name",
     label: "Full Name",
     render: (row) => (
-      <Link to="/#" className="text-blue-600 hover:underline">
-        {row.full_name}
+      <Link to="/dashboard" className="text-blue-600 hover:underline">
+        {row.name}
       </Link>
     ),
   },
   { key: "email", label: "Email Id" },
   { key: "mobile", label: "Mobile No" },
   { key: "dob", label: "Date of Birth" },
-  { key: "support_type", label: "Support Type" },
-  { key: "address", label: "Full Address" },
+  { key: "supportType", label: "Support Type" },
+  { key: "fullAddress", label: "Full Address" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },
-  { key: "preferred_contribution", label: "Preferred Contribution" },
+  { key: "prefferedContribution", label: "Preferred Contribution" },
 ];
 const SupportList = () => {
+  const dispatch = useDispatch();
+  const { supports } = useSelector((state) => state.support);
+  console.log("support", supports);
+
+  useEffect(() => {
+    dispatch(getAllSupports());
+  }, [dispatch]);
+
   return (
     <div className=" space-y-6">
       {/* ================= HEADER ================= */}
@@ -58,7 +43,7 @@ const SupportList = () => {
       </div>
 
       {/* ================= TABLE ================= */}
-      <CommonTable data={data} columns={columns} />
+      <CommonTable data={supports || []} columns={columns} />
     </div>
   );
 };
