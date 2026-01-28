@@ -8,6 +8,7 @@ import {
 } from "../../redux/slices/home-banner/bannerSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import { MdSchedule } from "react-icons/md";
 
 const HomeBanner = () => {
   const dispatch = useDispatch();
@@ -28,8 +29,8 @@ const HomeBanner = () => {
   const [schedule, setSchedule] = useState({
     startDate: "",
     startTime: "",
-    days: "",
     endDate: "",
+    endTime: "",
   });
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -37,31 +38,17 @@ const HomeBanner = () => {
   // const currentUserId = authUser?.id || null;
   // const currentUserName = authUser?.username || "";
 
-  const calculateEndDate = (startDate, days) => {
-    if (!startDate || !days) return "";
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + Number(days));
-    return date.toISOString().split("T")[0];
-  };
   const handleScheduleChange = (e) => {
     const { name, value } = e.target;
-
-    const updated = {
-      ...schedule,
-      [name]: value,
-    };
-
-    if (name === "startDate" || name === "days") {
-      updated.endDate = calculateEndDate(
-        name === "startDate" ? value : schedule.startDate,
-        name === "days" ? value : schedule.days
-      );
-    }
-
-    setSchedule(updated);
+    setSchedule((prev) => ({ ...prev, [name]: value }));
   };
   const handleSaveSchedule = () => {
-    if (!schedule.startDate || !schedule.startTime || !schedule.days) {
+    if (
+      !schedule.startDate ||
+      !schedule.startTime ||
+      !schedule.endDate ||
+      !schedule.endTime
+    ) {
       showError("Please fill all schedule fields");
       return;
     }
@@ -71,8 +58,8 @@ const HomeBanner = () => {
       schedule: {
         start_date: schedule.startDate,
         start_time: schedule.startTime,
-        days: schedule.days,
         end_date: schedule.endDate,
+        end_time: schedule.endTime,
       },
     }));
 
@@ -114,7 +101,12 @@ const HomeBanner = () => {
       updated_by: "",
       schedule: null,
     });
-    setSchedule({ startDate: "", startTime: "", days: "", endDate: "" });
+    setSchedule({
+      startDate: "",
+      startTime: "",
+      endDate: "",
+      endTime: "",
+    });
     setIsEdit(false);
   };
 
@@ -427,15 +419,15 @@ hover:after:w-full"
                               setSchedule({
                                 startDate: item.schedule.start_date || "",
                                 startTime: item.schedule.start_time || "",
-                                days: item.schedule.days || "",
                                 endDate: item.schedule.end_date || "",
+                                endTime: item.schedule.end_time || "",
                               });
                             } else {
                               setSchedule({
                                 startDate: "",
                                 startTime: "",
-                                days: "",
                                 endDate: "",
+                                endTime: "",
                               });
                             }
                             setIsEdit(true);
@@ -516,7 +508,8 @@ hover:after:w-full"
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-lg w-full max-w-lg shadow-lg">
               {/* Header */}
-              <div className="px-5 py-3 border-b border-gray-200">
+              <div className="px-5 py-3 border-b border-gray-200 flex items-center gap-2">
+                <MdSchedule className="text-blue-600 text-xl" />
                 <h3 className="text-lg font-normal text-gray-800">
                   Schedule Banner
                 </h3>
@@ -552,27 +545,26 @@ hover:after:w-full"
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Days
+                    End Date
                   </label>
                   <input
-                    type="number"
-                    name="days"
-                    min="1"
-                    value={schedule.days}
+                    type="date"
+                    name="endDate"
+                    value={schedule.endDate}
                     onChange={handleScheduleChange}
                     className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                    placeholder="e.g. 2"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date (Auto)
+                    End Time
                   </label>
                   <input
-                    type="date"
-                    value={schedule.endDate}
-                    disabled
+                    type="time"
+                    name="endTime"
+                    value={schedule.endTime}
+                    onChange={handleScheduleChange}
                     className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </div>

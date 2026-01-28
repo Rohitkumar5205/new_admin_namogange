@@ -23,9 +23,7 @@ export const loginWithPasswordThunk = createAsyncThunk(
 
       return res.data; // { success, message, user_id, username }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Login failed"
-      );
+      return rejectWithValue(err.response?.data?.message || "Login failed");
     }
   }
 );
@@ -183,11 +181,19 @@ const authSlice = createSlice({
       // ======================
       // LOGOUT
       // ======================
+      .addCase(logoutThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(logoutThunk.fulfilled, (state) => {
         state.token = null;
         state.user = null;
         state.isAuthenticated = false;
         state.otpStep = false;
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
