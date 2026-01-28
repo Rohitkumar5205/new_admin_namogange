@@ -36,6 +36,11 @@ export default function Sidebar() {
 
   const isActive = (path) => location.pathname === path;
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   /* ======================
      SIDEBAR CONFIG (JSON)
   ====================== */
@@ -363,7 +368,11 @@ export default function Sidebar() {
 
       {/* LOGOUT */}
       <div className="p-4 border-t-3 border-gray-100">
-        <button className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-1.5 rounded-md text-sm">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-1.5 rounded-md text-sm"
+        >
+          {" "}
           <MdLogout />
           Logout
         </button>

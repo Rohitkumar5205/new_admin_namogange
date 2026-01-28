@@ -11,12 +11,13 @@ import {
   MdSupportAgent,
   MdBusiness,
 } from "react-icons/md";
-
+import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // CLOSE ON OUTSIDE CLICK
   useEffect(() => {
@@ -29,7 +30,11 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   const IconWithTooltip = ({ label, children }) => {
     return (
       <div className="relative group cursor-pointer">
@@ -155,7 +160,11 @@ export default function Header() {
 
               {/* LOGOUT */}
               <div className="border-t border-gray-200">
-                <div className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer">
+                <div
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+                >
+                  {" "}
                   <MdLogout className="text-lg" />
                   Logout
                 </div>
