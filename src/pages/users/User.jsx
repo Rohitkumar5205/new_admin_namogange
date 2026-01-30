@@ -167,7 +167,7 @@ const User = () => {
             updated_by: currentUserId,
           })
         )
-        .unwrap();
+          .unwrap();
         showSuccess("User added successfully");
       }
       dispatch(getAllUsersThunk());
@@ -180,12 +180,11 @@ const User = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      dispatch(deleteUserThunk({ id, user_id: currentUserId })).then(() => {
-        showSuccess("User deleted successfully");
-        dispatch(getAllUsersThunk());
-      });
-    }
+    dispatch(deleteUserThunk({ id, user_id: currentUserId })).then(() => {
+      showSuccess("User deleted successfully");
+      dispatch(getAllUsersThunk());
+    });
+
   };
 
   return (
@@ -380,9 +379,8 @@ const User = () => {
               type="button"
               onClick={resetForm}
               disabled={isSubmitting}
-              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               Cancel
             </button>
@@ -390,17 +388,16 @@ const User = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-6 py-1.5 text-sm rounded text-white ${
-                isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isSubmitting
                 ? "Processing..."
                 : isEdit
-                ? "Update User"
-                : "Add User"}
+                  ? "Update User"
+                  : "Add User"}
             </button>
           </div>
         </form>
@@ -467,11 +464,10 @@ const User = () => {
                   <td className="px-4 py-3">{item.role}</td>
                   <td className="px-4 py-3">
                     <span
-                      className={`px-3 py-1 text-xs rounded-full font-medium ${
-                        item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${item.status === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                        }`}
                     >
                       {item.status}
                     </span>
@@ -546,11 +542,10 @@ hover:after:w-full"
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                  }`}
+                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : ""
+                    }`}
                 >
                   {p}
                 </button>
