@@ -14,7 +14,7 @@ export const createEvent = createAsyncThunk(
     try {
       const res = await api.post("/events/create", data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -22,7 +22,7 @@ export const createEvent = createAsyncThunk(
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: data.user_id,
+          user_id: data.get("user_id"),
           message: "Event created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
           section: "Event",
@@ -85,7 +85,7 @@ export const updateEvent = createAsyncThunk(
 
       dispatch(
         createActivityLogThunk({
-          user_id: data.user_id,
+          user_id: data.get("user_id"),
           message: "Event updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
           section: "Event",

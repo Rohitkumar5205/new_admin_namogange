@@ -15,12 +15,14 @@ const Event = () => {
   const [form, setForm] = useState({
     _id: null,
     name: "",
-    date: "",
+    start_date: "",
+    end_date: "",
     reporting_point: "",
     coordinator_contact: "",
     reporting_time: "",
     HSN_code: "",
     link: "",
+    image: null,
     description: "",
     status: "Active",
   });
@@ -41,19 +43,21 @@ const Event = () => {
 
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    const { name, value, files } = e.target;
+    setForm({ ...form, [name]: files ? files[0] : value });
   };
   const resetForm = () => {
     setForm({
       _id: null,
       name: "",
-      date: "",
+      start_date: "",
+      end_date: "",
       reporting_point: "",
       coordinator_contact: "",
       reporting_time: "",
       HSN_code: "",
       link: "",
+      image: null,
       description: "",
       status: "Active",
     });
@@ -71,44 +75,46 @@ const Event = () => {
     const currentUserId = authUser?.id || null;
     const currentUserName = authUser?.username || "";
 
+    const dataToSend = new FormData();
+    dataToSend.append("name", form.name);
+    dataToSend.append("start_date", form.start_date);
+    dataToSend.append("end_date", form.end_date);
+    dataToSend.append("reporting_point", form.reporting_point);
+    dataToSend.append("coordinator_contact", form.coordinator_contact);
+    dataToSend.append("reporting_time", form.reporting_time);
+    dataToSend.append("HSN_code", form.HSN_code);
+    dataToSend.append("link", form.link);
+    dataToSend.append("description", form.description);
+    dataToSend.append("status", form.status);
+    if (form.image instanceof File) {
+      dataToSend.append("image", form.image);
+    }
+    console.log(dataToSend, "DATA TO SEND", form);
+
     try {
       if (isEdit) {
+        dataToSend.append("updated_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateEvent({
-            id: form._id,
-            data: {
-              ...form,
-              name: form.name,
-              status: form.status,
-              updated_by: currentUserName,
-              user_id: currentUserId,
-            },
-          })
+          updateEvent({ id: form._id, data: dataToSend })
         ).unwrap();
         showSuccess("Event updated successfully ✅");
       } else {
-        await dispatch(
-          createEvent({
-            ...form,
-            name: form.name,
-            status: form.status,
-            created_by: currentUserName,
-            user_id: currentUserId,
-          })
-        ).unwrap();
+        dataToSend.append("created_by", currentUserName);
+        dataToSend.append("user_id", currentUserId);
+        await dispatch(createEvent(dataToSend)).unwrap();
         showSuccess("Event added successfully ✅");
       }
       dispatch(getAllEvents());
       resetForm();
       setCurrentPage(1);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       showError(err || "Something went wrong!");
     } finally {
       setIsSubmitting(false);
     }
   };
-
   const handleDelete = async (id) => {
     const currentUserId = authUser?.id || null;
     try {
@@ -116,7 +122,7 @@ const Event = () => {
       showSuccess("Event deleted successfully");
       dispatch(getAllEvents());
     } catch (error) {
-      showError("Failed to delete event");
+      showError("Failed to delete event", error);
     }
   };
   /* ===== PAGINATION LOGIC ===== */
@@ -178,7 +184,7 @@ const Event = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-4 gap-3"
+            className="grid grid-cols-1 md:grid-cols-4 gap-4"
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -197,12 +203,26 @@ const Event = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date <span className="text-red-500">*</span>
+                Start Date <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
-                name="date"
-                value={form.date}
+                name="start_date"
+                value={form.start_date}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="end_date"
+                value={form.end_date}
                 onChange={handleChange}
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
@@ -313,6 +333,19 @@ const Event = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image
+              </label>
+              <input
+                key={form._id || "new"}
+                type="file"
+                name="image"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Status <span className="text-red-500">*</span>
               </label>
               <select
@@ -353,9 +386,8 @@ const Event = () => {
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
@@ -363,15 +395,14 @@ const Event = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit ? "bg-blue-600" : "bg-green-600"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit ? "bg-blue-600" : "bg-green-600"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Event"
-                  : "Add Event"}{" "}
+                    ? "Update Event"
+                    : "Add Event"}{" "}
               </button>
             </div>
           </form>
@@ -387,7 +418,9 @@ const Event = () => {
               <tr>
                 <th className="px-4 py-3">S.No</th>
                 <th className="px-4 py-3">Event Name</th>
-                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Start Date</th>
+                <th className="px-4 py-3">End Date</th>
+                <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Action</th>
               </tr>
@@ -395,7 +428,7 @@ const Event = () => {
             <tbody>
               {loading && events?.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4">
                     Loading...
                   </td>
                 </tr>
@@ -408,18 +441,29 @@ const Event = () => {
                     <td className="px-4 py-3">{startIndex + i + 1}.</td>
                     <td className="px-4 py-3">{item.name}</td>
                     <td className="px-4 py-3">
-                      {item.date
-                        ? new Date(item.date).toLocaleDateString()
+                      {item.start_date
+                        ? new Date(item.start_date).toLocaleDateString()
                         : ""}
+                    </td>
+                    <td className="px-4 py-3">
+                      {item.end_date
+                        ? new Date(item.end_date).toLocaleDateString()
+                        : ""}
+                    </td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={item.image || "/placeholder.png"}
+                        alt="Initiative"
+                        className="h-10 w-20 object-cover rounded border border-gray-300"
+                      />
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
@@ -430,8 +474,8 @@ const Event = () => {
                         onClick={() => {
                           setForm({
                             ...item,
-                            // Ensure date is formatted for input type="date" (YYYY-MM-DD)
-                            date: item.date ? item.date.split("T")[0] : "",
+                            start_date: item.start_date ? item.start_date.split("T")[0] : "",
+                            end_date: item.end_date ? item.end_date.split("T")[0] : "",
                           });
                           setIsEdit(true);
                           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -479,11 +523,10 @@ const Event = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>
