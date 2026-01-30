@@ -36,8 +36,10 @@ const User = () => {
   const [search, setSearch] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const authUser = JSON.parse(localStorage.getItem("user"));
-  const currentUserId = authUser?.id || null;
-  // const currentUserId = "66ec23d89309636c42738591"; // Placeholder
+  console.log("authUser:", authUser);
+  const currentUserId = authUser?._id || authUser?.id || null;
+
+  // const currentUserId = "Z66ec23d89309636c42738591"; // Placeholder
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -160,10 +162,12 @@ const User = () => {
         await dispatch(
           createUserThunk({
             ...userData,
+            password: formData.password,
             created_by: currentUserId,
             updated_by: currentUserId,
           })
-        ).unwrap();
+        )
+        .unwrap();
         showSuccess("User added successfully");
       }
       dispatch(getAllUsersThunk());

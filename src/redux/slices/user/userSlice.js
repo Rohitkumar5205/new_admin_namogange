@@ -10,11 +10,11 @@ export const createUserThunk = createAsyncThunk(
   async (formData, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.post("/users/create", formData);
-
+      console.log(formData);
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: formData.created_by,
+          user_id: formData?.updated_by,
           message: "User created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/users`,
           section: "User",
@@ -64,13 +64,15 @@ export const getUserByIdThunk = createAsyncThunk(
 export const updateUserThunk = createAsyncThunk(
   "user/update",
   async ({ id, data, updated_by }, { dispatch, rejectWithValue }) => {
+    console.log("updated_by", updated_by);
+    console.log("data", data);
     try {
       const res = await api.put(`/users/${id}`, data);
 
       // 🔹 activity log
       dispatch(
         createActivityLogThunk({
-          user_id: updated_by,
+          user_id: data?.updated_by,
           message: "User updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/users`,
           section: "User",
@@ -203,9 +205,7 @@ const userSlice = createSlice({
       })
       .addCase(deleteUserThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = state.users.filter(
-          (u) => u._id !== action.payload
-        );
+        state.users = state.users.filter((u) => u._id !== action.payload);
       })
       .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
