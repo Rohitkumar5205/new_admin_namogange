@@ -33,7 +33,8 @@ const Initiatives = () => {
   const authUser = JSON.parse(localStorage.getItem("user"));
   // redux logic
   const { initiatives, loading } = useSelector((state) => state.initiative);
-  const { data: objectiveCategory } = useSelector((state) => state.objectives);
+  const { data: allObjectiveCategories } = useSelector((state) => state.objectives);
+  const objectiveCategory = allObjectiveCategories?.filter((cat) => cat.status === "Active");
   console.log("initiatives..", initiatives);
 
   /* ===== FETCH DATA ===== */
