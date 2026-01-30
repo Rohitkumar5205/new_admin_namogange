@@ -18,6 +18,7 @@ const Objective = () => {
     title: "",
     slug: "",
     image: null,
+    logo: null,
     meta_keywords: "",
     meta_desc: "",
     desc: "",
@@ -52,9 +53,9 @@ const Objective = () => {
         .replace(/[^\w\s-]/g, "")
         .replace(/[\s_-]+/g, "-")
         .replace(/^-+|-+$/g, "");
-      setFormData({ ...formData, title: value, slug: slug });
+      setFormData((prev) => ({ ...prev, title: value, slug: slug }));
     } else {
-      setFormData({ ...formData, [name]: files ? files[0] : value });
+      setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
     }
   };
   const resetForm = () => {
@@ -63,6 +64,7 @@ const Objective = () => {
       title: "",
       slug: "",
       image: null,
+      logo: null,
       meta_keywords: "",
       meta_desc: "",
       desc: "",
@@ -123,6 +125,9 @@ const Objective = () => {
 
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
+    }
+    if (formData.logo instanceof File) {
+      dataToSend.append("logo", formData.logo);
     }
 
     // const currentUserId = "66ec23d89309636c42738591";
@@ -263,6 +268,19 @@ const Objective = () => {
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+            {/* LOGO */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Logo
+              </label>
+              <input
+                key={formData._id || "new"}
+                type="file"
+                name="logo"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
 
             {/* STATUS */}
             <div>
@@ -302,9 +320,11 @@ const Objective = () => {
 
               <Editor
                 value={formData.desc}
-                onTextChange={(e) =>
-                  setFormData({ ...formData, desc: e.htmlValue })
-                }
+                onTextChange={(e) => {
+                  if (e.source === "user") {
+                    setFormData((prev) => ({ ...prev, desc: e.htmlValue }));
+                  }
+                }}
                 style={{
                   height: "180px",
                   borderRadius: "4px", // rounded
@@ -373,6 +393,7 @@ const Objective = () => {
                 <th className="px-4 py-3">S.No</th>
                 <th className="px-4 py-3">Objective Title</th>
                 <th className="px-4 py-3">Slug</th>
+                <th className="px-4 py-3">Logo</th>
                 <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Action</th>
@@ -395,6 +416,13 @@ const Objective = () => {
                     <td className="px-4 py-3">{startIndex + index + 1}.</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
                     <td className="px-4 py-3 text-gray-500">{item.slug}</td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={item.logo || "/placeholder.png"}
+                        alt="Objective Logo"
+                        className="h-10 w-20 object-cover rounded border border-gray-300"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
@@ -427,6 +455,7 @@ hover:after:w-full"
                               title: item.title,
                               slug: item.slug,
                               image: item.image,
+                              logo: item.logo,
                               meta_keywords: item.meta_keywords,
                               meta_desc: item.meta_desc,
                               desc: item.desc,
