@@ -9,6 +9,7 @@ import {
   deleteInitiative,
 } from "../../redux/slices/initiativeSlice";
 import { showSuccess, showError } from "../../utils/toastService";
+import { fetchObjectives } from "../../redux/slices/objective/objectiveSlice";
 
 const Initiatives = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const Initiatives = () => {
     desc: "",
     created_by: "",
     updated_by: "",
+    objectiveCategory: "",
     status: "Active",
   });
 
@@ -31,11 +33,13 @@ const Initiatives = () => {
   const authUser = JSON.parse(localStorage.getItem("user"));
   // redux logic
   const { initiatives, loading } = useSelector((state) => state.initiative);
+  const { data: objectiveCategory } = useSelector((state) => state.objectives);
   console.log("initiatives..", initiatives);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
     dispatch(getAllInitiatives());
+    dispatch(fetchObjectives());
   }, [dispatch]);
 
   /* ===== PAGINATION STATE ===== */
@@ -52,9 +56,9 @@ const Initiatives = () => {
         .replace(/[^\w\s-]/g, "")
         .replace(/[\s_-]+/g, "-")
         .replace(/^-+|-+$/g, "");
-      setFormData({ ...formData, title: value, slug: slug });
+      setFormData((prev) => ({ ...prev, title: value, slug: slug }));
     } else {
-      setFormData({ ...formData, [name]: files ? files[0] : value });
+      setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
     }
   };
 
@@ -70,6 +74,7 @@ const Initiatives = () => {
       desc: "",
       created_by: "",
       updated_by: "",
+      objectiveCategory: "",
       status: "Active",
     });
     setIsEdit(false);
@@ -110,6 +115,8 @@ const Initiatives = () => {
     dataToSend.append("meta_keywords", formData.meta_keywords);
     dataToSend.append("meta_desc", formData.meta_desc);
     dataToSend.append("desc", formData.desc);
+    dataToSend.append("objective_catagory", formData.objectiveCategory);
+    console.log("formData", formData);
 
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
@@ -138,7 +145,7 @@ const Initiatives = () => {
       resetForm();
       setCurrentPage(1);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       showError("Something went wrong!");
     } finally {
       setIsSubmitting(false);
@@ -265,6 +272,25 @@ const Initiatives = () => {
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+            {/* CATEGORY */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Objective Category
+              </label>
+              <select
+                name="objectiveCategory"
+                value={formData.objectiveCategory}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              >
+                <option value="">Select Category</option>
+                {objectiveCategory?.map((cat) => (
+                  <option key={cat._id} value={cat.title}>
+                    {cat.title}
+                  </option>
+                ))}
+              </select>
+            </div>
             {/* STATUS */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -295,7 +321,7 @@ const Initiatives = () => {
               />
             </div>
             {/* META DESCRIPTION */}
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Meta Description
               </label>
@@ -317,9 +343,11 @@ const Initiatives = () => {
 
               <Editor
                 value={formData.desc}
-                onTextChange={(e) =>
-                  setFormData({ ...formData, desc: e.htmlValue })
-                }
+                onTextChange={(e) => {
+                  if (e.source === "user") {
+                    setFormData((prev) => ({ ...prev, desc: e.htmlValue }));
+                  }
+                }}
                 style={{
                   height: "160px",
                   borderRadius: "4px", // rounded
@@ -336,9 +364,8 @@ const Initiatives = () => {
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
@@ -346,17 +373,16 @@ const Initiatives = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Initiatives"
-                  : "Add Initiatives"}{" "}
+                    ? "Update Initiatives"
+                    : "Add Initiatives"}{" "}
               </button>
             </div>
           </form>
@@ -377,6 +403,7 @@ const Initiatives = () => {
                 <th className="px-4 py-3">Initiatives Title</th>
                 <th className="px-4 py-3">Link</th>
                 <th className="px-4 py-3">Image</th>
+                <th className="px-4 py-3">Objective Category</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Action</th>
               </tr>
@@ -385,7 +412,7 @@ const Initiatives = () => {
             <tbody>
               {loading && initiatives?.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-4">
+                  <td colSpan="7" className="text-center py-4">
                     Loading...
                   </td>
                 </tr>
@@ -407,14 +434,14 @@ const Initiatives = () => {
                         className="h-10 w-20 object-cover rounded border border-gray-300"
                       />
                     </td>
+                    <td className="px-4 py-3">{item.objective_catagory}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
@@ -439,6 +466,7 @@ hover:after:w-full"
                               desc: item.desc,
                               created_by: item.created_by,
                               updated_by: item.updated_by,
+                              objectiveCategory: item.objectiveCategory,
                               status: item.status,
                             });
                             setIsEdit(true);
@@ -492,11 +520,10 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>
