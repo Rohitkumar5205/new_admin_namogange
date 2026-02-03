@@ -94,243 +94,243 @@ export default function Sidebar() {
   /* ======================
      SIDEBAR CONFIG (JSON)
   ====================== */
-  const sidebarData1 = [
-    {
-      section: "MAIN",
-      items: [
-        { label: "Dashboard", path: "/dashboard", icon: MdDashboard },
-        {
-          label: "Home Banner",
-          icon: FiSliders,
-          path: "/home-banner",
-        },
-        { label: "Objective", path: "/objective", icon: MdCorporateFare },
-        { label: "Testimonial", path: "/testimonial", icon: MdCorporateFare },
-        { label: "Initiatives", path: "/initiatives", icon: MdCorporateFare },
-        { label: "Achievements", path: "/achievements", icon: MdCorporateFare },
-        {
-          label: "Media",
-          icon: FiImage,
-          children: [
-            { label: "Photos Gallery", path: "/media/photos-gallery" },
-            { label: "Videos Gallery", path: "/media/videos-gallery" },
-          ],
-        },
-        {
-          label: "Trust Bodies",
-          icon: FiImage,
-          children: [
-            {
-              label: "Add Trust Bodies",
-              path: "/trust-bodies/add-trust-bodies",
-            },
-            {
-              label: "Trust Bodies List",
-              path: "/trust-bodies/trust-bodies-list",
-            },
-          ],
-        },
-        {
-          label: "Resent Updates",
-          icon: FaRegBuilding,
-          children: [
-            { label: "Add News Updates", path: "/news/add-news-updates" },
-            { label: "News Updates List", path: "/news/news-updates-list" },
-          ],
-        },
-        { label: "News Letters", path: "/news-letters", icon: PiNewspaperBold },
-        {
-          label: "Blogs",
-          icon: MdArticle,
-          children: [
-            { label: "Add Blog", path: "/blogs/add-blog" },
-            { label: "Blog List", path: "/blogs/blog-list" },
-          ],
-        },
-        { label: "FAQ", path: "/faq", icon: MdQuestionAnswer },
-        {
-          label: "Enquiry List",
-          path: "/enquiry/enquiry-list",
-          icon: IoIosInformationCircle,
-        },
-        {
-          label: "Support List",
-          path: "/support/support-list",
-          icon: SlSupport,
-        },
-      ],
-    },
-    {
-      section: "PARTNER SECTION",
-      items: [
-        {
-          label: "Member",
-          icon: MdCardMembership,
-          children: [
-            { label: "Add Member", path: "/member/add-member" },
-            { label: "Member List", path: "/member/member-list" },
-          ],
-        },
-        {
-          label: "Volunteer",
-          icon: MdOutlineVolunteerActivism,
-          children: [
-            { label: "Add Volunteer", path: "/volunteer/add-volunteer" },
-            { label: "Volunteer List", path: "/volunteer/volunteer-list" },
-          ],
-        },
-        {
-          label: "Donation",
-          icon: FaDonate,
-          children: [
-            { label: "Add Donation", path: "/donation/add-donation" },
-            { label: "Donation List", path: "/donation/donation-list" },
-          ],
-        },
-      ],
-    },
-    {
-      section: "EVENT SECTION",
-      items: [
-        {
-          label: "16th AGS Section",
-          icon: GoPersonFill,
-          children: [
-            { label: "Web Enquiry", path: "/16th-ags-section/web-enquiry" },
-            { label: "Delegates", path: "/16th-ags-section/delegate-list" },
-            { label: "New Data", path: "/16th-ags-section/new-data" },
-            { label: "Warm Data", path: "/16th-ags-section/warm-data" },
-            { label: "Hot Data", path: "/16th-ags-section/hot-data" },
-            { label: "Cold Data", path: "/16th-ags-section/cold-data" },
-            {
-              label: "Master Delegate Data",
-              path: "/16th-ags-section/master-delegate-data",
-            },
-          ],
-        },
-        {
-          label: "TGMY",
-          icon: HiTrendingUp,
-          children: [
-            { label: "Add New Contestants", path: "/tgym/add-contestant" },
-            { label: "General Contestants", path: "/tgym/general-contestant" },
-            {
-              label: "Follow UP Contestants",
-              path: "/tgym/follow-up-contestant",
-            },
-            { label: "Hot Contestants", path: "/tgym/hot-contestant" },
-            {
-              label: "Audition Contestants",
-              path: "/tgym/audition-contestant",
-            },
-            { label: "Video Contestants", path: "/tgym/video-contestant" },
-            { label: "Finale Contestants", path: "/tgym/finale-contestant" },
-            { label: "Master Contestants", path: "/tgym/master-contestant" },
-            {
-              label: "Not Intr. Contestants",
-              path: "/tgym/not-intr-contestant",
-            },
-          ],
-        },
-        {
-          label: "Baccho Ki Rangshala",
-          icon: FaChild,
-          children: [
-            {
-              label: "Add Rangshala",
-              path: "/baccho-ki-rangshala/add-rangshala",
-            },
-            {
-              label: "Rangshala List",
-              path: "/baccho-ki-rangshala/rangshala-list",
-            },
-          ],
-        },
-        {
-          label: "Painting Competition",
-          icon: FaPalette,
-          children: [
-            {
-              label: "Add Painting",
-              path: "/painting-competition/add-painting",
-            },
-            {
-              label: "Painting List",
-              path: "/painting-competition/painting-list",
-            },
-          ],
-        },
-        {
-          label: "Nukkad Natak",
-          icon: FaTheaterMasks,
-          children: [
-            { label: "Add Natak", path: "/nukkad-natak/add-natak" },
-            { label: "Natak List", path: "/nukkad-natak/natak-list" },
-          ],
-        },
-      ],
-    },
+  // const sidebarData1 = [
+  //   {
+  //     section: "MAIN",
+  //     items: [
+  //       { label: "Dashboard", path: "/dashboard", icon: MdDashboard },
+  //       {
+  //         label: "Home Banner",
+  //         icon: FiSliders,
+  //         path: "/home-banner",
+  //       },
+  //       { label: "Objective", path: "/objective", icon: MdCorporateFare },
+  //       { label: "Testimonial", path: "/testimonial", icon: MdCorporateFare },
+  //       { label: "Initiatives", path: "/initiatives", icon: MdCorporateFare },
+  //       { label: "Achievements", path: "/achievements", icon: MdCorporateFare },
+  //       {
+  //         label: "Media",
+  //         icon: FiImage,
+  //         children: [
+  //           { label: "Photos Gallery", path: "/media/photos-gallery" },
+  //           { label: "Videos Gallery", path: "/media/videos-gallery" },
+  //         ],
+  //       },
+  //       {
+  //         label: "Trust Bodies",
+  //         icon: FiImage,
+  //         children: [
+  //           {
+  //             label: "Add Trust Bodies",
+  //             path: "/trust-bodies/add-trust-bodies",
+  //           },
+  //           {
+  //             label: "Trust Bodies List",
+  //             path: "/trust-bodies/trust-bodies-list",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         label: "Resent Updates",
+  //         icon: FaRegBuilding,
+  //         children: [
+  //           { label: "Add News Updates", path: "/news/add-news-updates" },
+  //           { label: "News Updates List", path: "/news/news-updates-list" },
+  //         ],
+  //       },
+  //       { label: "News Letters", path: "/news-letters", icon: PiNewspaperBold },
+  //       {
+  //         label: "Blogs",
+  //         icon: MdArticle,
+  //         children: [
+  //           { label: "Add Blog", path: "/blogs/add-blog" },
+  //           { label: "Blog List", path: "/blogs/blog-list" },
+  //         ],
+  //       },
+  //       { label: "FAQ", path: "/faq", icon: MdQuestionAnswer },
+  //       {
+  //         label: "Enquiry List",
+  //         path: "/enquiry/enquiry-list",
+  //         icon: IoIosInformationCircle,
+  //       },
+  //       {
+  //         label: "Support List",
+  //         path: "/support/support-list",
+  //         icon: SlSupport,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     section: "PARTNER SECTION",
+  //     items: [
+  //       {
+  //         label: "Member",
+  //         icon: MdCardMembership,
+  //         children: [
+  //           { label: "Add Member", path: "/member/add-member" },
+  //           { label: "Member List", path: "/member/member-list" },
+  //         ],
+  //       },
+  //       {
+  //         label: "Volunteer",
+  //         icon: MdOutlineVolunteerActivism,
+  //         children: [
+  //           { label: "Add Volunteer", path: "/volunteer/add-volunteer" },
+  //           { label: "Volunteer List", path: "/volunteer/volunteer-list" },
+  //         ],
+  //       },
+  //       {
+  //         label: "Donation",
+  //         icon: FaDonate,
+  //         children: [
+  //           { label: "Add Donation", path: "/donation/add-donation" },
+  //           { label: "Donation List", path: "/donation/donation-list" },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     section: "EVENT SECTION",
+  //     items: [
+  //       {
+  //         label: "16th AGS Section",
+  //         icon: GoPersonFill,
+  //         children: [
+  //           { label: "Web Enquiry", path: "/16th-ags-section/web-enquiry" },
+  //           { label: "Delegates", path: "/16th-ags-section/delegate-list" },
+  //           { label: "New Data", path: "/16th-ags-section/new-data" },
+  //           { label: "Warm Data", path: "/16th-ags-section/warm-data" },
+  //           { label: "Hot Data", path: "/16th-ags-section/hot-data" },
+  //           { label: "Cold Data", path: "/16th-ags-section/cold-data" },
+  //           {
+  //             label: "Master Delegate Data",
+  //             path: "/16th-ags-section/master-delegate-data",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         label: "TGMY",
+  //         icon: HiTrendingUp,
+  //         children: [
+  //           { label: "Add New Contestants", path: "/tgym/add-contestant" },
+  //           { label: "General Contestants", path: "/tgym/general-contestant" },
+  //           {
+  //             label: "Follow UP Contestants",
+  //             path: "/tgym/follow-up-contestant",
+  //           },
+  //           { label: "Hot Contestants", path: "/tgym/hot-contestant" },
+  //           {
+  //             label: "Audition Contestants",
+  //             path: "/tgym/audition-contestant",
+  //           },
+  //           { label: "Video Contestants", path: "/tgym/video-contestant" },
+  //           { label: "Finale Contestants", path: "/tgym/finale-contestant" },
+  //           { label: "Master Contestants", path: "/tgym/master-contestant" },
+  //           {
+  //             label: "Not Intr. Contestants",
+  //             path: "/tgym/not-intr-contestant",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         label: "Baccho Ki Rangshala",
+  //         icon: FaChild,
+  //         children: [
+  //           {
+  //             label: "Add Rangshala",
+  //             path: "/baccho-ki-rangshala/add-rangshala",
+  //           },
+  //           {
+  //             label: "Rangshala List",
+  //             path: "/baccho-ki-rangshala/rangshala-list",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         label: "Painting Competition",
+  //         icon: FaPalette,
+  //         children: [
+  //           {
+  //             label: "Add Painting",
+  //             path: "/painting-competition/add-painting",
+  //           },
+  //           {
+  //             label: "Painting List",
+  //             path: "/painting-competition/painting-list",
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         label: "Nukkad Natak",
+  //         icon: FaTheaterMasks,
+  //         children: [
+  //           { label: "Add Natak", path: "/nukkad-natak/add-natak" },
+  //           { label: "Natak List", path: "/nukkad-natak/natak-list" },
+  //         ],
+  //       },
+  //     ],
+  //   },
 
-    {
-      section: "ADMIN MANAGEMENT",
-      items: [
-        {
-          label: "Add By Admin",
-          icon: FaDatabase,
-          children: [
-            { label: "Add Occupation", path: "/add_by_admin/add-occupation" },
-            {
-              label: "Add Organization",
-              path: "/add_by_admin/organization ",
-            },
-            { label: "Add Designation", path: "/add_by_admin/designation" },
-            { label: "Add Department", path: "/add_by_admin/department" },
-            { label: "Add Category", path: "/add_by_admin/category" },
-            { label: "Add Profession", path: "/add_by_admin/profession" },
-            { label: "Add Event", path: "/add_by_admin/event" },
-            { label: "Add Status", path: "/add_by_admin/status" },
-            { label: "Add University", path: "/add_by_admin/university" },
-            { label: "Add Source", path: "/add_by_admin/source" },
-            { label: "Add Enquiry", path: "/add_by_admin/enquiry" },
-            { label: "Add Data", path: "/add_by_admin/data" },
-            { label: "Add Target", path: "/add_by_admin/target" },
-            { label: "Add Published", path: "/add_by_admin/published" },
-            {
-              label: "Add Coordinator Status",
-              path: "/add_by_admin/coordinator",
-            },
-            { label: "Add Bank", path: "/add_by_admin/bank" },
-            { label: "Image Category", path: "/add_by_admin/image-category" },
-            { label: "Add IP", path: "/add_by_admin/ip" },
-            { label: "Add Role", path: "/add_by_admin/role" },
-          ],
-        },
+  //   {
+  //     section: "ADMIN MANAGEMENT",
+  //     items: [
+  //       {
+  //         label: "Add By Admin",
+  //         icon: FaDatabase,
+  //         children: [
+  //           { label: "Add Occupation", path: "/add_by_admin/add-occupation" },
+  //           {
+  //             label: "Add Organization",
+  //             path: "/add_by_admin/organization ",
+  //           },
+  //           { label: "Add Designation", path: "/add_by_admin/designation" },
+  //           { label: "Add Department", path: "/add_by_admin/department" },
+  //           { label: "Add Category", path: "/add_by_admin/category" },
+  //           { label: "Add Profession", path: "/add_by_admin/profession" },
+  //           { label: "Add Event", path: "/add_by_admin/event" },
+  //           { label: "Add Status", path: "/add_by_admin/status" },
+  //           { label: "Add University", path: "/add_by_admin/university" },
+  //           { label: "Add Source", path: "/add_by_admin/source" },
+  //           { label: "Add Enquiry", path: "/add_by_admin/enquiry" },
+  //           { label: "Add Data", path: "/add_by_admin/data" },
+  //           { label: "Add Target", path: "/add_by_admin/target" },
+  //           { label: "Add Published", path: "/add_by_admin/published" },
+  //           {
+  //             label: "Add Coordinator Status",
+  //             path: "/add_by_admin/coordinator",
+  //           },
+  //           { label: "Add Bank", path: "/add_by_admin/bank" },
+  //           { label: "Image Category", path: "/add_by_admin/image-category" },
+  //           { label: "Add IP", path: "/add_by_admin/ip" },
+  //           { label: "Add Role", path: "/add_by_admin/role" },
+  //         ],
+  //       },
 
-        {
-          label: "Users",
-          icon: FaRegUser,
-          children: [
-            { label: "Add User", path: "/users/user" },
-            // { label: "Activity Log", path: "/users/activity-log" },
-          ],
-        },
-        {
-          label: "Colleges",
-          icon: BiSolidInstitution,
-          children: [
-            { label: "Add College", path: "/collage/add-college" },
-            { label: "College List", path: "/collage/college-list" },
-          ],
-        },
-        { label: "Role Rights", icon: PiNewspaperBold, path: "/role-rights" },
-      ],
-    },
+  //       {
+  //         label: "Users",
+  //         icon: FaRegUser,
+  //         children: [
+  //           { label: "Add User", path: "/users/user" },
+  //           // { label: "Activity Log", path: "/users/activity-log" },
+  //         ],
+  //       },
+  //       {
+  //         label: "Colleges",
+  //         icon: BiSolidInstitution,
+  //         children: [
+  //           { label: "Add College", path: "/collage/add-college" },
+  //           { label: "College List", path: "/collage/college-list" },
+  //         ],
+  //       },
+  //       { label: "Role Rights", icon: PiNewspaperBold, path: "/role-rights" },
+  //     ],
+  //   },
 
-    // {
-    //   section: "CONTENT",
-    //   items: [{ label: "FAQ", path: "/faq", icon: MdQuestionAnswer }],
-    // },
-  ];
+  //   // {
+  //   //   section: "CONTENT",
+  //   //   items: [{ label: "FAQ", path: "/faq", icon: MdQuestionAnswer }],
+  //   // },
+  // ];
 
   useEffect(() => {
     dispatch(getAllSidebars());
