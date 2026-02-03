@@ -1,0 +1,516 @@
+// c:\Projects\NamoGange\new_admin_namogange\src\pages\add_by_admin\RoleRights.jsx
+
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    createRoleRights,
+    getAllRoleRights,
+    updateRoleRights,
+    deleteRoleRights,
+} from "../../redux/slices/role_rights/roleRightsSlice";
+import { getAllRoles } from "../../redux/slices/add_by_admin/roleSlice";
+import { showSuccess, showError } from "../../utils/toastService";
+import adminBanner from "../../assets/banners/bg.jpg";
+
+// Replicating sidebar structure for permissions
+const SIDEBAR_PAGES = [
+    {
+        section: "MAIN",
+        items: [
+            { label: "Dashboard" },
+            { label: "Home Banner" },
+            { label: "Objective" },
+            { label: "Testimonial" },
+            { label: "Initiatives" },
+            { label: "Achievements" },
+            { label: "Photos Gallery" },
+            { label: "Videos Gallery" },
+            { label: "Add Trust Bodies" },
+            { label: "Trust Bodies List" },
+            { label: "Add News Updates" },
+            { label: "News Updates List" },
+            { label: "News Letters" },
+            { label: "Add Blog" },
+            { label: "Blog List" },
+            { label: "FAQ" },
+            { label: "Enquiry List" },
+            { label: "Support List" },
+        ],
+    },
+    {
+        section: "PARTNER SECTION",
+        items: [
+            { label: "Add Member" },
+            { label: "Member List" },
+            { label: "Add Volunteer" },
+            { label: "Volunteer List" },
+            { label: "Add Donation" },
+            { label: "Donation List" },
+        ],
+    },
+    {
+        section: "EVENT SECTION",
+        items: [
+            { label: "Web Enquiry" },
+            { label: "Delegates" },
+            { label: "New Data" },
+            { label: "Warm Data" },
+            { label: "Hot Data" },
+            { label: "Cold Data" },
+            { label: "Master Delegate Data" },
+            { label: "Add New Contestants" },
+            { label: "General Contestants" },
+            { label: "Follow UP Contestants" },
+            { label: "Hot Contestants" },
+            { label: "Audition Contestants" },
+            { label: "Video Contestants" },
+            { label: "Finale Contestants" },
+            { label: "Master Contestants" },
+            { label: "Not Intr. Contestants" },
+            { label: "Add Rangshala" },
+            { label: "Rangshala List" },
+            { label: "Add Painting" },
+            { label: "Painting List" },
+            { label: "Add Natak" },
+            { label: "Natak List" },
+        ],
+    },
+    {
+        section: "ADMIN MANAGEMENT",
+        items: [
+            { label: "Add Occupation" },
+            { label: "Add Organization" },
+            { label: "Add Designation" },
+            { label: "Add Department" },
+            { label: "Add Category" },
+            { label: "Add Profession" },
+            { label: "Add Event" },
+            { label: "Add Status" },
+            { label: "Add University" },
+            { label: "Add Source" },
+            { label: "Add Enquiry" },
+            { label: "Add Data" },
+            { label: "Add Target" },
+            { label: "Add Published" },
+            { label: "Add Coordinator Status" },
+            { label: "Add Bank" },
+            { label: "Image Category" },
+            { label: "Add IP" },
+            { label: "Add Role" },
+            { label: "Role Rights" },
+            { label: "Add User" },
+            { label: "Add College" },
+            { label: "College List" },
+        ],
+    },
+];
+
+const RoleRights = () => {
+    const dispatch = useDispatch();
+    const { roleRightsList, loading } = useSelector((state) => state.roleRights || {});
+    const { roles: allRoles } = useSelector((state) => state.role || {});
+    const allRolesList = allRoles?.filter((role) => role.status === "Active");
+
+
+    const authUser = JSON.parse(localStorage.getItem("user"));
+
+    const [formData, setFormData] = useState({
+        _id: null,
+        role: "",
+        permissions: [],
+    });
+
+    const [isEdit, setIsEdit] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Initialize permissions state
+    useEffect(() => {
+        dispatch(getAllRoleRights());
+        dispatch(getAllRoles());
+    }, [dispatch]);
+
+    // Helper to initialize empty permissions
+    const getInitialPermissions = () => {
+        const perms = [];
+        SIDEBAR_PAGES.forEach((section) => {
+            section.items.forEach((item) => {
+                perms.push({
+                    page: item.label,
+                    read: false,
+                    write: false,
+                    delete: false,
+                });
+            });
+        });
+        return perms;
+    };
+
+    useEffect(() => {
+        if (!isEdit) {
+            setFormData((prev) => ({
+                ...prev,
+                permissions: getInitialPermissions(),
+            }));
+        }
+    }, [isEdit]);
+
+    const handleRoleChange = (e) => {
+        const selectedRole = e.target.value;
+        // Check if rights already exist for this role to switch to edit mode automatically?
+        // For now, just set the role.
+        setFormData({ ...formData, role: selectedRole });
+    };
+
+    const handlePermissionChange = (pageName, type) => {
+        setFormData((prev) => {
+            const newPermissions = prev.permissions.map((p) => {
+                if (p.page === pageName) {
+                    return { ...p, [type]: !p[type] };
+                }
+                return p;
+            });
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+
+    const handleSelectAll = (pageName, checked) => {
+        setFormData((prev) => {
+            const newPermissions = prev.permissions.map((p) => {
+                if (p.page === pageName) {
+                    return { ...p, read: checked, write: checked, delete: checked };
+                }
+                return p;
+            });
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!formData.role) {
+            showError("Please select a role");
+            return;
+        }
+
+        setIsSubmitting(true);
+        const currentUserId = authUser?.id || null;
+        const currentUserName = authUser?.username || "";
+
+        try {
+            if (isEdit) {
+                await dispatch(
+                    updateRoleRights({
+                        id: formData._id,
+                        data: {
+                            ...formData,
+                            updated_by: currentUserName,
+                            user_id: currentUserId,
+                        },
+                    })
+                ).unwrap();
+                showSuccess("Role Rights updated successfully");
+            } else {
+                // Check if role already exists in list
+                const exists = roleRightsList.find((r) => r.role === formData.role);
+                if (exists) {
+                    showError("Rights for this role already exist. Please edit instead.");
+                    setIsSubmitting(false);
+                    return;
+                }
+
+                await dispatch(
+                    createRoleRights({
+                        ...formData,
+                        created_by: currentUserName,
+                        user_id: currentUserId,
+                    })
+                ).unwrap();
+                showSuccess("Role Rights added successfully");
+            }
+            dispatch(getAllRoleRights());
+            resetForm();
+        } catch (err) {
+            console.error(err);
+            showError("Something went wrong!");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const resetForm = () => {
+        setFormData({
+            _id: null,
+            role: "",
+            permissions: getInitialPermissions(),
+        });
+        setIsEdit(false);
+    };
+
+    const handleEdit = (item) => {
+        // Merge saved permissions with current sidebar structure to handle new pages
+        const initialPerms = getInitialPermissions();
+        const mergedPermissions = initialPerms.map((def) => {
+            const saved = item.permissions.find((p) => p.page === def.page);
+            return saved ? saved : def;
+        });
+
+        setFormData({
+            _id: item._id,
+            role: item.role,
+            permissions: mergedPermissions,
+        });
+        setIsEdit(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const handleDelete = (id) => {
+        const currentUserId = authUser?.id || null;
+        if (window.confirm("Are you sure you want to delete these rights?")) {
+            dispatch(deleteRoleRights({ id, user_id: currentUserId })).then(() => {
+                showSuccess("Role Rights deleted successfully");
+                dispatch(getAllRoleRights());
+            });
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* ================= HEADER ================= */}
+            <div
+                className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+                style={{
+                    backgroundImage: `url(${adminBanner})`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                }}
+            >
+                <div className="absolute inset-0 bg-white/10"></div>
+                <div className="relative flex justify-center items-center px-6 py-4 h-25">
+                    <div className="flex items-center gap-3">
+                        <div className="flex flex-col text-center">
+                            <h2 className="text-xl font-semibold text-white text-center">
+                                Role Rights Management
+                            </h2>
+                            <p className="text-sm text-blue-100">
+                                Configure page access permissions for user roles.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-3 p-5">
+                {/* ================= FORM ================= */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-base font-medium text-gray-800 mb-4">
+                        {isEdit ? "Update Role Rights" : "Add Role Rights"}
+                    </h3>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-6 max-w-md">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Select Role <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.role}
+                                onChange={handleRoleChange}
+                                disabled={isEdit} // Disable role change in edit mode
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                                <option value="">-- Select Role --</option>
+                                {allRolesList?.map((role) => (
+                                    <option key={role._id} value={role.role}>
+                                        {role.role}
+                                        {/* ({role.role_name}) */}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* PERMISSIONS TABLE */}
+                        <div className="border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full text-sm text-left text-gray-600">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-4 py-3 font-semibold">Page Name</th>
+                                        <th className="px-4 py-3 text-center w-24">Read (View)</th>
+                                        <th className="px-4 py-3 text-center w-24">Write</th>
+                                        <th className="px-4 py-3 text-center w-24">Delete</th>
+                                        <th className="px-4 py-3 text-center w-24">All</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {SIDEBAR_PAGES.map((section) => (
+                                        <React.Fragment key={section.section}>
+                                            <tr className="bg-gray-100 border-b border-gray-200">
+                                                <td
+                                                    colSpan="5"
+                                                    className="px-4 py-2 font-bold text-xs text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    {section.section}
+                                                </td>
+                                            </tr>
+                                            {section.items.map((item) => {
+                                                const perm = formData.permissions.find(
+                                                    (p) => p.page === item.label
+                                                ) || {
+                                                    read: false,
+                                                    write: false,
+                                                    delete: false,
+                                                };
+
+                                                const isAllChecked =
+                                                    perm.read && perm.write && perm.delete;
+
+                                                return (
+                                                    <tr
+                                                        key={item.label}
+                                                        className="border-b border-gray-200 hover:bg-gray-50"
+                                                    >
+                                                        <td className="px-4 py-2 font-medium">
+                                                            {item.label}
+                                                        </td>
+                                                        <td className="px-4 py-2 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={perm.read}
+                                                                onChange={() =>
+                                                                    handlePermissionChange(item.label, "read")
+                                                                }
+                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </td>
+                                                        <td className="px-4 py-2 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={perm.write}
+                                                                onChange={() =>
+                                                                    handlePermissionChange(item.label, "write")
+                                                                }
+                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </td>
+                                                        <td className="px-4 py-2 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={perm.delete}
+                                                                onChange={() =>
+                                                                    handlePermissionChange(item.label, "delete")
+                                                                }
+                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </td>
+                                                        <td className="px-4 py-2 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={isAllChecked}
+                                                                onChange={(e) =>
+                                                                    handleSelectAll(item.label, e.target.checked)
+                                                                }
+                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </React.Fragment>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                disabled={isSubmitting}
+                                className="px-5 py-2 text-sm border border-gray-300 rounded hover:bg-gray-100"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`px-6 py-2 text-sm rounded text-white ${isEdit
+                                    ? "bg-blue-600 hover:bg-blue-700"
+                                    : "bg-green-600 hover:bg-green-700"
+                                    } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                            >
+                                {isSubmitting
+                                    ? "Processing..."
+                                    : isEdit
+                                        ? "Update Rights"
+                                        : "Save Rights"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* ================= LIST TABLE ================= */}
+                <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+                    <div className="px-5 py-3 border-b border-gray-200">
+                        <h3 className="text-base font-medium text-gray-800">
+                            Configured Role Rights
+                        </h3>
+                    </div>
+                    <table className="w-full text-sm text-left text-gray-600">
+                        <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th className="px-4 py-3">S.No</th>
+                                <th className="px-4 py-3">Role</th>
+                                <th className="px-4 py-3">Permissions Configured</th>
+                                <th className="px-4 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading && (!roleRightsList || roleRightsList.length === 0) ? (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-4">
+                                        Loading...
+                                    </td>
+                                </tr>
+                            ) : roleRightsList && roleRightsList.length > 0 ? (
+                                roleRightsList.map((item, index) => (
+                                    <tr
+                                        key={item._id}
+                                        className="border-b border-gray-200 hover:bg-gray-50"
+                                    >
+                                        <td className="px-4 py-3">{index + 1}</td>
+                                        <td className="px-4 py-3 font-medium">{item.role}</td>
+                                        <td className="px-4 py-3">
+                                            {item.permissions?.filter((p) => p.read).length} Pages
+                                            Accessible
+                                        </td>
+                                        <td className="px-4 py-3 flex gap-3">
+                                            <button
+                                                className="text-green-600 hover:underline"
+                                                onClick={() => handleEdit(item)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="text-red-600 hover:underline"
+                                                onClick={() => handleDelete(item._id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-4">
+                                        No records found
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RoleRights;
