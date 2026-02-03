@@ -412,6 +412,7 @@ const AddSidebar = () => {
                         <table className="w-full text-sm text-left text-gray-600">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
+                                    <th className="px-4 py-3">S.No</th>
                                     <th className="px-4 py-3">Label</th>
                                     <th className="px-4 py-3">Path</th>
                                     <th className="px-4 py-3">Section</th>
