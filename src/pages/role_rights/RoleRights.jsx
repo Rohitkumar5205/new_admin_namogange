@@ -1,6 +1,6 @@
 // c:\Projects\NamoGange\new_admin_namogange\src\pages\add_by_admin\RoleRights.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     createRoleRights,
@@ -9,106 +9,15 @@ import {
     deleteRoleRights,
 } from "../../redux/slices/role_rights/roleRightsSlice";
 import { getAllRoles } from "../../redux/slices/add_by_admin/roleSlice";
+import { getAllSidebars } from "../../redux/slices/add_by_admin/addSidebarSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
-
-// Replicating sidebar structure for permissions
-const SIDEBAR_PAGES = [
-    {
-        section: "MAIN",
-        items: [
-            { label: "Dashboard" },
-            { label: "Home Banner" },
-            { label: "Objective" },
-            { label: "Testimonial" },
-            { label: "Initiatives" },
-            { label: "Achievements" },
-            { label: "Photos Gallery" },
-            { label: "Videos Gallery" },
-            { label: "Add Trust Bodies" },
-            { label: "Trust Bodies List" },
-            { label: "Add News Updates" },
-            { label: "News Updates List" },
-            { label: "News Letters" },
-            { label: "Add Blog" },
-            { label: "Blog List" },
-            { label: "FAQ" },
-            { label: "Enquiry List" },
-            { label: "Support List" },
-        ],
-    },
-    {
-        section: "PARTNER SECTION",
-        items: [
-            { label: "Add Member" },
-            { label: "Member List" },
-            { label: "Add Volunteer" },
-            { label: "Volunteer List" },
-            { label: "Add Donation" },
-            { label: "Donation List" },
-        ],
-    },
-    {
-        section: "EVENT SECTION",
-        items: [
-            { label: "Web Enquiry" },
-            { label: "Delegates" },
-            { label: "New Data" },
-            { label: "Warm Data" },
-            { label: "Hot Data" },
-            { label: "Cold Data" },
-            { label: "Master Delegate Data" },
-            { label: "Add New Contestants" },
-            { label: "General Contestants" },
-            { label: "Follow UP Contestants" },
-            { label: "Hot Contestants" },
-            { label: "Audition Contestants" },
-            { label: "Video Contestants" },
-            { label: "Finale Contestants" },
-            { label: "Master Contestants" },
-            { label: "Not Intr. Contestants" },
-            { label: "Add Rangshala" },
-            { label: "Rangshala List" },
-            { label: "Add Painting" },
-            { label: "Painting List" },
-            { label: "Add Natak" },
-            { label: "Natak List" },
-        ],
-    },
-    {
-        section: "ADMIN MANAGEMENT",
-        items: [
-            { label: "Add Occupation" },
-            { label: "Add Organization" },
-            { label: "Add Designation" },
-            { label: "Add Department" },
-            { label: "Add Category" },
-            { label: "Add Profession" },
-            { label: "Add Event" },
-            { label: "Add Status" },
-            { label: "Add University" },
-            { label: "Add Source" },
-            { label: "Add Enquiry" },
-            { label: "Add Data" },
-            { label: "Add Target" },
-            { label: "Add Published" },
-            { label: "Add Coordinator Status" },
-            { label: "Add Bank" },
-            { label: "Image Category" },
-            { label: "Add IP" },
-            { label: "Add Role" },
-            { label: "Role Rights" },
-            { label: "Add User" },
-            { label: "Add College" },
-            { label: "College List" },
-        ],
-    },
-];
 
 const RoleRights = () => {
     const dispatch = useDispatch();
     const { roleRightsList, loading } = useSelector((state) => state.roleRights || {});
     const { roles: allRoles } = useSelector((state) => state.role || {});
+    const { sidebars } = useSelector((state) => state.sidebar || {});
     const allRolesList = allRoles?.filter((role) => role.status === "Active");
 
 
@@ -127,12 +36,52 @@ const RoleRights = () => {
     useEffect(() => {
         dispatch(getAllRoleRights());
         dispatch(getAllRoles());
+        dispatch(getAllSidebars());
     }, [dispatch]);
+
+    // Transform sidebars data into sections
+    const sidebarPages = useMemo(() => {
+        if (!sidebars) return [];
+        const sections = {};
+
+        sidebars.forEach((item) => {
+            if (item.status === "Active") {
+                const sectionName = item.section || "MAIN";
+                if (!sections[sectionName]) {
+                    sections[sectionName] = [];
+                }
+                sections[sectionName].push(item);
+            }
+        });
+
+        const SECTION_ORDER = [
+            "MAIN",
+            "PARTNER SECTION",
+            "EVENT SECTION",
+            "ADMIN MANAGEMENT",
+            "CONTENT",
+        ];
+
+        return Object.keys(sections)
+            .sort((a, b) => {
+                const indexA = SECTION_ORDER.indexOf(a);
+                const indexB = SECTION_ORDER.indexOf(b);
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                return 0;
+            })
+            .map((section) => ({
+                section,
+                items: sections[section],
+                // items: sections[section].sort((a, b) => (a.order_by || 0) - (b.order_by || 0)),
+            }));
+    }, [sidebars]);
 
     // Helper to initialize empty permissions
     const getInitialPermissions = () => {
         const perms = [];
-        SIDEBAR_PAGES.forEach((section) => {
+        sidebarPages.forEach((section) => {
             section.items.forEach((item) => {
                 perms.push({
                     page: item.label,
@@ -152,7 +101,7 @@ const RoleRights = () => {
                 permissions: getInitialPermissions(),
             }));
         }
-    }, [isEdit]);
+    }, [isEdit, sidebarPages]);
 
     const handleRoleChange = (e) => {
         const selectedRole = e.target.value;
@@ -181,6 +130,19 @@ const RoleRights = () => {
                 }
                 return p;
             });
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+
+    const handleGlobalSelectAll = (e) => {
+        const checked = e.target.checked;
+        setFormData((prev) => {
+            const newPermissions = prev.permissions.map((p) => ({
+                ...p,
+                read: checked,
+                write: checked,
+                delete: checked,
+            }));
             return { ...prev, permissions: newPermissions };
         });
     };
@@ -273,6 +235,10 @@ const RoleRights = () => {
         }
     };
 
+    const areAllSelected = formData.permissions.length > 0 && formData.permissions.every(
+        (p) => p.read && p.write && p.delete
+    );
+
     return (
         <div className="space-y-6">
             {/* ================= HEADER ================= */}
@@ -334,14 +300,22 @@ const RoleRights = () => {
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-4 py-3 font-semibold">Page Name</th>
-                                        <th className="px-4 py-3 text-center w-24">Read (View)</th>
+                                        <th className="px-4 py-3 text-center w-28">Read (View)</th>
                                         <th className="px-4 py-3 text-center w-24">Write</th>
                                         <th className="px-4 py-3 text-center w-24">Delete</th>
-                                        <th className="px-4 py-3 text-center w-24">All</th>
+                                        <th className="px-4 py-3 text-center w-24">
+                                            All
+                                            <input
+                                                type="checkbox"
+                                                checked={areAllSelected}
+                                                onChange={handleGlobalSelectAll}
+                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
+                                            />
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {SIDEBAR_PAGES.map((section) => (
+                                    {sidebarPages.map((section) => (
                                         <React.Fragment key={section.section}>
                                             <tr className="bg-gray-100 border-b border-gray-200">
                                                 <td
