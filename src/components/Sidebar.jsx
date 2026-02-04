@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllSidebars } from "../redux/slices/add_by_admin/addSidebarSlice";
+import { getAllRoleRights } from "../redux/slices/role_rights/roleRightsSlice";
 import {
   MdDashboard,
   MdPeople,
@@ -83,6 +84,7 @@ export default function Sidebar() {
   const dispatch = useDispatch();
   const [openMenu, setOpenMenu] = useState("Drivers");
   const { sidebars } = useSelector((state) => state.sidebar || {});
+  const { roleRightsList } = useSelector((state) => state.roleRights || {});
 
   const isActive = (path) => location.pathname === path;
 
@@ -334,6 +336,7 @@ export default function Sidebar() {
 
   useEffect(() => {
     dispatch(getAllSidebars());
+    dispatch(getAllRoleRights());
   }, [dispatch]);
 
   /* ======================
@@ -342,6 +345,19 @@ export default function Sidebar() {
 
   const processSidebarData = () => {
     if (!sidebars || sidebars.length === 0) return [];
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userRole = user?.role;
+
+    let allowedPages = null;
+    if (roleRightsList && userRole) {
+      const roleRights = roleRightsList.find((r) => r.role === userRole);
+      if (roleRights) {
+        allowedPages = roleRights.permissions
+          .filter((p) => p.read)
+          .map((p) => p.page);
+      }
+    }
 
     // 1. Group by Section
     // Sort sidebars by order first so children and parents are processed in order
@@ -354,6 +370,10 @@ export default function Sidebar() {
     // Separate root items and children
     sortedSidebars.forEach((item) => {
       if (item.status !== "Active") return;
+
+      if (allowedPages && !allowedPages.includes(item.label)) {
+        return;
+      }
 
       // Trim strings to ensure matching works even with accidental spaces
       const parent = item.parent_menu ? item.parent_menu.trim() : null;

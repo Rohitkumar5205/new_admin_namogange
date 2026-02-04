@@ -147,6 +147,32 @@ const RoleRights = () => {
         });
     };
 
+    const handleColumnSelectAll = (type, checked) => {
+        setFormData((prev) => {
+            const newPermissions = prev.permissions.map((p) => ({
+                ...p,
+                [type]: checked,
+            }));
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+    const handleSectionSelectAll = (sectionName, checked) => {
+        const section = sidebarPages.find((s) => s.section === sectionName);
+        if (!section) return;
+
+        const pageNames = section.items.map((item) => item.label);
+
+        setFormData((prev) => {
+            const newPermissions = prev.permissions.map((p) => {
+                if (pageNames.includes(p.page)) {
+                    return { ...p, read: checked, write: checked, delete: checked };
+                }
+                return p;
+            });
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.role) {
@@ -238,6 +264,9 @@ const RoleRights = () => {
     const areAllSelected = formData.permissions.length > 0 && formData.permissions.every(
         (p) => p.read && p.write && p.delete
     );
+    const areAllReadSelected = formData.permissions.length > 0 && formData.permissions.every((p) => p.read);
+    const areAllWriteSelected = formData.permissions.length > 0 && formData.permissions.every((p) => p.write);
+    const areAllDeleteSelected = formData.permissions.length > 0 && formData.permissions.every((p) => p.delete);
 
     return (
         <div className="space-y-6">
@@ -281,7 +310,6 @@ const RoleRights = () => {
                             <select
                                 value={formData.role}
                                 onChange={handleRoleChange}
-                                disabled={isEdit} // Disable role change in edit mode
                                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             >
                                 <option value="">-- Select Role --</option>
@@ -300,9 +328,33 @@ const RoleRights = () => {
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-4 py-3 font-semibold">Page Name</th>
-                                        <th className="px-4 py-3 text-center w-28">Read (View)</th>
-                                        <th className="px-4 py-3 text-center w-24">Write</th>
-                                        <th className="px-4 py-3 text-center w-24">Delete</th>
+                                        <th className="px-4 py-3 text-center w-28">
+                                            Read (View)
+                                            <input
+                                                type="checkbox"
+                                                checked={areAllReadSelected}
+                                                onChange={(e) => handleColumnSelectAll("read", e.target.checked)}
+                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
+                                            />
+                                        </th>
+                                        <th className="px-4 py-3 text-center w-24">
+                                            Write
+                                            <input
+                                                type="checkbox"
+                                                checked={areAllWriteSelected}
+                                                onChange={(e) => handleColumnSelectAll("write", e.target.checked)}
+                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
+                                            />
+                                        </th>
+                                        <th className="px-4 py-3 text-center w-24">
+                                            Delete
+                                            <input
+                                                type="checkbox"
+                                                checked={areAllDeleteSelected}
+                                                onChange={(e) => handleColumnSelectAll("delete", e.target.checked)}
+                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
+                                            />
+                                        </th>
                                         <th className="px-4 py-3 text-center w-24">
                                             All
                                             <input
@@ -315,81 +367,96 @@ const RoleRights = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {sidebarPages.map((section) => (
-                                        <React.Fragment key={section.section}>
-                                            <tr className="bg-gray-100 border-b border-gray-200">
-                                                <td
-                                                    colSpan="5"
-                                                    className="px-4 py-2 font-bold text-xs text-gray-500 uppercase tracking-wider"
-                                                >
-                                                    {section.section}
-                                                </td>
-                                            </tr>
-                                            {section.items.map((item) => {
-                                                const perm = formData.permissions.find(
-                                                    (p) => p.page === item.label
-                                                ) || {
-                                                    read: false,
-                                                    write: false,
-                                                    delete: false,
-                                                };
+                                    {sidebarPages.map((section) => {
+                                        const isSectionAllChecked = section.items.length > 0 && section.items.every((item) => {
+                                            const perm = formData.permissions.find((p) => p.page === item.label);
+                                            return perm && perm.read && perm.write && perm.delete;
+                                        });
 
-                                                const isAllChecked =
-                                                    perm.read && perm.write && perm.delete;
-
-                                                return (
-                                                    <tr
-                                                        key={item.label}
-                                                        className="border-b border-gray-200 hover:bg-gray-50"
+                                        return (
+                                            <React.Fragment key={section.section}>
+                                                <tr className="bg-gray-100 border-b border-gray-200">
+                                                    <td
+                                                        colSpan="4"
+                                                        className="px-4 py-2 font-bold text-xs text-gray-500 uppercase tracking-wider"
                                                     >
-                                                        <td className="px-4 py-2 font-medium">
-                                                            {item.label}
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={perm.read}
-                                                                onChange={() =>
-                                                                    handlePermissionChange(item.label, "read")
-                                                                }
-                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={perm.write}
-                                                                onChange={() =>
-                                                                    handlePermissionChange(item.label, "write")
-                                                                }
-                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={perm.delete}
-                                                                onChange={() =>
-                                                                    handlePermissionChange(item.label, "delete")
-                                                                }
-                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-4 py-2 text-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={isAllChecked}
-                                                                onChange={(e) =>
-                                                                    handleSelectAll(item.label, e.target.checked)
-                                                                }
-                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ))}
+                                                        {section.section}
+                                                    </td>
+                                                    <td className="px-4 py-2 text-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSectionAllChecked}
+                                                            onChange={(e) => handleSectionSelectAll(section.section, e.target.checked)}
+                                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                {section.items.map((item) => {
+                                                    const perm = formData.permissions.find(
+                                                        (p) => p.page === item.label
+                                                    ) || {
+                                                        read: false,
+                                                        write: false,
+                                                        delete: false,
+                                                    };
+
+                                                    const isAllChecked =
+                                                        perm.read && perm.write && perm.delete;
+
+                                                    return (
+                                                        <tr
+                                                            key={item.label}
+                                                            className="border-b border-gray-200 hover:bg-gray-50"
+                                                        >
+                                                            <td className="px-4 py-2 font-medium">
+                                                                {item.label}
+                                                            </td>
+                                                            <td className="px-4 py-2 text-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={perm.read}
+                                                                    onChange={() =>
+                                                                        handlePermissionChange(item.label, "read")
+                                                                    }
+                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-2 text-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={perm.write}
+                                                                    onChange={() =>
+                                                                        handlePermissionChange(item.label, "write")
+                                                                    }
+                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-2 text-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={perm.delete}
+                                                                    onChange={() =>
+                                                                        handlePermissionChange(item.label, "delete")
+                                                                    }
+                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                />
+                                                            </td>
+                                                            <td className="px-4 py-2 text-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={isAllChecked}
+                                                                    onChange={(e) =>
+                                                                        handleSelectAll(item.label, e.target.checked)
+                                                                    }
+                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         </div>
