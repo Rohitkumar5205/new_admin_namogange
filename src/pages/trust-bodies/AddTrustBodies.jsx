@@ -8,6 +8,8 @@ import {
 } from "../../redux/slices/trustbody/trustBodySlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const AddTrustBodies = () => {
   const navigate = useNavigate();
@@ -26,6 +28,8 @@ const AddTrustBodies = () => {
 
   const [isEdit, setIsEdit] = useState(false);
   const authUser = JSON.parse(localStorage.getItem("user"));
+
+  const { isFormDisabled } = useRoleRights(PageNames.ADD_TRUST_BODIES);
 
   useEffect(() => {
     if (location.state) {
@@ -139,7 +143,7 @@ const AddTrustBodies = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
           >
             {/* NAME */}
             <div>
@@ -153,6 +157,7 @@ const AddTrustBodies = () => {
                 onChange={handleChange}
                 placeholder="Enter name"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -181,6 +186,7 @@ const AddTrustBodies = () => {
                 name="designation"
                 value={formData.designation}
                 onChange={handleChange}
+                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
               >
@@ -200,6 +206,7 @@ const AddTrustBodies = () => {
                 type="file"
                 name="image"
                 onChange={handleChange}
+                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
@@ -213,6 +220,7 @@ const AddTrustBodies = () => {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
+                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="Active">Active</option>
@@ -229,6 +237,7 @@ const AddTrustBodies = () => {
               <Editor
                 value={formData.description}
                 name="description"
+                readOnly={isFormDisabled}
                 onTextChange={(e) =>
                   setFormData({ ...formData, description: e.htmlValue })
                 }
@@ -257,6 +266,7 @@ const AddTrustBodies = () => {
                   });
                   setIsEdit(false);
                 }}
+                disabled={isFormDisabled}
                 className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
               >
                 Cancel
@@ -264,12 +274,11 @@ const AddTrustBodies = () => {
 
               <button
                 type="submit"
-                disabled={loading}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
+                disabled={loading || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-green-600 hover:bg-green-700"
-                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {loading ? "Processing..." : isEdit ? "Update" : "Add"}
               </button>

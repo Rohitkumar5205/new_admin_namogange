@@ -9,6 +9,8 @@ import {
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
 import { MdSchedule } from "react-icons/md";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const HomeBanner = () => {
   const dispatch = useDispatch();
@@ -75,6 +77,9 @@ const HomeBanner = () => {
   useEffect(() => {
     dispatch(getAllBanners());
   }, [dispatch]);
+
+  // Get permissions for the current user on "Home Banner" page
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.HOME_BANNER);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -233,7 +238,7 @@ const HomeBanner = () => {
           <div className="bg-gray-50 border-b my-2  border-gray-200" />
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -247,6 +252,7 @@ const HomeBanner = () => {
                 onChange={handleChange}
                 placeholder="Enter banner title"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -263,6 +269,7 @@ const HomeBanner = () => {
                 onChange={handleChange}
                 placeholder="https://example.com"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -276,6 +283,7 @@ const HomeBanner = () => {
                 name="image"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -289,6 +297,7 @@ const HomeBanner = () => {
                 value={formData?.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -301,38 +310,35 @@ const HomeBanner = () => {
               <button
                 type="button"
                 onClick={() => setShowScheduleModal(true)}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Schedule
               </button>
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Banner"
-                  : "Add Banner"}{" "}
+                    ? "Update Banner"
+                    : "Add Banner"}{" "}
               </button>
 
               {/* CANCEL BUTTON */}
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
@@ -354,7 +360,7 @@ const HomeBanner = () => {
                 <th className="px-4 py-3">Redirect Link</th>
                 <th className="px-4 py-3">Banner Image</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -386,69 +392,74 @@ const HomeBanner = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item?.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="relative text-sm text-green-600 transition
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && (
+                            <button
+                              className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              title: item.title,
-                              link: item.link,
-                              status: item.status,
-                              image: null, // 👈 IMPORTANT
-                              created_by: item.created_by,
-                              updated_by: item.updated_by,
-                              imagePreview: item.image, // 👈 preview ke liye
-                              schedule: item.schedule,
-                            });
-                            if (item.schedule) {
-                              setSchedule({
-                                startDate: item.schedule.start_date || "",
-                                startTime: item.schedule.start_time || "",
-                                endDate: item.schedule.end_date || "",
-                                endTime: item.schedule.end_time || "",
-                              });
-                            } else {
-                              setSchedule({
-                                startDate: "",
-                                startTime: "",
-                                endDate: "",
-                                endTime: "",
-                              });
-                            }
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  title: item.title,
+                                  link: item.link,
+                                  status: item.status,
+                                  image: null, // 👈 IMPORTANT
+                                  created_by: item.created_by,
+                                  updated_by: item.updated_by,
+                                  imagePreview: item.image, // 👈 preview ke liye
+                                  schedule: item.schedule,
+                                });
+                                if (item.schedule) {
+                                  setSchedule({
+                                    startDate: item.schedule.start_date || "",
+                                    startTime: item.schedule.start_time || "",
+                                    endDate: item.schedule.end_date || "",
+                                    endTime: item.schedule.end_time || "",
+                                  });
+                                } else {
+                                  setSchedule({
+                                    startDate: "",
+                                    startTime: "",
+                                    endDate: "",
+                                    endTime: "",
+                                  });
+                                }
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="relative text-sm text-red-600 transition
+                          {canDelete && (
+                            <button
+                              className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                              onClick={() => handleDelete(item._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -481,11 +492,10 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>
