@@ -32,7 +32,7 @@ const VideosGallery = () => {
   });
   const [isEdit, setIsEdit] = useState(false);
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.VIDEO_GALLERY);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.VIDEOS_GALLERY);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {

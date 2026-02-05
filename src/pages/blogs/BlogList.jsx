@@ -17,7 +17,7 @@ const BlogList = () => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.BLOGS);
+  const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.BLOG_LIST);
 
   useEffect(() => {
     dispatch(getAllBlogs());

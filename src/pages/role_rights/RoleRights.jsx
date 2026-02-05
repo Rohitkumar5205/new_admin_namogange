@@ -1,5 +1,3 @@
-// c:\Projects\NamoGange\new_admin_namogange\src\pages\add_by_admin\RoleRights.jsx
-
 import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -328,7 +326,7 @@ const RoleRights = () => {
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-4 py-3 font-semibold">Page Name</th>
-                                        <th className="px-4 py-3 text-center w-28">
+                                        <th className="px-4 py-3 text-center w-34">
                                             Read (View)
                                             <input
                                                 type="checkbox"
@@ -346,7 +344,7 @@ const RoleRights = () => {
                                                 className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
                                             />
                                         </th>
-                                        <th className="px-4 py-3 text-center w-24">
+                                        <th className="px-4 py-3 text-center w-26">
                                             Delete
                                             <input
                                                 type="checkbox"
