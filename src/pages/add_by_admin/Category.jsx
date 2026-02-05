@@ -164,7 +164,7 @@ const Category = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -216,8 +216,8 @@ const Category = () => {
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
                   } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
@@ -347,8 +347,8 @@ hover:after:w-full"
                     key={p}
                     onClick={() => setCurrentPage(p)}
                     className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
                       }`}
                   >
                     {p}
