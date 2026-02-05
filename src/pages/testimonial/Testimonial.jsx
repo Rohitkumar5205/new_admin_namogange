@@ -9,6 +9,8 @@ import {
 } from "../../redux/slices/testimonial/testimonialSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Testimonial = () => {
     const dispatch = useDispatch();
@@ -36,7 +38,7 @@ const Testimonial = () => {
     useEffect(() => {
         dispatch(fetchTestimonials());
     }, [dispatch]);
-
+    const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.TESTIMONIAL);
     /* ===== HANDLERS ===== */
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -190,7 +192,7 @@ const Testimonial = () => {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-3"
+                        className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
                     >
                         {/* NAME */}
                         <div>
@@ -203,6 +205,7 @@ const Testimonial = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 placeholder="Enter name"
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                                 required
                             />
@@ -218,6 +221,7 @@ const Testimonial = () => {
                                 type="file"
                                 name="image"
                                 onChange={handleChange}
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
@@ -231,6 +235,7 @@ const Testimonial = () => {
                                 name="status"
                                 value={formData.status}
                                 onChange={handleChange}
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none"
                             >
                                 <option value="Active">Active</option>
@@ -257,7 +262,8 @@ const Testimonial = () => {
                                     borderBottom: "1px solid #e5e7eb", // border-gray-200
                                     overflow: "hidden", // corners properly clip ho
                                 }}
-                                className="w-full text-sm outline-none"
+                                readOnly={isFormDisabled}
+                                className={`w-full text-sm outline-none ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
                             />
                         </div>
 
@@ -266,20 +272,19 @@ const Testimonial = () => {
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                disabled={isSubmitting}
-                                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                                    }`}
+                                disabled={isSubmitting || isFormDisabled}
+                                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""} ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
                             >
                                 Cancel
                             </button>
 
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-6 py-1 text-sm rounded text-white ${isEdit
                                     ? "bg-blue-600 hover:bg-blue-700"
                                     : "bg-green-600 hover:bg-green-700"
-                                    } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""} ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
                             >
                                 {isSubmitting
                                     ? "Processing..."
@@ -306,7 +311,7 @@ const Testimonial = () => {
                                 <th className="px-4 py-3">Name</th>
                                 <th className="px-4 py-3">Image</th>
                                 <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3">Action</th>
+                                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
                             </tr>
                         </thead>
 
@@ -343,44 +348,50 @@ const Testimonial = () => {
                                                 {item.status}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    className="relative text-sm text-green-600 transition
+                                        {(canWrite || canDelete) && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    {canWrite && (
+                                                        <button
+                                                            className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                                                    onClick={() => {
-                                                        setFormData({
-                                                            _id: item._id,
-                                                            name: item.name,
-                                                            image: item.image,
-                                                            desc: item.desc,
-                                                            created_by: item.created_by,
-                                                            updated_by: item.updated_by,
-                                                            status: item.status,
-                                                        });
+                                                            onClick={() => {
+                                                                setFormData({
+                                                                    _id: item._id,
+                                                                    name: item.name,
+                                                                    image: item.image,
+                                                                    desc: item.desc,
+                                                                    created_by: item.created_by,
+                                                                    updated_by: item.updated_by,
+                                                                    status: item.status,
+                                                                });
 
-                                                        setIsEdit(true);
-                                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
+                                                                setIsEdit(true);
+                                                                window.scrollTo({ top: 0, behavior: "smooth" });
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
 
-                                                <button
-                                                    className="relative text-sm text-red-600 transition
+                                                    {canDelete && (
+                                                        <button
+                                                            className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                                                    onClick={() => handleDelete(item._id)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                                                            onClick={() => handleDelete(item._id)}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}

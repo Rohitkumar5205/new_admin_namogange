@@ -9,6 +9,8 @@ import {
   deleteEvent,
 } from "../../redux/slices/add_by_admin/eventSlice";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Event = () => {
   const dispatch = useDispatch();
@@ -37,6 +39,9 @@ const Event = () => {
   useEffect(() => {
     dispatch(getAllEvents());
   }, [dispatch]);
+
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_EVENT);
+
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -184,7 +189,7 @@ const Event = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -197,6 +202,7 @@ const Event = () => {
                 type="text"
                 placeholder="Event Name"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -212,6 +218,7 @@ const Event = () => {
                 onChange={handleChange}
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -226,6 +233,7 @@ const Event = () => {
                 onChange={handleChange}
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -241,6 +249,7 @@ const Event = () => {
                 placeholder="Reporting Point"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -269,6 +278,7 @@ const Event = () => {
                   }
                 }}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -298,6 +308,7 @@ const Event = () => {
                   }));
                 }}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -313,6 +324,7 @@ const Event = () => {
                 placeholder="HSN Code"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -328,6 +340,7 @@ const Event = () => {
                 placeholder="Event Link"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -341,6 +354,7 @@ const Event = () => {
                 name="image"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -354,6 +368,7 @@ const Event = () => {
                 value={form.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option>Active</option>
                 <option>Inactive</option>
@@ -368,6 +383,7 @@ const Event = () => {
               <Editor
                 value={form.description}
                 name="description"
+                readOnly={isFormDisabled}
                 onTextChange={(e) =>
                   setForm({ ...form, description: e.htmlValue })
                 }
@@ -385,7 +401,7 @@ const Event = () => {
               <button
                 type="button"
                 onClick={handleCancel}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isFormDisabled}
                 className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
@@ -394,7 +410,7 @@ const Event = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit ? "bg-blue-600" : "bg-green-600"
                   } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
@@ -422,7 +438,7 @@ const Event = () => {
                 <th className="px-4 py-3">End Date</th>
                 <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -468,30 +484,36 @@ const Event = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <button
-                        className="text-green-600 mr-3"
-                        onClick={() => {
-                          setForm({
-                            ...item,
-                            start_date: item.start_date ? item.start_date.split("T")[0] : "",
-                            end_date: item.end_date ? item.end_date.split("T")[0] : "",
-                          });
-                          setIsEdit(true);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-600"
-                        onClick={() => {
-                          handleDelete(item._id);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        {canWrite && (
+                          <button
+                            className="text-green-600 mr-3"
+                            onClick={() => {
+                              setForm({
+                                ...item,
+                                start_date: item.start_date ? item.start_date.split("T")[0] : "",
+                                end_date: item.end_date ? item.end_date.split("T")[0] : "",
+                              });
+                              setIsEdit(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            className="text-red-600"
+                            onClick={() => {
+                              handleDelete(item._id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

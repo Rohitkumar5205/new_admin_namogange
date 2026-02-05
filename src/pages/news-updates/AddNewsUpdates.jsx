@@ -9,6 +9,8 @@ import {
   createRecentUpdate,
   updateRecentUpdate,
 } from "../../redux/slices/recentUpdate/recentUpdateSlice";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const AddNewsUpdates = () => {
   const navigate = useNavigate();
@@ -31,6 +33,8 @@ const AddNewsUpdates = () => {
   console.log("recentUpdates...", recentUpdates);
   const authUser = JSON.parse(localStorage.getItem("user"));
   const [isEdit, setIsEdit] = useState(false);
+
+  const { isFormDisabled } = useRoleRights(PageNames.NEWS_UPDATES);
 
   useEffect(() => {
     dispatch(getAllPublished());
@@ -140,7 +144,7 @@ const AddNewsUpdates = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -155,6 +159,7 @@ const AddNewsUpdates = () => {
                 placeholder="Enter title"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
             {/* PUBLISHED BY */}
@@ -169,6 +174,7 @@ const AddNewsUpdates = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               >
                 <option value="">Select Publisher</option>
                 {list?.map((u) => (
@@ -190,6 +196,7 @@ const AddNewsUpdates = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
             {/* IMAGE */}
@@ -202,6 +209,7 @@ const AddNewsUpdates = () => {
                 name="image"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
             {/* STATUS */}
@@ -214,6 +222,7 @@ const AddNewsUpdates = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -238,13 +247,14 @@ const AddNewsUpdates = () => {
                   overflow: "hidden", // corners properly clip ho
                 }}
                 className="w-full text-sm outline-none"
+                readOnly={isFormDisabled}
               />
             </div>
             {/* ACTION BUTTONS */}
             <div className="md:col-span-3 flex justify-end gap-3 mt-2">
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || isFormDisabled}
                 onClick={() => {
                   setFormData({
                     _id: null,
@@ -264,12 +274,11 @@ const AddNewsUpdates = () => {
 
               <button
                 type="submit"
-                disabled={loading}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={loading || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${loading || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {loading ? "Processing..." : isEdit ? "Update" : "Add"}
               </button>

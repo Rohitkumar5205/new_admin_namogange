@@ -35,6 +35,10 @@ import faqReducer from "../redux/slices/faq/faqSlice";
 import enquiryListReducer from "../redux/slices/enquiry-list/enquiryListSlice";
 import achievementReducer from "../redux/slices/achievements/achievementSlice";
 import supportReducer from "../redux/slices/support/supportSlice";
+import ipReducer from "../redux/slices/add_by_admin/ipSlice";
+import roleReducer from "../redux/slices/add_by_admin/roleSlice";
+import roleRightsReducer from "../redux/slices/role_rights/roleRightsSlice";
+import sidebarReducer from "../redux/slices/add_by_admin/addSidebarSlice";
 
 const store = configureStore({
   reducer: {
@@ -74,6 +78,10 @@ const store = configureStore({
     enquiryList: enquiryListReducer,
     achievements: achievementReducer,
     support: supportReducer,
+    ip: ipReducer,
+    role: roleReducer,
+    roleRights: roleRightsReducer,
+    sidebar: sidebarReducer,
   },
 });
 

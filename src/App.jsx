@@ -79,6 +79,10 @@ import Testimonial from "./pages/testimonial/Testimonial";
 import Login from "./pages/auth/Login";
 import ProtectedRoute from "./layouts/ProtectedRoute";
 import Published from "./pages/add_by_admin/Published";
+import IP from "./pages/add_by_admin/IP";
+import Role from "./pages/add_by_admin/Role";
+import RoleRights from "./pages/role_rights/RoleRights";
+import AddSidebar from "./pages/add_by_admin/AddSidebar";
 
 function App() {
   return (
@@ -120,6 +124,10 @@ function App() {
               element={<ImageCategory />}
             />
             <Route path="/add_by_admin/published" element={<Published />} />
+            <Route path="/add_by_admin/ip" element={<IP />} />
+            <Route path="/add_by_admin/role" element={<Role />} />
+            <Route path="/add_by_admin/add-sidebar" element={<AddSidebar />} />
+            <Route path="/users" element={<User />} />
             <Route path="/users/user" element={<User />} />
             <Route path="/users/user/:id" element={<ActivityLog />} />
             {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
@@ -150,6 +158,8 @@ function App() {
             <Route path="/faq" element={<Faq />} />
             <Route path="/collage/add-college" element={<AddCollege />} />
             <Route path="/collage/college-list" element={<CollegeList />} />
+            {/* <Route path="/settings/role-rights" element={<RoleRights />} /> */}
+            <Route path="/role-rights" element={<RoleRights />} />
             <Route path="/enquiry/enquiry-list" element={<EnquiryList />} />
             <Route path="/support/support-list" element={<SupportList />} />
             <Route path="/donation/add-donation" element={<AddDonation />} />

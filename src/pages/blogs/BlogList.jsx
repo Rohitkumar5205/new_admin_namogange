@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getAllBlogs, deleteBlog } from "../../redux/slices/blog/blogSlice";
 import { showSuccess } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const BlogList = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,8 @@ const BlogList = () => {
   // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.BLOGS);
 
   useEffect(() => {
     dispatch(getAllBlogs());
@@ -80,12 +84,14 @@ const BlogList = () => {
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-5 py-3 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-base font-medium text-gray-800">All Blogs</h3>
-            <button
-              onClick={() => navigate("/blogs/add-blog")}
-              className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700"
-            >
-              Add New Blog
-            </button>
+            {canAdd && (
+              <button
+                onClick={() => navigate("/blogs/add-blog")}
+                className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+              >
+                Add New Blog
+              </button>
+            )}
           </div>
           <table className="w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -96,7 +102,7 @@ const BlogList = () => {
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -121,12 +127,14 @@ const BlogList = () => {
                         {blog.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => handleEdit(blog)} className="text-green-600 hover:underline">Edit</button>
-                        <button onClick={() => handleDelete(blog._id)} className="text-red-600 hover:underline">Delete</button>
-                      </div>
-                    </td>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && <button onClick={() => handleEdit(blog)} className="text-green-600 hover:underline">Edit</button>}
+                          {canDelete && <button onClick={() => handleDelete(blog._id)} className="text-red-600 hover:underline">Delete</button>}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

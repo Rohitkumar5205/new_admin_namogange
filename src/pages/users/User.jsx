@@ -8,6 +8,9 @@ import {
   updateUserThunk,
   deleteUserThunk,
 } from "../../redux/slices/user/userSlice";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
+import { getAllRoles } from "../../redux/slices/add_by_admin/roleSlice";
 
 const User = () => {
   const navigate = useNavigate();
@@ -15,7 +18,8 @@ const User = () => {
   const { users, loading } = useSelector((state) => state.user);
   console.log("Users..:", users);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { roles: allRoles } = useSelector((state) => state.role || {});
+  const allRolesList = allRoles?.filter((role) => role.status === "Active");
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
     _id: null,
@@ -41,9 +45,12 @@ const User = () => {
 
   // const currentUserId = "Z66ec23d89309636c42738591"; // Placeholder
 
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_USER);
+
   /* ===== FETCH DATA ===== */
   useEffect(() => {
     dispatch(getAllUsersThunk());
+    dispatch(getAllRoles());
   }, [dispatch]);
 
   const filteredData = (users || []).filter(
@@ -207,7 +214,7 @@ const User = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-4 gap-3"
+          className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -220,6 +227,7 @@ const User = () => {
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm "
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -234,6 +242,7 @@ const User = () => {
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -248,6 +257,7 @@ const User = () => {
               maxLength={10}
               required
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -263,6 +273,7 @@ const User = () => {
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -276,6 +287,7 @@ const User = () => {
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -291,6 +303,7 @@ const User = () => {
               onChange={handleChange}
               required={!isEdit}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -305,6 +318,7 @@ const User = () => {
               onChange={handleChange}
               required={!isEdit}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -317,6 +331,7 @@ const User = () => {
               value={formData.designation}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             >
               <option value="">Select Designation</option>
               <option value="Manager">Manager</option>
@@ -334,6 +349,7 @@ const User = () => {
               value={formData.department}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             >
               <option value="">Select Department</option>
               <option value="IT">IT</option>
@@ -351,10 +367,15 @@ const User = () => {
               value={formData.role}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             >
               <option value="">Select Role</option>
-              <option value="Admin">Admin</option>
-              <option value="User">User</option>
+              {allRolesList?.map((role) => (
+                <option key={role._id} value={role.role}>
+                  {role.role}
+                  {/* ({role.role_name}) */}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -368,6 +389,7 @@ const User = () => {
               value={formData.status}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+              disabled={isFormDisabled}
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
@@ -378,8 +400,8 @@ const User = () => {
             <button
               type="button"
               onClick={resetForm}
-              disabled={isSubmitting}
-              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              disabled={isSubmitting || isFormDisabled}
+              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
                 }`}
             >
               Cancel
@@ -387,11 +409,11 @@ const User = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isFormDisabled}
               className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isSubmitting
                 ? "Processing..."
@@ -440,7 +462,7 @@ const User = () => {
               <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Role</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
+              {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
             </tr>
           </thead>
           <tbody>
@@ -472,48 +494,54 @@ const User = () => {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 flex gap-3">
-                    <button
-                      className="relative text-sm text-blue-600 transition
+                  {(canWrite || canDelete) && (
+                    <td className="px-4 py-3 flex gap-3">
+                      <button
+                        className="relative text-sm text-blue-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-blue-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => navigate(`/users/user/${item._id}`)}
-                    >
-                      View
-                    </button>
+                        onClick={() => navigate(`/users/user/${item._id}`)}
+                      >
+                        View
+                      </button>
 
-                    <button
-                      className="relative text-sm text-green-600 transition
+                      {canWrite && (
+                        <button
+                          className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => {
-                        setFormData({
-                          ...item,
-                          password: "",
-                          confirm_password: "",
-                        });
-                        setIsEdit(true);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      Edit
-                    </button>
+                          onClick={() => {
+                            setFormData({
+                              ...item,
+                              password: "",
+                              confirm_password: "",
+                            });
+                            setIsEdit(true);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Edit
+                        </button>
+                      )}
 
-                    <button
-                      className="relative text-sm text-red-600 transition
+                      {canDelete && (
+                        <button
+                          className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                      onClick={() => handleDelete(item._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))
             )}

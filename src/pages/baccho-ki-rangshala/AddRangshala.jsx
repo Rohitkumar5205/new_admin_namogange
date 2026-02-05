@@ -12,6 +12,8 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const AddRangshala = () => {
   const navigate = useNavigate();
@@ -39,6 +41,8 @@ const AddRangshala = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const { isFormDisabled } = useRoleRights(PageNames.ADD_RANGSHALA);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -145,6 +149,7 @@ const AddRangshala = () => {
                 placeholder="Enter college name"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -159,6 +164,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
                 <option value="Health">Health</option>
@@ -178,6 +184,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 placeholder="Enter website url"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -193,6 +200,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 placeholder="Enter affiliation"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -208,6 +216,7 @@ const AddRangshala = () => {
                 placeholder="Enter full address"
                 // rows={2}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -222,6 +231,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               >
                 <option value="">Select Country</option>
                 <option value="India">India</option>
@@ -241,6 +251,7 @@ const AddRangshala = () => {
                 placeholder="Enter state"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               >
                 <option value="">Select State</option>
                 <option value="Uttar Pradesh">Uttar Pradesh</option>
@@ -260,6 +271,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               >
                 <option value="">Select City</option>
                 <option value="Noida">Noida</option>
@@ -280,6 +292,7 @@ const AddRangshala = () => {
                 onChange={handleChange}
                 placeholder="Enter pincode"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
             {/* STATUS */}
@@ -292,6 +305,7 @@ const AddRangshala = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -309,6 +323,7 @@ const AddRangshala = () => {
                 type="button"
                 onClick={addContact}
                 className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded border border-blue-200 hover:bg-blue-100"
+                disabled={isFormDisabled}
               >
                 + Add Contact
               </button>
@@ -325,6 +340,7 @@ const AddRangshala = () => {
                     onClick={() => removeContact(index)}
                     className="absolute top-1 right-1 text-red-500 hover:text-red-700"
                     title="Remove Contact"
+                    disabled={isFormDisabled}
                   >
                     ✕
                   </button>
@@ -342,6 +358,7 @@ const AddRangshala = () => {
                     onChange={(e) => handleContactChange(index, e)}
                     placeholder="Name"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   />
                 </div>
 
@@ -355,6 +372,7 @@ const AddRangshala = () => {
                     value={contact.designation}
                     onChange={(e) => handleContactChange(index, e)}
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   >
                     <option value="">Select Designation</option>
                     <option value="Principal">Principal</option>
@@ -375,6 +393,7 @@ const AddRangshala = () => {
                     onChange={(e) => handleContactChange(index, e)}
                     placeholder="Email"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   />
                 </div>
 
@@ -390,6 +409,7 @@ const AddRangshala = () => {
                     onChange={(e) => handleContactChange(index, e)}
                     placeholder="Mobile"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   />
                 </div>
 
@@ -405,6 +425,7 @@ const AddRangshala = () => {
                     onChange={(e) => handleContactChange(index, e)}
                     placeholder="Alternate Mobile"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   />
                 </div>
 
@@ -420,6 +441,7 @@ const AddRangshala = () => {
                     onChange={(e) => handleContactChange(index, e)}
                     placeholder="Landline"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isFormDisabled}
                   />
                 </div>
               </div>
@@ -457,17 +479,18 @@ const AddRangshala = () => {
                 setIsEdit(false);
               }}
               className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              disabled={isFormDisabled}
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className={`px-6 py-1 text-sm rounded text-white ${
-                isEdit
+              className={`px-6 py-1 text-sm rounded text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-              }`}
+                } ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={isFormDisabled}
             >
               {isEdit ? "Update" : "Add"}
             </button>

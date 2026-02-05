@@ -6,6 +6,8 @@ import { createBlog, updateBlog } from "../../redux/slices/blog/blogSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { getAllCategories } from "../../redux/slices/add_by_admin/categorySlice";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const AddBlog = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ const AddBlog = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { isFormDisabled } = useRoleRights(PageNames.BLOGS);
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -134,7 +138,7 @@ const AddBlog = () => {
       {/* Form */}
       <div className="space-y-3 p-5">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6">
+          <form onSubmit={handleSubmit} className={`grid grid-cols-1 gap-6 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -148,6 +152,7 @@ const AddBlog = () => {
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div className="col-span-1">
@@ -159,6 +164,7 @@ const AddBlog = () => {
                   value={formData.category}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                  disabled={isFormDisabled}
                 >
                   <option value="">Select Category</option>
                   {categories?.map((cat) => (
@@ -179,6 +185,7 @@ const AddBlog = () => {
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div className="col-span-1">
@@ -190,6 +197,7 @@ const AddBlog = () => {
                   name="image"
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                  disabled={isFormDisabled}
                 />
               </div>
 
@@ -205,6 +213,7 @@ const AddBlog = () => {
                   value={formData.status}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none"
+                  disabled={isFormDisabled}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -222,6 +231,7 @@ const AddBlog = () => {
                   value={formData.meta_keyword}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                  disabled={isFormDisabled}
                 />
               </div>
               <div className="col-span-2">
@@ -235,6 +245,7 @@ const AddBlog = () => {
                   onChange={handleChange}
                   rows={1}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                  disabled={isFormDisabled}
                 />
               </div>
             </div>
@@ -249,12 +260,13 @@ const AddBlog = () => {
                 onTextChange={handleEditorChange}
                 style={{ height: "160px" }}
                 className="w-full text-sm outline-none"
+                readOnly={isFormDisabled}
               />
             </div>
 
             <div className="flex justify-end gap-3">
               <button type="button" onClick={() => navigate("/blogs/blog-list")} disabled={isSubmitting} className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
-              <button type="submit" disabled={isSubmitting} className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update Blog" : "Add Blog"}</button>
+              <button type="submit" disabled={isSubmitting || isFormDisabled} className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update Blog" : "Add Blog"}</button>
             </div>
           </form>
         </div>

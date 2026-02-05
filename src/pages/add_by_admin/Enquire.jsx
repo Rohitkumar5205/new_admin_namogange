@@ -8,6 +8,8 @@ import {
 } from "../../redux/slices/add_by_admin/enquirySlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Enquire = () => {
   const dispatch = useDispatch();
@@ -31,6 +33,9 @@ const Enquire = () => {
   useEffect(() => {
     dispatch(getAllEnquiries());
   }, [dispatch]);
+
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_ENQUIRY);
+
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -156,7 +161,7 @@ const Enquire = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* Nmae */}
             <div>
@@ -170,6 +175,7 @@ const Enquire = () => {
                 onChange={handleChange}
                 placeholder="Enter enquire name"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -184,6 +190,7 @@ const Enquire = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -195,28 +202,26 @@ const Enquire = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Enquire"
-                  : "Add Enquire"}{" "}
+                    ? "Update Enquire"
+                    : "Add Enquire"}{" "}
               </button>
             </div>
           </form>
@@ -236,7 +241,7 @@ const Enquire = () => {
                 <th className="px-4 py-3">S.No</th>
                 <th className="px-4 py-3">Enquire Name</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -259,40 +264,45 @@ const Enquire = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="text-green-600 hover:underline"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              name: item.name,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && (
+                            <button
+                              className="text-green-600 hover:underline"
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  name: item.name,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="text-red-600 hover:underline"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                          {canDelete && (
+                            <button
+                              className="text-red-600 hover:underline"
+                              onClick={() => handleDelete(item._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -325,11 +335,10 @@ const Enquire = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>
