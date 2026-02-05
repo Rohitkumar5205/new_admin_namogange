@@ -33,7 +33,7 @@ const AddBlog = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { isFormDisabled } = useRoleRights(PageNames.BLOGS);
+  const { isFormDisabled } = useRoleRights(PageNames.ADD_BLOG);
 
   useEffect(() => {
     dispatch(getAllCategories());

@@ -34,7 +34,7 @@ const AddNewsUpdates = () => {
   const authUser = JSON.parse(localStorage.getItem("user"));
   const [isEdit, setIsEdit] = useState(false);
 
-  const { isFormDisabled } = useRoleRights(PageNames.NEWS_UPDATES);
+  const { isFormDisabled } = useRoleRights(PageNames.ADD_NEWS_UPDATES);
 
   useEffect(() => {
     dispatch(getAllPublished());

@@ -41,7 +41,7 @@ const PhotosGallery = () => {
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.PHOTO_GALLERY);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.PHOTOS_GALLERY);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
