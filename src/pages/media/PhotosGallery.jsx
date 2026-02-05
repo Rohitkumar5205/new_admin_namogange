@@ -9,6 +9,8 @@ import {
 import { showSuccess, showError } from "../../utils/toastService";
 import { getAllCategoryImages } from "../../redux/slices/add_by_admin/categoryImageSlice";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const CATEGORY_OPTIONS = [
   "Ann Sewa",
@@ -38,6 +40,8 @@ const PhotosGallery = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.PHOTO_GALLERY);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -175,7 +179,7 @@ const PhotosGallery = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -190,6 +194,7 @@ const PhotosGallery = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
                 required
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -204,6 +209,7 @@ const PhotosGallery = () => {
                 value={formData.date}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -217,6 +223,7 @@ const PhotosGallery = () => {
                 value={formData.category}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
                 {categoryImages?.map((cat) => (
@@ -237,6 +244,7 @@ const PhotosGallery = () => {
                 value={formData.orderBy}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Order</option>
                 {Array.from({ length: 50 }, (_, i) => (
@@ -259,6 +267,7 @@ const PhotosGallery = () => {
                 value={formData.location}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -272,6 +281,7 @@ const PhotosGallery = () => {
                 name="image"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -285,6 +295,7 @@ const PhotosGallery = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -296,8 +307,8 @@ const PhotosGallery = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
                 Cancel
@@ -305,11 +316,11 @@ const PhotosGallery = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -340,7 +351,7 @@ const PhotosGallery = () => {
                 <th className="px-4 py-3">Location</th>
                 <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -381,52 +392,58 @@ const PhotosGallery = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-3">
-                        <button
-                          className="text-green-600"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              title: item.title,
-                              date: item.date ? item.date.split("T")[0] : "",
-                              category: item.category,
-                              orderBy: item.orderBy,
-                              location: item.location,
-                              image: item.image,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex gap-3">
+                          {canWrite && (
+                            <button
+                              className="text-green-600"
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  title: item.title,
+                                  date: item.date ? item.date.split("T")[0] : "",
+                                  category: item.category,
+                                  orderBy: item.orderBy,
+                                  location: item.location,
+                                  image: item.image,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="text-red-600"
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to delete this gallery?"
-                              )
-                            ) {
-                              const currentUserId = authUser?.id || null;
-                              dispatch(
-                                deleteGallery({
-                                  id: item._id,
-                                  user_id: currentUserId,
-                                })
-                              ).then(() => {
-                                showSuccess("Gallery deleted successfully");
-                              });
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                          {canDelete && (
+                            <button
+                              className="text-red-600"
+                              onClick={() => {
+                                if (
+                                  window.confirm(
+                                    "Are you sure you want to delete this gallery?"
+                                  )
+                                ) {
+                                  const currentUserId = authUser?.id || null;
+                                  dispatch(
+                                    deleteGallery({
+                                      id: item._id,
+                                      user_id: currentUserId,
+                                    })
+                                  ).then(() => {
+                                    showSuccess("Gallery deleted successfully");
+                                  });
+                                }
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

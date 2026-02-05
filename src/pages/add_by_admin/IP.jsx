@@ -10,6 +10,8 @@ import {
     deleteIP,
 } from "../../redux/slices/add_by_admin/ipSlice";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const IP = () => {
     const dispatch = useDispatch();
@@ -36,6 +38,8 @@ const IP = () => {
     useEffect(() => {
         dispatch(getAllIPs());
     }, [dispatch]);
+
+    const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_IP);
 
     const filteredData = (ips || []).filter(
         (item) =>
@@ -172,7 +176,7 @@ const IP = () => {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="grid grid-cols-1 md:grid-cols-4 gap-3"
+                        className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
                     >
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -185,6 +189,7 @@ const IP = () => {
                                 onChange={handleChange}
                                 required
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                             />
                         </div>
                         <div>
@@ -198,6 +203,7 @@ const IP = () => {
                                 onChange={handleChange}
                                 required
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                             />
                         </div>
 
@@ -211,6 +217,7 @@ const IP = () => {
                                 value={formData.remark}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                             />
                         </div>
 
@@ -223,6 +230,7 @@ const IP = () => {
                                 value={formData.status}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                             >
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
@@ -233,7 +241,7 @@ const IP = () => {
                             <button
                                 type="button"
                                 onClick={resetForm}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 cursor-pointer ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
@@ -242,7 +250,7 @@ const IP = () => {
 
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                                     ? "bg-blue-600 hover:bg-blue-700"
                                     : "bg-green-600 hover:bg-green-700"
@@ -297,7 +305,7 @@ const IP = () => {
                                 <th className="px-4 py-3">IP Address</th>
                                 <th className="px-4 py-3">Remark</th>
                                 <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3">Action</th>
+                                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -327,39 +335,45 @@ const IP = () => {
                                                 {item.status}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3 flex gap-3">
-                                            <button
-                                                className="relative text-sm text-green-600 transition
+                                        {(canWrite || canDelete) && (
+                                            <td className="px-4 py-3 flex gap-3">
+                                                {canWrite && (
+                                                    <button
+                                                        className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                                                onClick={() => {
-                                                    setFormData({
-                                                        _id: item._id,
-                                                        ip_name: item.ip_name,
-                                                        ip_address: item.ip_address,
-                                                        remark: item.remark || "",
-                                                        status: item.status,
-                                                    });
-                                                    setIsEdit(true);
-                                                    window.scrollTo({ top: 0, behavior: "smooth" });
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
+                                                        onClick={() => {
+                                                            setFormData({
+                                                                _id: item._id,
+                                                                ip_name: item.ip_name,
+                                                                ip_address: item.ip_address,
+                                                                remark: item.remark || "",
+                                                                status: item.status,
+                                                            });
+                                                            setIsEdit(true);
+                                                            window.scrollTo({ top: 0, behavior: "smooth" });
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                )}
 
-                                            <button
-                                                className="relative text-sm text-red-600 transition
+                                                {canDelete && (
+                                                    <button
+                                                        className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                                                onClick={() => handleDelete(item._id)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
+                                                        onClick={() => handleDelete(item._id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}

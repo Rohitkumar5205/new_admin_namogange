@@ -9,6 +9,8 @@ import {
 } from "../../redux/slices/add_by_admin/roleSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Role = () => {
     const dispatch = useDispatch();
@@ -41,6 +43,8 @@ const Role = () => {
     useEffect(() => {
         dispatch(getAllRoles());
     }, [dispatch]);
+
+    const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_ROLE);
 
     /* ===== HANDLERS ===== */
     const handleTableSearchChange = (e) => {
@@ -192,7 +196,7 @@ const Role = () => {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-3"
+                        className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
                     >
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -205,6 +209,7 @@ const Role = () => {
                                 value={formData.role}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                                 required
                             />
                         </div>
@@ -220,6 +225,7 @@ const Role = () => {
                                 value={formData.role_name}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                                 required
                             />
                         </div>
@@ -234,6 +240,7 @@ const Role = () => {
                                 value={formData.status}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                                disabled={isFormDisabled}
                             >
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
@@ -244,7 +251,7 @@ const Role = () => {
                             <button
                                 type="button"
                                 onClick={resetForm}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
@@ -253,7 +260,7 @@ const Role = () => {
 
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                                     ? "bg-blue-600 hover:bg-blue-700"
                                     : "bg-green-600 hover:bg-green-700"
@@ -333,7 +340,7 @@ const Role = () => {
                                 <th className="px-4 py-3">Role</th>
                                 <th className="px-4 py-3">Role Name</th>
                                 <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3">Action</th>
+                                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
                             </tr>
                         </thead>
 
@@ -369,31 +376,37 @@ const Role = () => {
                                                 {item.status}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex gap-3">
-                                                <button
-                                                    className="text-green-600 hover:underline"
-                                                    onClick={() => {
-                                                        setFormData({
-                                                            _id: item._id,
-                                                            role: item.role,
-                                                            role_name: item.role_name,
-                                                            status: item.status,
-                                                        });
-                                                        setIsEdit(true);
-                                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    className="text-red-600 hover:underline"
-                                                    onClick={() => handleDelete(item._id)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {(canWrite || canDelete) && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex gap-3">
+                                                    {canWrite && (
+                                                        <button
+                                                            className="text-green-600 hover:underline"
+                                                            onClick={() => {
+                                                                setFormData({
+                                                                    _id: item._id,
+                                                                    role: item.role,
+                                                                    role_name: item.role_name,
+                                                                    status: item.status,
+                                                                });
+                                                                setIsEdit(true);
+                                                                window.scrollTo({ top: 0, behavior: "smooth" });
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            className="text-red-600 hover:underline"
+                                                            onClick={() => handleDelete(item._id)}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}

@@ -8,6 +8,8 @@ import {
 } from "../../redux/slices/add_by_admin/bankSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Bank = () => {
   const dispatch = useDispatch();
@@ -42,6 +44,8 @@ const Bank = () => {
   useEffect(() => {
     dispatch(getAllBanks());
   }, [dispatch]);
+
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_BANK);
 
   /* ===== HANDLERS ===== */
   const handleTableSearchChange = (e) => {
@@ -206,8 +210,8 @@ const Bank = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
-          >
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
+              }`}          >
             <div>
               <label className="block text-sm font-medium text-gray-700  mb-1">
                 Bank Name <span className="text-red-500">*</span>
@@ -219,6 +223,7 @@ const Bank = () => {
                 value={formData.bank_name}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -234,6 +239,7 @@ const Bank = () => {
                 value={formData.bank_branch}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -249,6 +255,7 @@ const Bank = () => {
                 value={formData.account_number}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -264,6 +271,7 @@ const Bank = () => {
                 value={formData.ifsc_code}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -278,6 +286,7 @@ const Bank = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -288,28 +297,26 @@ const Bank = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Bank"
-                  : "Add Bank"}{" "}
+                    ? "Update Bank"
+                    : "Add Bank"}{" "}
               </button>
             </div>
           </form>
@@ -357,15 +364,14 @@ const Bank = () => {
                     setCurrentPage(1);
                   }}
                   className={`px-4 py-1 border shadow-sm rounded text-sm transition-colors
-                  ${
-                    statusFilter === status
+                  ${statusFilter === status
                       ? status === "Active"
                         ? "bg-green-600 text-white border-green-600"
                         : status === "Inactive"
-                        ? "bg-red-600 text-white border-red-600"
-                        : "bg-blue-600 text-white border-blue-600"
+                          ? "bg-red-600 text-white border-red-600"
+                          : "bg-blue-600 text-white border-blue-600"
                       : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -382,7 +388,7 @@ const Bank = () => {
                 <th className="px-4 py-3">Account No</th>
                 <th className="px-4 py-3">IFSC</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -412,42 +418,47 @@ const Bank = () => {
                     <td className="px-4 py-3">{item.ifsc_code}</td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 text-xs rounded-full font-medium ${
-                          item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                        className={`px-3 py-1 text-xs rounded-full font-medium ${item.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-3">
-                        <button
-                          className="text-green-600 hover:underline"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              bank_name: item.bank_name,
-                              bank_branch: item.bank_branch,
-                              account_number: item.account_number,
-                              ifsc_code: item.ifsc_code,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="text-red-600 hover:underline"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex gap-3">
+                          {canWrite && (
+                            <button
+                              className="text-green-600 hover:underline"
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  bank_name: item.bank_name,
+                                  bank_branch: item.bank_branch,
+                                  account_number: item.account_number,
+                                  ifsc_code: item.ifsc_code,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              className="text-red-600 hover:underline"
+                              onClick={() => handleDelete(item._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -536,11 +547,10 @@ const Bank = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>

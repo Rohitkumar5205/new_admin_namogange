@@ -9,6 +9,8 @@ import {
     deleteAchievement,
 } from "../../redux/slices/achievements/achievementSlice";
 import { showSuccess, showError } from "../../utils/toastService";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Achievements = () => {
     const dispatch = useDispatch();
@@ -35,6 +37,7 @@ const Achievements = () => {
     useEffect(() => {
         dispatch(getAllAchievements());
     }, [dispatch]);
+    const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ACHIEVEMENTS);
 
     /* ===== PAGINATION STATE ===== */
     const itemsPerPage = 10;
@@ -196,7 +199,7 @@ const Achievements = () => {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="grid grid-cols-1 md:grid-cols-4 gap-3"
+                        className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
                     >
                         {/* TITLE */}
                         <div>
@@ -210,6 +213,7 @@ const Achievements = () => {
                                 onChange={handleChange}
                                 placeholder="Enter achievement title"
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                disabled={isFormDisabled}
                                 required
                             />
                         </div>
@@ -224,6 +228,7 @@ const Achievements = () => {
                                 value={formData.slug}
                                 onChange={handleChange}
                                 placeholder="Enter slug"
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                                 required
                             />
@@ -239,6 +244,7 @@ const Achievements = () => {
                                 value={formData.link}
                                 onChange={handleChange}
                                 placeholder="Enter link"
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
@@ -253,6 +259,7 @@ const Achievements = () => {
                                 type="file"
                                 name="image"
                                 onChange={handleChange}
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
@@ -266,6 +273,7 @@ const Achievements = () => {
                                 name="status"
                                 value={formData.status}
                                 onChange={handleChange}
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
                             >
                                 <option value="Active">Active</option>
@@ -283,6 +291,7 @@ const Achievements = () => {
                                 value={formData.meta_keywords}
                                 onChange={handleChange}
                                 placeholder="Enter meta keywords"
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
@@ -298,6 +307,7 @@ const Achievements = () => {
                                 onChange={handleChange}
                                 placeholder="Enter meta description"
                                 rows={1}
+                                disabled={isFormDisabled}
                                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
@@ -313,6 +323,7 @@ const Achievements = () => {
                                     setFormData({ ...formData, desc: e.htmlValue })
                                 }
                                 style={{ height: "160px" }}
+                                readOnly={isFormDisabled}
                                 className="w-full text-sm outline-none"
                             />
                         </div>
@@ -322,8 +333,8 @@ const Achievements = () => {
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                disabled={isSubmitting}
-                                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                                disabled={isSubmitting || isFormDisabled}
+                                className={`px-5 py-1.5 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
                                 Cancel
@@ -331,7 +342,7 @@ const Achievements = () => {
 
                             <button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || isFormDisabled}
                                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                                     ? "bg-blue-600 hover:bg-blue-700"
                                     : "bg-green-600 hover:bg-green-700"
@@ -363,7 +374,7 @@ const Achievements = () => {
                                 {/* <th className="px-4 py-3">Link</th> */}
                                 <th className="px-4 py-3">Image</th>
                                 <th className="px-4 py-3">Status</th>
-                                <th className="px-4 py-3">Action</th>
+                                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
                             </tr>
                         </thead>
 
@@ -403,39 +414,44 @@ const Achievements = () => {
                                                 {item.status}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    className="text-green-600 hover:underline"
-                                                    onClick={() => {
-                                                        setFormData({
-                                                            _id: item._id,
-                                                            title: item.title,
-                                                            link: item.link,
-                                                            slug: item.slug,
-                                                            image: item.image,
-                                                            meta_keywords: item.meta_keywords,
-                                                            meta_desc: item.meta_desc,
-                                                            desc: item.desc,
-                                                            created_by: item.created_by,
-                                                            updated_by: item.updated_by,
-                                                            status: item.status,
-                                                        });
-                                                        setIsEdit(true);
-                                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-
-                                                <button
-                                                    className="text-red-600 hover:underline"
-                                                    onClick={() => handleDelete(item._id)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {(canWrite || canDelete) && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-3">
+                                                    {canWrite && (
+                                                        <button
+                                                            className="text-green-600 hover:underline"
+                                                            onClick={() => {
+                                                                setFormData({
+                                                                    _id: item._id,
+                                                                    title: item.title,
+                                                                    link: item.link,
+                                                                    slug: item.slug,
+                                                                    image: item.image,
+                                                                    meta_keywords: item.meta_keywords,
+                                                                    meta_desc: item.meta_desc,
+                                                                    desc: item.desc,
+                                                                    created_by: item.created_by,
+                                                                    updated_by: item.updated_by,
+                                                                    status: item.status,
+                                                                });
+                                                                setIsEdit(true);
+                                                                window.scrollTo({ top: 0, behavior: "smooth" });
+                                                            }}
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            className="text-red-600 hover:underline"
+                                                            onClick={() => handleDelete(item._id)}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}

@@ -140,7 +140,7 @@ const TrustBodiesList = () => {
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Designation</th>
                 <th className="px-4 py-3">Slug</th>
-                <th className="px-4 py-3">Image</th>{" "}
+                <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Status</th>
                 {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
@@ -264,8 +264,8 @@ hover:after:w-full"
                     key={p}
                     onClick={() => setCurrentPage(p)}
                     className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
                       }`}
                   >
                     {p}

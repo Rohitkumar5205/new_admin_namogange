@@ -7,6 +7,8 @@ import {
 } from "../../redux/slices/recentUpdate/recentUpdateSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const NewsUpdatesList = () => {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const NewsUpdatesList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [search, setSearch] = useState("");
+
+  const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.NEWS_UPDATES);
 
   useEffect(() => {
     dispatch(getAllRecentUpdates());
@@ -91,13 +95,15 @@ const NewsUpdatesList = () => {
             </div>
           </div>
           <div>
-            <button
-              onClick={() => navigate("/news/add-news-updates")}
-              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-            >
-              {" "}
-              Add News Updates
-            </button>
+            {canAdd && (
+              <button
+                onClick={() => navigate("/news/add-news-updates")}
+                className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+              >
+                {" "}
+                Add News Updates
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -143,7 +149,7 @@ const NewsUpdatesList = () => {
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Image</th>{" "}
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -175,51 +181,56 @@ const NewsUpdatesList = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="relative text-sm text-green-600 transition
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && (
+                            <button
+                              className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            navigate("/news/add-news-updates", { state: item });
-                          }}
-                        >
-                          Edit
-                        </button>
+                              onClick={() => {
+                                navigate("/news/add-news-updates", { state: item });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="relative text-sm text-red-600 transition
+                          {canDelete && (
+                            <button
+                              className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            dispatch(
-                              deleteRecentUpdate({
-                                id: item._id,
-                                user_id: authUser?.id,
-                              })
-                            ).then(() => {
-                              showSuccess("News Update deleted successfully ");
-                            });
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                              onClick={() => {
+                                dispatch(
+                                  deleteRecentUpdate({
+                                    id: item._id,
+                                    user_id: authUser?.id,
+                                  })
+                                ).then(() => {
+                                  showSuccess("News Update deleted successfully ");
+                                });
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -251,11 +262,10 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
                         ? "bg-blue-50 text-blue-600 font-semibold"
                         : ""
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>

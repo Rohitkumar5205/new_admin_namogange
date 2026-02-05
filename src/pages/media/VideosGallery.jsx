@@ -9,6 +9,8 @@ import {
 import { getAllCategoryVideos } from "../../redux/slices/add_by_admin/categoryVideoSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const VideosGallery = () => {
   const dispatch = useDispatch();
@@ -29,6 +31,8 @@ const VideosGallery = () => {
     status: "Active",
   });
   const [isEdit, setIsEdit] = useState(false);
+
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.VIDEO_GALLERY);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -155,7 +159,7 @@ const VideosGallery = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -170,6 +174,7 @@ const VideosGallery = () => {
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                 required
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -184,6 +189,7 @@ const VideosGallery = () => {
                 value={formData.date}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -197,6 +203,7 @@ const VideosGallery = () => {
                 value={formData.category}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
                 {categoryVideos?.map((cat) => (
@@ -217,6 +224,7 @@ const VideosGallery = () => {
                 value={formData.orderBy}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Order</option>
                 {Array.from({ length: 50 }, (_, i) => (
@@ -239,6 +247,7 @@ const VideosGallery = () => {
                 value={formData.location}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -255,6 +264,7 @@ const VideosGallery = () => {
                 onChange={handleChange}
                 placeholder="https://youtube.com/embed/xxxx"
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -268,6 +278,7 @@ const VideosGallery = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -279,8 +290,8 @@ const VideosGallery = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
                 Cancel
@@ -288,11 +299,11 @@ const VideosGallery = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1.5 text-sm rounded-md text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -323,7 +334,7 @@ const VideosGallery = () => {
                 <th className="px-4 py-3">Location</th>
                 <th className="px-4 py-3">Video Link</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -371,53 +382,59 @@ const VideosGallery = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-3">
-                        <button
-                          className="text-green-600"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              title: item.title,
-                              date: item.date ? item.date.split("T")[0] : "",
-                              category: item.category,
-                              orderBy: item.orderBy,
-                              location: item.location,
-                              video_link: item.video_link,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex gap-3">
+                          {canWrite && (
+                            <button
+                              className="text-green-600"
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  title: item.title,
+                                  date: item.date ? item.date.split("T")[0] : "",
+                                  category: item.category,
+                                  orderBy: item.orderBy,
+                                  location: item.location,
+                                  video_link: item.video_link,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="text-red-600"
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to delete this video?"
-                              )
-                            ) {
-                              const currentUserId = authUser?.id || null;
-                              dispatch(
-                                deleteGalleryVideo({
-                                  id: item._id,
-                                  user_id: currentUserId,
-                                })
-                              ).then(() => {
-                                showSuccess("Video Gallery deleted successfully");
-                                dispatch(getAllGalleryVideos());
-                              });
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                          {canDelete && (
+                            <button
+                              className="text-red-600"
+                              onClick={() => {
+                                if (
+                                  window.confirm(
+                                    "Are you sure you want to delete this video?"
+                                  )
+                                ) {
+                                  const currentUserId = authUser?.id || null;
+                                  dispatch(
+                                    deleteGalleryVideo({
+                                      id: item._id,
+                                      user_id: currentUserId,
+                                    })
+                                  ).then(() => {
+                                    showSuccess("Video Gallery deleted successfully");
+                                    dispatch(getAllGalleryVideos());
+                                  });
+                                }
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

@@ -13,6 +13,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import CommonTable from "../../components/CommonTable";
+// import CommonTable from "../../components/CommonTable";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const data = [
   {
@@ -105,6 +108,7 @@ const columns = [
 ];
 const RangshalaList = () => {
   const navigate = useNavigate();
+  const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.ADD_RANGSHALA);
 
   return (
     <div className="space-y-6">
@@ -114,13 +118,15 @@ const RangshalaList = () => {
           Rangshala List Management
         </h2>
 
-        <button
-          onClick={() => navigate("/baccho-ki-rangshala/add-rangshala")}
-          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-        >
-          {" "}
-          Add Rangshala
-        </button>
+        {canAdd && (
+          <button
+            onClick={() => navigate("/baccho-ki-rangshala/add-rangshala")}
+            className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+          >
+            {" "}
+            Add Rangshala
+          </button>
+        )}
       </div>
 
       {/* ================= TABLE ================= */}

@@ -9,6 +9,8 @@ import {
   updateNewsLetter,
   deleteNewsLetter,
 } from "../../redux/slices/newsletter/newsLetterSlice";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const NewsLetters = () => {
   const dispatch = useDispatch();
@@ -33,6 +35,8 @@ const NewsLetters = () => {
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.NEWS_LETTERS);
 
   useEffect(() => {
     dispatch(getAllNewsLetters());
@@ -115,8 +119,8 @@ const NewsLetters = () => {
   const currentList = Array.isArray(newsletters)
     ? newsletters
     : Array.isArray(newsletters?.data)
-    ? newsletters.data
-    : [];
+      ? newsletters.data
+      : [];
   const totalPages = Math.ceil(currentList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -157,7 +161,7 @@ const NewsLetters = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-4 gap-3"
+          className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           {/* TITLE */}
           <div>
@@ -172,6 +176,7 @@ const NewsLetters = () => {
               placeholder="Enter banner title"
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               required
+              disabled={isFormDisabled}
             />
           </div>
           {/* MONTH & YEAR */}
@@ -186,6 +191,7 @@ const NewsLetters = () => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -200,6 +206,7 @@ const NewsLetters = () => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               required
+              disabled={isFormDisabled}
             >
               <option value="">Select Order</option>
               {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
@@ -221,6 +228,7 @@ const NewsLetters = () => {
               accept="image/*"
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -235,6 +243,7 @@ const NewsLetters = () => {
               accept="application/pdf"
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -248,6 +257,7 @@ const NewsLetters = () => {
               value={formData.status}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+              disabled={isFormDisabled}
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
@@ -259,7 +269,7 @@ const NewsLetters = () => {
             <button
               type="button"
               onClick={resetForm}
-              disabled={loading}
+              disabled={loading || isFormDisabled}
               className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
             >
               Cancel
@@ -267,20 +277,18 @@ const NewsLetters = () => {
 
             <button
               type="submit"
-              disabled={loading || isSubmitting}
-              className={`px-6 py-1.5 text-sm rounded text-white ${
-                isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-              } ${
-                loading || isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              disabled={loading || isSubmitting || isFormDisabled}
+              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-green-600 hover:bg-green-700"
+                } ${loading || isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               {loading || isSubmitting
                 ? "Processing..."
                 : isEdit
-                ? "Update News Letters"
-                : "Add News Letters"}{" "}
+                  ? "Update News Letters"
+                  : "Add News Letters"}{" "}
             </button>
           </div>
         </form>
@@ -304,7 +312,7 @@ const NewsLetters = () => {
               <th className="px-4 py-3">Image</th>
               <th className="px-4 py-3">PDF</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Action</th>
+              {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
             </tr>
           </thead>
 
@@ -348,52 +356,57 @@ const NewsLetters = () => {
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
                     >
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <button
-                        className="relative text-sm text-green-600 transition
+                  {(canWrite || canDelete) && (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {canWrite && (
+                          <button
+                            className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                        onClick={() => {
-                          setFormData({
-                            _id: item._id,
-                            title: item.title,
-                            month_year: item.monthYear,
-                            order_by: item.order_by,
-                            image: item.image,
-                            pdf: item.pdf,
-                            status: item.status,
-                          });
-                          setIsEdit(true);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        Edit
-                      </button>
+                            onClick={() => {
+                              setFormData({
+                                _id: item._id,
+                                title: item.title,
+                                month_year: item.monthYear,
+                                order_by: item.order_by,
+                                image: item.image,
+                                pdf: item.pdf,
+                                status: item.status,
+                              });
+                              setIsEdit(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
 
-                      <button
-                        className="relative text-sm text-red-600 transition
+                        {canDelete && (
+                          <button
+                            className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                        onClick={() => handleDelete(item._id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+                            onClick={() => handleDelete(item._id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
@@ -431,11 +444,10 @@ hover:after:w-full"
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                    currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                  }`}
+                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : ""
+                    }`}
                 >
                   {p}
                 </button>

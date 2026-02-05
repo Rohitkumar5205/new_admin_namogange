@@ -8,6 +8,8 @@ import {
 } from "../../redux/slices/add_by_admin/sourceSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Source = () => {
   const dispatch = useDispatch();
@@ -38,6 +40,9 @@ const Source = () => {
   useEffect(() => {
     dispatch(getAllSources());
   }, [dispatch]);
+
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_SOURCE);
+
   /* ===== INPUT CHANGE ===== */
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -177,7 +182,7 @@ const Source = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* NAME */}
             <div>
@@ -191,6 +196,7 @@ const Source = () => {
                 type="text"
                 placeholder="Enter name"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -209,6 +215,7 @@ const Source = () => {
                 placeholder="Enter mobile number"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -225,6 +232,7 @@ const Source = () => {
                 placeholder="Enter email"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -241,6 +249,7 @@ const Source = () => {
                 placeholder="Enter address"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -255,6 +264,7 @@ const Source = () => {
                 value={formData.country}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Country</option>
                 <option value="India">India</option>
@@ -274,6 +284,7 @@ const Source = () => {
                 value={formData.state}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="">Select State</option>
                 <option value="India">Uttar Pradesh</option>
@@ -292,6 +303,7 @@ const Source = () => {
                 value={formData.city}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="">Select City</option>
                 <option value="India">Lucknow</option>
@@ -313,6 +325,7 @@ const Source = () => {
                 placeholder="Enter pinCode"
                 required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -326,6 +339,7 @@ const Source = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -337,28 +351,26 @@ const Source = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 cursor-pointer ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 cursor-pointer ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Source"
-                  : "Add Source"}
+                    ? "Update Source"
+                    : "Add Source"}
               </button>
             </div>
           </form>
@@ -404,7 +416,7 @@ const Source = () => {
                 <th className="px-4 py-3">Mobile</th>
                 <th className="px-4 py-3">City</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -428,44 +440,49 @@ const Source = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <button
-                        className="text-green-600 mr-3"
-                        onClick={() => {
-                          setFormData({
-                            _id: item._id,
-                            name: item.name,
-                            mobile: item.mobile,
-                            email: item.email,
-                            address: item.address,
-                            country: item.country,
-                            state: item.state,
-                            city: item.city,
-                            pinCode: item.pinCode,
-                            status: item.status,
-                          });
-                          setIsEdit(true);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-600"
-                        onClick={() => handleDelete(item._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        {canWrite && (
+                          <button
+                            className="text-green-600 mr-3"
+                            onClick={() => {
+                              setFormData({
+                                _id: item._id,
+                                name: item.name,
+                                mobile: item.mobile,
+                                email: item.email,
+                                address: item.address,
+                                country: item.country,
+                                state: item.state,
+                                city: item.city,
+                                pinCode: item.pinCode,
+                                status: item.status,
+                              });
+                              setIsEdit(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            className="text-red-600"
+                            onClick={() => handleDelete(item._id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -497,11 +514,10 @@ const Source = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>

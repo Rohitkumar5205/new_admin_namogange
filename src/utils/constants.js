@@ -64,6 +64,7 @@ export const PageNames = {
     IMAGE_CATEGORY: "Image Category",
     ADD_IP: "Add IP",
     ADD_ROLE: "Add Role",
+    ADD_SIDEBAR: "Add Sidebar",
     ADD_USER: "Add User",
     ADD_COLLEGE: "Add College",
     COLLEGE_LIST: "College List",

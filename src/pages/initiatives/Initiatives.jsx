@@ -10,6 +10,8 @@ import {
 } from "../../redux/slices/initiativeSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { fetchObjectives } from "../../redux/slices/objective/objectiveSlice";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Initiatives = () => {
   const dispatch = useDispatch();
@@ -36,6 +38,8 @@ const Initiatives = () => {
   const { data: allObjectiveCategories } = useSelector((state) => state.objectives);
   const objectiveCategory = allObjectiveCategories?.filter((cat) => cat.status === "Active");
   console.log("initiatives..", initiatives);
+
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.INITIATIVES);
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -212,7 +216,7 @@ const Initiatives = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-4 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -227,6 +231,7 @@ const Initiatives = () => {
                 placeholder="Enter banner title"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
             {/* SLUG */}
@@ -242,6 +247,7 @@ const Initiatives = () => {
                 placeholder="Enter slug"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
             {/* LINK */}
@@ -257,6 +263,7 @@ const Initiatives = () => {
                 placeholder="Enter link"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 required
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -271,6 +278,7 @@ const Initiatives = () => {
                 name="image"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
             {/* CATEGORY */}
@@ -283,6 +291,7 @@ const Initiatives = () => {
                 value={formData.objectiveCategory}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
                 {objectiveCategory?.map((cat) => (
@@ -302,6 +311,7 @@ const Initiatives = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -319,6 +329,7 @@ const Initiatives = () => {
                 onChange={handleChange}
                 placeholder="Enter meta keywords"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
             {/* META DESCRIPTION */}
@@ -333,6 +344,7 @@ const Initiatives = () => {
                 placeholder="Enter meta description"
                 rows={1}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
@@ -356,6 +368,7 @@ const Initiatives = () => {
                   overflow: "hidden", // corners properly clip ho
                 }}
                 className="w-full text-sm outline-none"
+                readOnly={isFormDisabled}
               />
             </div>
 
@@ -364,8 +377,8 @@ const Initiatives = () => {
               <button
                 type="button"
                 onClick={handleCancel}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
                 Cancel
@@ -373,11 +386,11 @@ const Initiatives = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                  } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -406,7 +419,7 @@ const Initiatives = () => {
                 <th className="px-4 py-3">Image</th>
                 <th className="px-4 py-3">Objective Category</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -447,48 +460,54 @@ const Initiatives = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="relative text-sm text-green-600 transition
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && (
+                            <button
+                              className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              title: item.title,
-                              link: item.link,
-                              slug: item.slug,
-                              image: item.image,
-                              meta_keywords: item.meta_keywords,
-                              meta_desc: item.meta_desc,
-                              desc: item.desc,
-                              created_by: item.created_by,
-                              updated_by: item.updated_by,
-                              objectiveCategory: item.objectiveCategory,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  title: item.title,
+                                  link: item.link,
+                                  slug: item.slug,
+                                  image: item.image,
+                                  meta_keywords: item.meta_keywords,
+                                  meta_desc: item.meta_desc,
+                                  desc: item.desc,
+                                  created_by: item.created_by,
+                                  updated_by: item.updated_by,
+                                  objectiveCategory: item.objectiveCategory,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="relative text-sm text-red-600 transition
+                          {canDelete && (
+                            <button
+                              className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                              onClick={() => handleDelete(item._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

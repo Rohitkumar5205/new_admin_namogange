@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const AddVolunteer = () => {
   const navigate = useNavigate();
@@ -56,6 +58,8 @@ const AddVolunteer = () => {
   };
   const [formData, setFormData] = useState(initialFormState);
   const [isEdit, setIsEdit] = useState(false);
+
+  const { isFormDisabled } = useRoleRights(PageNames.ADD_VOLUNTEER);
 
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
@@ -133,7 +137,7 @@ const AddVolunteer = () => {
         </h3>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-6 gap-4"
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4  ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           {/* BASIC DETAILS */}
           <div>
@@ -146,6 +150,7 @@ const AddVolunteer = () => {
               onChange={handleChange}
               className={inputClass}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Select Title</option>
               <option>Mr</option>
@@ -165,6 +170,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -179,6 +185,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -193,6 +200,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -205,6 +213,7 @@ const AddVolunteer = () => {
               onChange={handleChange}
               className={inputClass}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Gender</option>
               <option>Male</option>
@@ -223,6 +232,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -236,6 +246,7 @@ const AddVolunteer = () => {
               onChange={handleChange}
               className={inputClass}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Occupation</option>
               <option>Service</option>
@@ -253,6 +264,7 @@ const AddVolunteer = () => {
               onChange={handleChange}
               className={inputClass}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Organisation Type</option>
               <option>Private</option>
@@ -270,6 +282,7 @@ const AddVolunteer = () => {
               onChange={handleChange}
               className={inputClass}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Designation</option>
               <option>Manager</option>
@@ -288,6 +301,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -304,6 +318,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -318,6 +333,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -331,6 +347,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -344,6 +361,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -358,6 +376,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -372,6 +391,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             >
               <option value="">Country</option>
               <option>India</option>
@@ -388,6 +408,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             >
               <option value="">State</option>
               <option>Uttar Pradesh</option>
@@ -405,6 +426,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             >
               <option value="">City</option>
               <option>Lucknow</option>
@@ -422,6 +444,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -437,6 +460,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
           <div>
@@ -450,6 +474,7 @@ const AddVolunteer = () => {
               className={inputClass}
               onChange={handleChange}
               required
+              disabled={isFormDisabled}
             />
           </div>
 
@@ -478,6 +503,7 @@ const AddVolunteer = () => {
                     "Meri Beti Mera Abhiman"
                   )}
                   onChange={() => handleCheckbox("Meri Beti Mera Abhiman")}
+                  disabled={isFormDisabled}
                 />
                 Meri Beti Mera Abhiman
               </label>
@@ -493,6 +519,7 @@ const AddVolunteer = () => {
                     "Bachchon Ki Rangshala"
                   )}
                   onChange={() => handleCheckbox("Bachchon Ki Rangshala")}
+                  disabled={isFormDisabled}
                 />
                 Bachchon Ki Rangshala
               </label>
@@ -506,6 +533,7 @@ const AddVolunteer = () => {
                   type="checkbox"
                   checked={formData.initiatives.includes("Ayuryujam")}
                   onChange={() => handleCheckbox("Ayuryujam")}
+                  disabled={isFormDisabled}
                 />
                 Ayuryujam
               </label>
@@ -521,6 +549,7 @@ const AddVolunteer = () => {
                     "Arogya Film Festival"
                   )}
                   onChange={() => handleCheckbox("Arogya Film Festival")}
+                  disabled={isFormDisabled}
                 />
                 Arogya Film Festival
               </label>
@@ -536,6 +565,7 @@ const AddVolunteer = () => {
                     "The Grand Master Of Yoga"
                   )}
                   onChange={() => handleCheckbox("The Grand Master Of Yoga")}
+                  disabled={isFormDisabled}
                 />
                 The Grand Master Of Yoga
               </label>
@@ -549,6 +579,7 @@ const AddVolunteer = () => {
                   type="checkbox"
                   checked={formData.initiatives.includes("Arogya Sangoshthi")}
                   onChange={() => handleCheckbox("Arogya Sangoshthi")}
+                  disabled={isFormDisabled}
                 />
                 Arogya Sangoshthi
               </label>
@@ -564,6 +595,7 @@ const AddVolunteer = () => {
                     "The Yogshalajobs.com"
                   )}
                   onChange={() => handleCheckbox("The Yogshalajobs.com")}
+                  disabled={isFormDisabled}
                 />
                 The Yogshalajobs.com
               </label>
@@ -579,6 +611,7 @@ const AddVolunteer = () => {
                     "Shrimad Bhagwat Katha"
                   )}
                   onChange={() => handleCheckbox("Shrimad Bhagwat Katha")}
+                  disabled={isFormDisabled}
                 />
                 Shrimad Bhagwat Katha
               </label>
@@ -594,6 +627,7 @@ const AddVolunteer = () => {
                     "Swachh Bharat Sankalp"
                   )}
                   onChange={() => handleCheckbox("Swachh Bharat Sankalp")}
+                  disabled={isFormDisabled}
                 />
                 Swachh Bharat Sankalp
               </label>
@@ -609,6 +643,7 @@ const AddVolunteer = () => {
                     "Indian Folk & Tribal Art"
                   )}
                   onChange={() => handleCheckbox("Indian Folk & Tribal Art")}
+                  disabled={isFormDisabled}
                 />
                 Indian Folk & Tribal Art
               </label>
@@ -622,6 +657,7 @@ const AddVolunteer = () => {
                   type="checkbox"
                   checked={formData.initiatives.includes("Others, if any")}
                   onChange={() => handleCheckbox("Others, if any")}
+                  disabled={isFormDisabled}
                 />
                 Others, if any
               </label>
@@ -650,6 +686,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
+                  disabled={isFormDisabled}
                 />
                 7 Days in a Month
               </label>
@@ -662,6 +699,7 @@ const AddVolunteer = () => {
                   checked={formData.volunteering_for === "15_days"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 15 Days in a Month
               </label>
@@ -674,6 +712,7 @@ const AddVolunteer = () => {
                   checked={formData.volunteering_for === "weekends"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Weekends
               </label>
@@ -686,6 +725,7 @@ const AddVolunteer = () => {
                   checked={formData.volunteering_for === "specific_events"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Specific Events & Campaigns
               </label>
@@ -704,6 +744,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
+                  disabled={isFormDisabled}
                 />
                 NGT Membership
               </label>
@@ -716,6 +757,7 @@ const AddVolunteer = () => {
                   checked={formData.networking_for === "partnership"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Partnership
               </label>
@@ -728,6 +770,7 @@ const AddVolunteer = () => {
                   checked={formData.networking_for === "associations"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Associations
               </label>
@@ -740,6 +783,7 @@ const AddVolunteer = () => {
                   checked={formData.networking_for === "awareness_drives"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Awareness Drives
               </label>
@@ -758,6 +802,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
+                  disabled={isFormDisabled}
                 />
                 Health & Education
               </label>
@@ -770,6 +815,7 @@ const AddVolunteer = () => {
                   checked={formData.area_of_interest === "art_culture"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Art & Culture
               </label>
@@ -782,6 +828,7 @@ const AddVolunteer = () => {
                   checked={formData.area_of_interest === "environment"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Environment
               </label>
@@ -794,6 +841,7 @@ const AddVolunteer = () => {
                   checked={formData.area_of_interest === "women_empowerment"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Women Empowerment
               </label>
@@ -812,6 +860,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   value="donation"
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Donation
               </label>
@@ -825,6 +874,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   value="charity"
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Charity
               </label>
@@ -838,6 +888,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   value="sponsorships"
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Sponsorships
               </label>
@@ -853,6 +904,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   value="fund_raising_activities"
                   className="accent-[#DF562C]"
+                  disabled={isFormDisabled}
                 />
                 Fund Raising Activities
               </label>
@@ -878,6 +930,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -891,6 +944,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -904,6 +958,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -917,6 +972,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -930,6 +986,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -943,6 +1000,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   onChange={handleChange}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
             </div>
@@ -966,6 +1024,7 @@ const AddVolunteer = () => {
                   placeholder="Enter Area of Region"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -979,6 +1038,7 @@ const AddVolunteer = () => {
                   placeholder="Enter Report To"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -992,6 +1052,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 >
                   <option value="">Select designation</option>
                   <option value="manager">Manager</option>
@@ -1013,6 +1074,7 @@ const AddVolunteer = () => {
                   placeholder="Enter your bank name"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -1026,6 +1088,7 @@ const AddVolunteer = () => {
                   placeholder="Enter account no"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -1039,6 +1102,7 @@ const AddVolunteer = () => {
                   placeholder="Enter ifsc code"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
             </div>
@@ -1062,6 +1126,7 @@ const AddVolunteer = () => {
                   placeholder="Enter your company name"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -1075,6 +1140,7 @@ const AddVolunteer = () => {
                   placeholder="Enter address"
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -1086,6 +1152,7 @@ const AddVolunteer = () => {
                   value={formData.business_country}
                   onChange={handleChange}
                   className={inputClass}
+                  disabled={isFormDisabled}
                 >
                   <option value="">Select your country</option>
                   {/* Add country options here */}
@@ -1104,6 +1171,7 @@ const AddVolunteer = () => {
                   value={formData.business_state}
                   onChange={handleChange}
                   className={inputClass}
+                  disabled={isFormDisabled}
                 >
                   <option value="">Select your state</option>
                   {/* Add state options here */}
@@ -1122,6 +1190,7 @@ const AddVolunteer = () => {
                   value={formData.business_city}
                   onChange={handleChange}
                   className={inputClass}
+                  disabled={isFormDisabled}
                 >
                   {" "}
                   <option value="">Select your city</option>
@@ -1142,6 +1211,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   placeholder="Enter pin code"
                   className={inputClass}
+                  disabled={isFormDisabled}
                 />
               </div>
               <div>
@@ -1155,6 +1225,7 @@ const AddVolunteer = () => {
                   onChange={handleChange}
                   className={inputClass}
                   required
+                  disabled={isFormDisabled}
                 >
                   {" "}
                   <option value="">Select designation</option>
@@ -1178,6 +1249,7 @@ const AddVolunteer = () => {
                   className={inputClass}
                   maxLength={10}
                   required
+                  disabled={isFormDisabled}
                 />
               </div>
             </div>
@@ -1202,7 +1274,9 @@ const AddVolunteer = () => {
                     accept="image/*"
                     onChange={handleChange}
                     required
-                    className="
+                    disabled={isFormDisabled}
+                    className=
+                    {` 
         w-full text-sm text-gray-700
         file:mr-4 file:py-1 file:px-4
         file:rounded file:border-0
@@ -1212,7 +1286,8 @@ const AddVolunteer = () => {
         border border-gray-300 rounded
         cursor-pointer focus:outline-none
         focus:ring-1 focus:ring-blue-500
-      "
+        ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+
                   />
                 </div>
 
@@ -1232,17 +1307,18 @@ const AddVolunteer = () => {
                     setIsEdit(false);
                   }}
                   className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 cursor-pointer"
+                  disabled={isFormDisabled}
                 >
                   {" "}
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className={`px-6 py-1 text-sm rounded text-white ${
-                    isEdit
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-green-600 hover:bg-green-700"
-                  }`}
+                  disabled={isFormDisabled}
+                  className={`px-6 py-1 text-sm rounded text-white ${isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                    } ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {isEdit ? "Update Member" : "Add Member"}
                 </button>

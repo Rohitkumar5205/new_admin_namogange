@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CommonTable from "../../components/CommonTable";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const data = [
   {
@@ -43,6 +45,7 @@ const columns = [
 ];
 const ListMember = () => {
   const navigate = useNavigate();
+  const { canRead: canAdd } = useRoleRights(PageNames.MEMBERS);
 
   return (
     <div className=" space-y-6">
@@ -51,12 +54,14 @@ const ListMember = () => {
         <h2 className="text-lg font-medium text-gray-800">
           Member List Management
         </h2>
-        <button
-          onClick={() => navigate("/member/add-member")}
-          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-        >
-          Add Member
-        </button>
+        {canAdd && (
+          <button
+            onClick={() => navigate("/member/add-member")}
+            className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+          >
+            Add Member
+          </button>
+        )}
       </div>
 
       {/* ================= TABLE ================= */}

@@ -9,6 +9,8 @@ import {
 } from "../../redux/slices/add_by_admin/statusOptionSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import adminBanner from "../../assets/banners/bg.jpg";
+import useRoleRights from "../../hooks/useRoleRights";
+import { PageNames } from "../../utils/constants";
 
 const Status = () => {
   const dispatch = useDispatch();
@@ -28,6 +30,9 @@ const Status = () => {
   useEffect(() => {
     dispatch(getAllStatusOptions());
   }, [dispatch]);
+
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_STATUS);
+
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -158,7 +163,7 @@ const Status = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {/* TITLE */}
             <div>
@@ -172,6 +177,7 @@ const Status = () => {
                 onChange={handleChange}
                 placeholder="Enter status name"
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
                 required
               />
             </div>
@@ -186,6 +192,7 @@ const Status = () => {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -197,27 +204,26 @@ const Status = () => {
               <button
                 type="button"
                 onClick={resetForm}
-                disabled={isSubmitting}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                className={`px-6 py-1.5 text-sm rounded text-white ${
-                  isEdit
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Status"
-                  : "Add Status"}{" "}
+                    ? "Update Status"
+                    : "Add Status"}{" "}
               </button>
             </div>
           </form>
@@ -235,7 +241,7 @@ const Status = () => {
                 <th className="px-4 py-3">S.No</th>
                 <th className="px-4 py-3">Status Name</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
 
@@ -258,50 +264,55 @@ const Status = () => {
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${
-            item.status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
+          ${item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                          }`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="relative text-sm text-green-600 transition
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {canWrite && (
+                            <button
+                              className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            setFormData({
-                              _id: item._id,
-                              name: item.name,
-                              status: item.status,
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
+                              onClick={() => {
+                                setFormData({
+                                  _id: item._id,
+                                  name: item.name,
+                                  status: item.status,
+                                });
+                                setIsEdit(true);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
 
-                        <button
-                          className="relative text-sm text-red-600 transition
+                          {canDelete && (
+                            <button
+                              className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            handleDelete(item._id);
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+                              onClick={() => {
+                                handleDelete(item._id);
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -334,11 +345,10 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
-                      currentPage === p
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : ""
-                    }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                      }`}
                   >
                     {p}
                   </button>
