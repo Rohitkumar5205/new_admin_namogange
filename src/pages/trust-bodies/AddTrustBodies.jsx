@@ -100,7 +100,7 @@ const AddTrustBodies = () => {
       {/* ================= HEADER ================= */}
 
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
         style={{
           backgroundImage: `url(${adminBanner})`,
           backgroundRepeat: "no-repeat",
@@ -113,9 +113,9 @@ const AddTrustBodies = () => {
 
         {/* Content */}
         <div className="relative flex justify-between items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+          <div className="flex  gap-3">
+            <div className="flex flex-col ">
+              <h2 className="text-xl font-semibold text-white ">
                 Trust Bodies Management
               </h2>
               <p className="text-sm text-blue-100">

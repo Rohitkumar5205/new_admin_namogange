@@ -14,7 +14,9 @@ import { PageNames } from "../../utils/constants";
 
 const VideosGallery = () => {
   const dispatch = useDispatch();
-  const { videos: galleryVideos, loading } = useSelector((state) => state.galleryVideo);
+  const { videos: galleryVideos, loading } = useSelector(
+    (state) => state.galleryVideo
+  );
   const { list: categoryVideos } = useSelector((state) => state.categoryVideo);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const authUser = JSON.parse(localStorage.getItem("user"));
@@ -32,7 +34,9 @@ const VideosGallery = () => {
   });
   const [isEdit, setIsEdit] = useState(false);
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.VIDEOS_GALLERY);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.VIDEOS_GALLERY
+  );
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -123,7 +127,7 @@ const VideosGallery = () => {
     <div className="">
       {/* ================= HEADER ================= */}
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
         style={{
           backgroundImage: `url(${adminBanner})`,
           backgroundRepeat: "no-repeat",
@@ -142,15 +146,14 @@ const VideosGallery = () => {
                 Videos Gallery Management
               </h2>
               <p className="text-sm text-blue-100">
-                Add or update videos gallery content including title, image, link and
-                status.
+                Add or update videos gallery content including title, image,
+                link and status.
               </p>
             </div>
           </div>
         </div>
       </div>
       <div className="space-y-3 p-5 ">
-
         {/* ================= FORM ================= */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -159,7 +162,9 @@ const VideosGallery = () => {
 
           <form
             onSubmit={handleSubmit}
-            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${
+              isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
             {/* TITLE */}
             <div>
@@ -291,8 +296,11 @@ const VideosGallery = () => {
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting || isFormDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
               >
                 Cancel
               </button>
@@ -300,16 +308,21 @@ const VideosGallery = () => {
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded-md text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded-md text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${
+                  isSubmitting || isFormDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
               >
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                    ? "Update Video"
-                    : "Add Video"}
+                  ? "Update Video"
+                  : "Add Video"}
               </button>
             </div>
           </form>
@@ -317,7 +330,7 @@ const VideosGallery = () => {
 
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-5 py-3 border-b border-gray-200">
+          <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
             <h3 className="text-base font-medium text-gray-800">
               Video Gallery List
             </h3>
@@ -334,7 +347,9 @@ const VideosGallery = () => {
                 <th className="px-4 py-3">Location</th>
                 <th className="px-4 py-3">Video Link</th>
                 <th className="px-4 py-3">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -347,7 +362,10 @@ const VideosGallery = () => {
                 </tr>
               ) : (
                 currentData.map((item, index) => (
-                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
+                  <tr
+                    key={item._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
                     <td className="px-4 py-3">
@@ -360,24 +378,44 @@ const VideosGallery = () => {
                     <td className="px-4 py-3">{item.location}</td>
                     <td className="px-4 py-3">
                       {item.video_link ? (
-                        <iframe
-                          src={item.video_link}
-                          title="video"
-                          className="w-32 h-20 rounded border"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
+                        <div className="group relative w-20 aspect-video rounded-lg overflow-hidden border border-gray-200 bg-black shadow-sm hover:shadow-lg transition">
+                          {/* Video */}
+                          <iframe
+                            src={item.video_link}
+                            title="video"
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+
+                          {/* YouTube Play Overlay */}
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20 opacity-90 group-hover:bg-black/30 transition">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600 shadow-lg">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                                className="w-5 h-5 ml-[2px]"
+                              >
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
                       ) : (
-                        <span className="text-gray-400 text-xs">No Video</span>
+                        <span className="inline-block text-xs text-gray-400 italic">
+                          No video available
+                        </span>
                       )}
                     </td>
 
                     <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                          }`}
+                        className={`px-3 py-1 text-xs rounded-full ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {item.status}
                       </span>
@@ -392,7 +430,9 @@ const VideosGallery = () => {
                                 setFormData({
                                   _id: item._id,
                                   title: item.title,
-                                  date: item.date ? item.date.split("T")[0] : "",
+                                  date: item.date
+                                    ? item.date.split("T")[0]
+                                    : "",
                                   category: item.category,
                                   orderBy: item.orderBy,
                                   location: item.location,
@@ -423,7 +463,9 @@ const VideosGallery = () => {
                                       user_id: currentUserId,
                                     })
                                   ).then(() => {
-                                    showSuccess("Video Gallery deleted successfully");
+                                    showSuccess(
+                                      "Video Gallery deleted successfully"
+                                    );
                                     dispatch(getAllGalleryVideos());
                                   });
                                 }
@@ -444,8 +486,9 @@ const VideosGallery = () => {
           {/* ================= PAGINATION ================= */}
           <div className="flex justify-between items-center p-4">
             <span className="text-sm text-gray-500">
-              Showing {startIndex + 1}–{Math.min(endIndex, galleryVideos?.length || 0)}{" "}
-              of {galleryVideos?.length || 0}
+              Showing {startIndex + 1}–
+              {Math.min(endIndex, galleryVideos?.length || 0)} of{" "}
+              {galleryVideos?.length || 0}
             </span>
 
             <div className="flex space-x-1">
@@ -466,10 +509,11 @@ const VideosGallery = () => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
@@ -477,7 +521,9 @@ const VideosGallery = () => {
               )}
 
               <button
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
               >
@@ -487,7 +533,6 @@ const VideosGallery = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

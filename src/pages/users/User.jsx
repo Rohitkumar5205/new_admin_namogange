@@ -427,7 +427,7 @@ const User = () => {
 
       {/* ================= TABLE ================= */}
       <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
+        <div className="px-5 bg-gray-50  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
           <h3 className="text-base font-medium text-gray-800">Users List</h3>
           <select
             value={itemsPerPage}

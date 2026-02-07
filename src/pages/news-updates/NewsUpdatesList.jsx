@@ -70,7 +70,7 @@ const NewsUpdatesList = () => {
         </button>
       </div> */}
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
         style={{
           backgroundImage: `url(${adminBanner})`,
           backgroundRepeat: "no-repeat",
@@ -110,34 +110,58 @@ const NewsUpdatesList = () => {
       <div className="space-y-3 p-5">
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
+          <div className="px-5 bg-gray-200  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
             <h3 className="text-base font-medium text-gray-800">
               News Updates List
             </h3>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-            >
-              {[5, 10, 25, 50].map((n) => (
-                <option key={n} value={n}>
-                  Show {n} Entries
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-            />
+          <select
+  value={itemsPerPage}
+  onChange={(e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  }}
+  className="
+    border border-gray-300
+    ring-0 ring-gray-300
+    rounded-md
+    bg-gray-50
+    px-2 py-0
+    text-sm
+    shadow-sm
+    focus:outline-none
+    focus:ring-0 focus:ring-blue-500
+    focus:border-blue-500
+  "
+>
+  {[5, 10, 25, 50].map((n) => (
+    <option key={n} value={n}>
+      Show {n} Entries
+    </option>
+  ))}
+</select>
+
+           <input
+  type="text"
+  placeholder="Search..."
+  value={search}
+  onChange={(e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  }}
+  className="
+    border border-gray-300
+    ring-0 ring-gray-300
+    rounded-md
+    bg-white
+    px-2 py-1
+    text-sm
+    shadow-sm
+    focus:outline-none
+    focus:ring-0 focus:ring-blue-500
+    focus:border-blue-500
+  "
+/>
+
           </div>
 
           <table className="w-full text-sm text-left text-gray-600">

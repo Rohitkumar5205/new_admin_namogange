@@ -201,13 +201,16 @@ const HomeBanner = () => {
     <div className="">
       {/* ================= HEADER ================= */}
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
-        style={{
-          backgroundImage: `url(${adminBanner})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        // className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
+        // style={{
+        //   backgroundImage: `url(${adminBanner})`,
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundSize: "cover",
+        //   backgroundPosition: "center",
+        // }}
+className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -348,7 +351,7 @@ const HomeBanner = () => {
 
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-5 py-3 border-b border-gray-200">
+          <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
             <h3 className="text-base font-medium text-gray-800">Banner List</h3>
           </div>
 
@@ -358,8 +361,7 @@ const HomeBanner = () => {
                 <th className="px-4 py-3">S.No</th>
                 <th className="px-4 py-3">Banner Title</th>
                 <th className="px-4 py-3">Redirect Link</th>
-                <th className="px-4 py-3">Banner Image</th>
-                <th className="px-4 py-3">Status</th>
+<th className="px-4 py-3 whitespace-nowrap">Banner Image</th>                <th className="px-4 py-3">Status</th>
                 {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
               </tr>
             </thead>
@@ -402,7 +404,7 @@ const HomeBanner = () => {
                     </td>
                     {(canWrite || canDelete) && (
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-6">
                           {canWrite && (
                             <button
                               className="relative text-sm text-green-600 transition

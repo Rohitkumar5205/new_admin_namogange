@@ -12,6 +12,7 @@ import {
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
 
+
 const NewsLetters = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -36,7 +37,9 @@ const NewsLetters = () => {
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.NEWS_LETTERS);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.NEWS_LETTERS
+  );
 
   useEffect(() => {
     dispatch(getAllNewsLetters());
@@ -119,8 +122,8 @@ const NewsLetters = () => {
   const currentList = Array.isArray(newsletters)
     ? newsletters
     : Array.isArray(newsletters?.data)
-      ? newsletters.data
-      : [];
+    ? newsletters.data
+    : [];
   const totalPages = Math.ceil(currentList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -141,18 +144,40 @@ const NewsLetters = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add News Letters Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update News Letters content including title, month, order,
+   <div className="">
+        {/* ================= HEADER ================= */}
+        <div
+          className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
+          style={{
+            backgroundImage: `url(${adminBanner})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-white/10"></div>
+  
+          {/* Content */}
+          <div className="relative flex justify-center items-center px-6 py-4 h-25">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col text-center">
+                <h2 className="text-xl font-semibold text-white text-center">
+                  {" "}
+                 News Letters Management
+                </h2>
+                <p className="text-sm text-blue-100">
+                   Add or update News Letters content including title, month, order,
           files and status.
-        </p>
-      </div>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      
 
+
+   <div className="space-y-3 p-5">
       {/* ================= FORM ================= */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -161,7 +186,9 @@ const NewsLetters = () => {
 
         <form
           onSubmit={handleSubmit}
-          className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+          className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${
+            isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
+          }`}
         >
           {/* TITLE */}
           <div>
@@ -278,17 +305,21 @@ const NewsLetters = () => {
             <button
               type="submit"
               disabled={loading || isSubmitting || isFormDisabled}
-              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-green-600 hover:bg-green-700"
-                } ${loading || isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`px-6 py-1.5 text-sm rounded text-white ${
+                isEdit
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
+              } ${
+                loading || isSubmitting || isFormDisabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
               {loading || isSubmitting
                 ? "Processing..."
                 : isEdit
-                  ? "Update News Letters"
-                  : "Add News Letters"}{" "}
+                ? "Update News Letters"
+                : "Add News Letters"}{" "}
             </button>
           </div>
         </form>
@@ -296,7 +327,7 @@ const NewsLetters = () => {
 
       {/* ================= TABLE ================= */}
       <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 py-3 border-b border-gray-200">
+        <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
           <h3 className="text-base font-medium text-gray-800">
             News Letters List
           </h3>
@@ -356,10 +387,11 @@ const NewsLetters = () => {
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                        }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                     >
                       {item.status}
                     </span>
@@ -444,10 +476,11 @@ hover:after:w-full"
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : ""
-                    }`}
+                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                    currentPage === p
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : ""
+                  }`}
                 >
                   {p}
                 </button>
@@ -463,6 +496,7 @@ hover:after:w-full"
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

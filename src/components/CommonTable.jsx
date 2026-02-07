@@ -83,9 +83,13 @@ const CommonTable = ({ data = [], columns = [], showCheckbox = true }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= TOOLBAR (SAME DESIGN) ================= */}
-      <div className="flex flex-col lg:flex-row justify-between gap-4 bg-white px-3 py-2 rounded-md border border-gray-200 shadow-sm">
+      
+
+      {/* ================= TABLE (SAME DESIGN) ================= */}
+      <div className="w-full bg-white shadow-sm rounded border border-gray-200">
+        <div className="flex flex-col lg:flex-row justify-between gap-4 bg-gray-200 px-3 py-2  border-b border-gray-200 ">
         <div className="flex items-center gap-2 text-sm">
           <select
             value={itemsPerPage}
@@ -93,8 +97,18 @@ const CommonTable = ({ data = [], columns = [], showCheckbox = true }) => {
               setItemsPerPage(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="border outline-none border-gray-300 shadow-md rounded px-2 py-1"
-          >
+className="
+    border border-gray-300
+    ring-0 ring-gray-300
+    rounded-md
+    bg-gray-50
+    px-2 py-1
+    text-sm
+    shadow-sm
+    focus:outline-none
+    focus:ring-0 focus:ring-blue-500
+    focus:border-blue-500
+  "          >
             {[5, 10, 25, 50].map((n) => (
               <option key={n} value={n}>
                 <span>Show</span> {n} <span>Entries</span>
@@ -106,12 +120,12 @@ const CommonTable = ({ data = [], columns = [], showCheckbox = true }) => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-1 border border-gray-300 shadow-md rounded text-sm hover:bg-gray-200"
+            className="flex items-center gap-2 px-4 py-1 border border-gray-300 shadow-md rounded text-sm bg-gray-50 hover:bg-gray-300"
           >
             <MdPrint /> Print
           </button>
 
-          <button className="flex items-center gap-2 px-4 py-1 border shadow-md rounded text-sm text-[#F36B2A] border-[#F36B2A] hover:bg-[#F36B2A] hover:text-white">
+          <button className="flex items-center gap-2 px-4 py-1 border shadow-md rounded text-sm text-[#F36B2A] border-[#F36B2A] bg-gray-50 hover:bg-[#F36B2A] hover:text-white">
             <FaFileExcel /> Excel
           </button>
 
@@ -124,14 +138,11 @@ const CommonTable = ({ data = [], columns = [], showCheckbox = true }) => {
                 setCurrentPage(1);
               }}
               placeholder="Search here..."
-              className="pl-9 pr-4 py-1 border outline-none border-gray-300 shadow-md rounded text-sm"
+              className="pl-9 pr-4 py-1 border outline-none border-gray-300 bg-gray-50 shadow-md rounded text-sm"
             />
           </div>
         </div>
       </div>
-
-      {/* ================= TABLE (SAME DESIGN) ================= */}
-      <div className="w-[1130px] bg-white shadow-sm rounded border border-gray-200">
         {/* ================= TABLE SCROLL AREA ================= */}
         <div className="relative overflow-x-auto">
           <table className="min-w-max w-full text-sm text-left text-gray-600">

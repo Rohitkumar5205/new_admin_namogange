@@ -60,7 +60,7 @@ const BlogList = () => {
     <div className="">
       {/* Header */}
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
         style={{
           backgroundImage: `url(${adminBanner})`,
           backgroundRepeat: "no-repeat",
@@ -82,12 +82,12 @@ const BlogList = () => {
       {/* Table */}
       <div className="space-y-3 p-5">
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-          <div className="px-5 py-3 border-b border-gray-200 flex justify-between items-center">
+          <div className="px-5 py-2 bg-gray-200 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-base font-medium text-gray-800">All Blogs</h3>
             {canAdd && (
               <button
                 onClick={() => navigate("/blogs/add-blog")}
-                className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+                className="px-4 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
               >
                 Add New Blog
               </button>
