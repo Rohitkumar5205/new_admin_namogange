@@ -145,7 +145,7 @@ const IP = () => {
         <div className="space-y-6">
             {/* ================= HEADER ================= */}
             <div
-                className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+                className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
                 style={{
                     backgroundImage: `url(${adminBanner})`,
                     backgroundRepeat: "no-repeat",
@@ -268,7 +268,7 @@ const IP = () => {
 
                 {/* ================= TABLE ================= */}
                 <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-                    <div className="px-5 py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
+                    <div className="px-5 bg-gray-50  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
                         <h3 className="text-base font-medium text-gray-800">IP List</h3>
                         <div className="flex gap-2">
                             <select

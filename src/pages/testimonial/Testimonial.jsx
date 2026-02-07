@@ -156,7 +156,7 @@ const Testimonial = () => {
         <div className="">
             {/* ================= HEADER ================= */}
             <div
-                className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+                className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
                 style={{
                     backgroundImage: `url(${adminBanner})`,
                     backgroundRepeat: "no-repeat",
@@ -298,7 +298,7 @@ const Testimonial = () => {
 
                 {/* ================= TABLE ================= */}
                 <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-                    <div className="px-5 py-3 border-b border-gray-200">
+                    <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
                         <h3 className="text-base font-medium text-gray-800">
                             Testimonial List
                         </h3>

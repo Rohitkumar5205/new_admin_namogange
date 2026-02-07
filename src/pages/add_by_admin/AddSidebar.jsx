@@ -201,7 +201,7 @@ const AddSidebar = () => {
         <div className="space-y-6">
             {/* HEADER */}
             <div
-                className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+                className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
                 style={{
                     backgroundImage: `url(${adminBanner})`,
                     backgroundRepeat: "no-repeat",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import adminBanner from "../assets/banners/admin.png";
+import adminBanner from "../assets/banners/das2.jpg";
 import {
   FaUsers,
   FaHome,
@@ -334,20 +334,22 @@ const Dashboard = () => {
     <div className="">
       {/* HEADER */}
       <div
-        className="relative overflow-hidden rounded shadow-sm border border-gray-200 h-25"
+        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
         style={{
           backgroundImage: `url(${adminBanner})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
+        // className="relative overflow-hidden shadow-sm border border-gray-200 h-28 bg-gradient-to-r from-cyan-500 to-blue-600"
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/0"></div>
+
 
         {/* Content */}
         <div className="relative flex justify-between items-center px-6 py-4 h-full">
-          <div className="flex items-center gap-3">
+          <div className="flex justify-center items-center gap-3">
             <div className="bg-white/20 p-2 rounded-md">
               <FiGrid className="text-white w-5 h-5" />
             </div>
@@ -358,10 +360,6 @@ const Dashboard = () => {
               </p>
             </div>
           </div>
-
-          {/* <div className="hidden sm:flex items-center bg-white/20 backdrop-blur px-4 py-1.5 rounded-full">
-            <span className="text-sm text-white font-medium">Admin Access</span>
-          </div> */}
         </div>
       </div>
 
