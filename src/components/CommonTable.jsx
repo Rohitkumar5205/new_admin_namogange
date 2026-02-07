@@ -83,12 +83,10 @@ const CommonTable = ({ data = [], columns = [], showCheckbox = true }) => {
   };
 
   return (
-    <div className="">
-      {/* ================= TOOLBAR (SAME DESIGN) ================= */}
+    <div className="w-full     min-w-[1150px]
+      max-w-[1100px]">
       
-
-      {/* ================= TABLE (SAME DESIGN) ================= */}
-      <div className="w-full bg-white shadow-sm rounded border border-gray-200">
+      <div className="w-full bg-white shadow-sm rounded border border-gray-200 ">
         <div className="flex flex-col lg:flex-row justify-between gap-4 bg-gray-200 px-3 py-2  border-b border-gray-200 ">
         <div className="flex items-center gap-2 text-sm">
           <select
@@ -144,77 +142,108 @@ className="
         </div>
       </div>
         {/* ================= TABLE SCROLL AREA ================= */}
-        <div className="relative overflow-x-auto">
-          <table className="min-w-max w-full text-sm text-left text-gray-600">
-            <thead className="bg-gray-50 border-b border-gray-300">
-              <tr>
-                {showCheckbox && (
-                  <th className="px-2 py-3">
-                    <input type="checkbox" />
-                  </th>
-                )}
+<div className="relative w-full overflow-x-auto border-t border-b border-gray-200">
+  <table className="min-w-full w-max table-auto text-sm text-left text-gray-600 border-collapse">
 
-                {columns.map((col) => (
-                  <th
-                    key={col.key}
-                    onClick={() => handleSort(col.key)}
-                    className="px-2 py-3 cursor-pointer select-none whitespace-nowrap"
-                  >
-                    {col.label}
-                    <span className="ml-1 text-xs">
-                      <SortIcon column={col.key} />
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
+    {/* ================= HEADER ================= */}
+    <thead className="sticky top-0 z-20 bg-gray-50 border-b border-gray-300">
+      <tr>
+        {showCheckbox && (
+          <th className="sticky left-0 z-30 w-12 bg-gray-50 px-4 py-3">
+            <input type="checkbox" />
+          </th>
+        )}
 
-            <tbody>
-              {currentData.map((row, i) => (
-                <tr
-                  key={i}
-                  className="border-b border-gray-300 hover:bg-gray-50"
-                >
-                  {showCheckbox && (
-                    <td className="px-2 py-3">
-                      <input type="checkbox" />
-                    </td>
-                  )}
+        {columns.map((col) => (
+          <th
+            key={col.key}
+            onClick={() => handleSort(col.key)}
+            className="
+              px-4 py-3
+              cursor-pointer select-none
+              font-semibold text-gray-700
+              whitespace-nowrap
+            "
+          >
+            {col.label}
+            <span className="ml-1 text-xs">
+              <SortIcon column={col.key} />
+            </span>
+          </th>
+        ))}
+      </tr>
+    </thead>
 
-                  {columns.map((col) => (
-                    <td
-                      key={col.key}
-                      className="px-2 py-3 font-medium text-gray-800 whitespace-nowrap"
-                    >
-                      {/* {row[col.key]} */}
-                      {col.render ? col.render(row) : row[col.key]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+    {/* ================= BODY ================= */}
+    <tbody>
+      {currentData.map((row, i) => (
+        <tr
+          key={i}
+          className="border-b border-gray-300 hover:bg-gray-50"
+        >
+          {showCheckbox && (
+            <td className="sticky left-0 z-10 w-12 bg-white px-2 py-3">
+              <input type="checkbox" />
+            </td>
+          )}
 
-              {/* COLUMN SEARCH */}
-              <tr className="border-t border-gray-300">
-                {showCheckbox && <td />}
+          {columns.map((col) => (
+            <td
+              key={col.key}
+              className="
+                px-4 py-3
+                font-medium text-gray-800
+                whitespace-nowrap
+              "
+            >
+              {col.render ? col.render(row) : row[col.key]}
+            </td>
+          ))}
+        </tr>
+      ))}
 
-                {columns.map((col) => (
-                  <td key={col.key} className="px-2 py-1">
-                    <input
-                      placeholder={`Search ${col.label}`}
-                      onChange={(e) =>
-                        setColumnSearch({
-                          ...columnSearch,
-                          [col.key]: e.target.value,
-                        })
-                      }
-                      className="w-full border border-gray-300 rounded outline-none px-2  text-sm"
-                    />
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* ================= EMPTY STATE ================= */}
+      {filteredData.length === 0 && (
+        <tr>
+          <td
+            colSpan={columns.length + (showCheckbox ? 1 : 0)}
+            className="text-center py-6 text-gray-400"
+          >
+            No data found
+          </td>
+        </tr>
+      )}
+
+      {/* ================= COLUMN SEARCH ================= */}
+      <tr className="sticky bottom-0 z-20 bg-white border-t border-gray-300">
+        {showCheckbox && <td className="sticky left-0 bg-white" />}
+
+        {columns.map((col) => (
+          <td key={col.key} className="px-3 py-2">
+            <input
+              placeholder={`Search ${col.label}`}
+              onChange={(e) =>
+                setColumnSearch({
+                  ...columnSearch,
+                  [col.key]: e.target.value,
+                })
+              }
+              className="
+                w-full
+                border border-gray-300
+                rounded
+                px-2 py-1
+                text-sm
+                focus:outline-none
+                focus:ring-1 focus:ring-blue-500
+              "
+            />
+          </td>
+        ))}
+      </tr>
+    </tbody>
+  </table>
+</div>
 
         {/* ================= PAGINATION (NO SCROLL) ================= */}
         <div className="flex flex-col md:flex-row border-t border-gray-300 items-center justify-between gap-4 px-4 py-2">

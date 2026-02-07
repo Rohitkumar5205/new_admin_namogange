@@ -43,12 +43,12 @@ export default function Header() {
         {/* TOOLTIP */}
         <div
           className="
-            absolute top-10 left-1/2 -translate-x-1/2
+            absolute top-8 left-1/2 -translate-x-1/2
             whitespace-nowrap rounded
             bg-gray-800 px-2 py-1 text-xs text-white
             opacity-0 group-hover:opacity-100
             transition-all duration-200
-            pointer-events-none
+            pointer-events-none z-30
           "
         >
           {label}
@@ -125,10 +125,10 @@ export default function Header() {
           <IconWithTooltip label="Profile">
             <div
               onClick={() => setOpen(!open)}
-              className="w-10 h-10 rounded-full 
+              className="w-7 h-7 rounded-full 
         bg-gradient-to-r from-[#F36B2A] to-[#0C55A0]
         flex items-center justify-center cursor-pointer
-        shadow-md hover:scale-105 transition"
+        shadow-md hover:scale-103 transition"
             >
               <FaUserCircle className="text-white text-2xl" />
             </div>

@@ -334,13 +334,8 @@ const Dashboard = () => {
     <div className="">
       {/* HEADER */}
       <div
-        className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
-        style={{
-          backgroundImage: `url(${adminBanner})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         // className="relative overflow-hidden shadow-sm border border-gray-200 h-28 bg-gradient-to-r from-cyan-500 to-blue-600"
       >
         {/* Overlay */}

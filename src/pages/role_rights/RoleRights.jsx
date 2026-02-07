@@ -9,7 +9,6 @@ import {
 import { getAllRoles } from "../../redux/slices/add_by_admin/roleSlice";
 import { getAllSidebars } from "../../redux/slices/add_by_admin/addSidebarSlice";
 import { showSuccess, showError } from "../../utils/toastService";
-import adminBanner from "../../assets/banners/bg.jpg";
 
 const RoleRights = () => {
     const dispatch = useDispatch();
@@ -267,16 +266,11 @@ const RoleRights = () => {
     const areAllDeleteSelected = formData.permissions.length > 0 && formData.permissions.every((p) => p.delete);
 
     return (
-        <div className="space-y-6">
+        <div className="">
             {/* ================= HEADER ================= */}
             <div
-                className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
-                style={{
-                    backgroundImage: `url(${adminBanner})`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                }}
+               className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
                 <div className="absolute inset-0 bg-white/10"></div>
                 <div className="relative flex justify-center items-center px-6 py-4 h-25">
@@ -295,20 +289,23 @@ const RoleRights = () => {
 
             <div className="space-y-3 p-5">
                 {/* ================= FORM ================= */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-base font-medium text-gray-800 mb-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    
+                    <form onSubmit={handleSubmit}>
+                        <div className=" flex justify-between items-center mb-4">
+ <div>
+                        <h3 className="text-base font-medium text-gray-800 mb-2">
                         {isEdit ? "Update Role Rights" : "Add Role Rights"}
                     </h3>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-6 max-w-md">
+                    </div>
+  <div className=" w-52">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Select Role <span className="text-red-500">*</span>
                             </label>
                             <select
                                 value={formData.role}
                                 onChange={handleRoleChange}
-                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             >
                                 <option value="">-- Select Role --</option>
                                 {allRolesList?.map((role) => (
@@ -319,145 +316,146 @@ const RoleRights = () => {
                                 ))}
                             </select>
                         </div>
-
-                        {/* PERMISSIONS TABLE */}
-                        <div className="border border-gray-200 rounded-lg overflow-hidden">
-                            <table className="w-full text-sm text-left text-gray-600">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-4 py-3 font-semibold">Page Name</th>
-                                        <th className="px-4 py-3 text-center w-34">
-                                            Read (View)
-                                            <input
-                                                type="checkbox"
-                                                checked={areAllReadSelected}
-                                                onChange={(e) => handleColumnSelectAll("read", e.target.checked)}
-                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
-                                            />
-                                        </th>
-                                        <th className="px-4 py-3 text-center w-24">
-                                            Write
-                                            <input
-                                                type="checkbox"
-                                                checked={areAllWriteSelected}
-                                                onChange={(e) => handleColumnSelectAll("write", e.target.checked)}
-                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
-                                            />
-                                        </th>
-                                        <th className="px-4 py-3 text-center w-26">
-                                            Delete
-                                            <input
-                                                type="checkbox"
-                                                checked={areAllDeleteSelected}
-                                                onChange={(e) => handleColumnSelectAll("delete", e.target.checked)}
-                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
-                                            />
-                                        </th>
-                                        <th className="px-4 py-3 text-center w-24">
-                                            All
-                                            <input
-                                                type="checkbox"
-                                                checked={areAllSelected}
-                                                onChange={handleGlobalSelectAll}
-                                                className="ml-2 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
-                                            />
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {sidebarPages.map((section) => {
-                                        const isSectionAllChecked = section.items.length > 0 && section.items.every((item) => {
-                                            const perm = formData.permissions.find((p) => p.page === item.label);
-                                            return perm && perm.read && perm.write && perm.delete;
-                                        });
-
-                                        return (
-                                            <React.Fragment key={section.section}>
-                                                <tr className="bg-gray-100 border-b border-gray-200">
-                                                    <td
-                                                        colSpan="4"
-                                                        className="px-4 py-2 font-bold text-xs text-gray-500 uppercase tracking-wider"
-                                                    >
-                                                        {section.section}
-                                                    </td>
-                                                    <td className="px-4 py-2 text-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isSectionAllChecked}
-                                                            onChange={(e) => handleSectionSelectAll(section.section, e.target.checked)}
-                                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 align-middle"
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                {section.items.map((item) => {
-                                                    const perm = formData.permissions.find(
-                                                        (p) => p.page === item.label
-                                                    ) || {
-                                                        read: false,
-                                                        write: false,
-                                                        delete: false,
-                                                    };
-
-                                                    const isAllChecked =
-                                                        perm.read && perm.write && perm.delete;
-
-                                                    return (
-                                                        <tr
-                                                            key={item.label}
-                                                            className="border-b border-gray-200 hover:bg-gray-50"
-                                                        >
-                                                            <td className="px-4 py-2 font-medium">
-                                                                {item.label}
-                                                            </td>
-                                                            <td className="px-4 py-2 text-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={perm.read}
-                                                                    onChange={() =>
-                                                                        handlePermissionChange(item.label, "read")
-                                                                    }
-                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                                />
-                                                            </td>
-                                                            <td className="px-4 py-2 text-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={perm.write}
-                                                                    onChange={() =>
-                                                                        handlePermissionChange(item.label, "write")
-                                                                    }
-                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                                />
-                                                            </td>
-                                                            <td className="px-4 py-2 text-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={perm.delete}
-                                                                    onChange={() =>
-                                                                        handlePermissionChange(item.label, "delete")
-                                                                    }
-                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                                />
-                                                            </td>
-                                                            <td className="px-4 py-2 text-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={isAllChecked}
-                                                                    onChange={(e) =>
-                                                                        handleSelectAll(item.label, e.target.checked)
-                                                                    }
-                                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                                />
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </React.Fragment>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
                         </div>
+                       
+                        {/* PERMISSIONS TABLE */}
+                       <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+  <table className="w-full min-w-[800px] text-sm text-left text-gray-700 border-collapse">
+
+    {/* ================= HEADER ================= */}
+    <thead className="bg-gray-100 border-b border-gray-300">
+      <tr>
+        <th className="px-5 py-3 font-semibold text-gray-800">
+          Page / Module
+        </th>
+
+        {[
+          { label: "Read", key: "read", checked: areAllReadSelected },
+          { label: "Write", key: "write", checked: areAllWriteSelected },
+          { label: "Delete", key: "delete", checked: areAllDeleteSelected },
+        ].map((col) => (
+          <th key={col.key} className="px-4 py-3 text-center font-semibold">
+            <div className="flex items-center justify-center gap-2">
+              {col.label}
+              <input
+                type="checkbox"
+                checked={col.checked}
+                onChange={(e) =>
+                  handleColumnSelectAll(col.key, e.target.checked)
+                }
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </div>
+          </th>
+        ))}
+
+        <th className="px-4 py-3 text-center font-semibold">
+          <div className="flex items-center justify-center gap-2">
+            All
+            <input
+              type="checkbox"
+              checked={areAllSelected}
+              onChange={handleGlobalSelectAll}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    {/* ================= BODY ================= */}
+    <tbody>
+      {sidebarPages.map((section) => {
+        const isSectionAllChecked =
+          section.items.length > 0 &&
+          section.items.every((item) => {
+            const perm = formData.permissions.find(
+              (p) => p.page === item.label
+            );
+            return perm && perm.read && perm.write && perm.delete;
+          });
+
+        return (
+          <React.Fragment key={section.section}>
+            {/* ===== Section Header ===== */}
+            <tr className="bg-gray-50 border-t border-b border-gray-200">
+              <td
+                colSpan={4}
+                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-gray-500"
+              >
+                {section.section}
+              </td>
+              <td className="px-4 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={isSectionAllChecked}
+                  onChange={(e) =>
+                    handleSectionSelectAll(section.section, e.target.checked)
+                  }
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+              </td>
+            </tr>
+
+            {/* ===== Pages ===== */}
+            {section.items.map((item) => {
+              const perm =
+                formData.permissions.find(
+                  (p) => p.page === item.label
+                ) || {
+                  read: false,
+                  write: false,
+                  delete: false,
+                };
+
+              const isAllChecked =
+                perm.read && perm.write && perm.delete;
+
+              return (
+                <tr
+                  key={item.label}
+                  className="border-b border-gray-200 hover:bg-blue-50/40 transition"
+                >
+                  <td className="px-5 py-2 font-medium text-gray-800">
+                    {item.label}
+                  </td>
+
+                  {["read", "write", "delete"].map((type) => (
+                    <td
+                      key={type}
+                      className="px-4 py-2 text-center"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={perm[type]}
+                        onChange={() =>
+                          handlePermissionChange(item.label, type)
+                        }
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                    </td>
+                  ))}
+
+                  <td className="px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllChecked}
+                      onChange={(e) =>
+                        handleSelectAll(item.label, e.target.checked)
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </React.Fragment>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
 
                         <div className="flex justify-end gap-3 mt-6">
                             <button

@@ -92,19 +92,41 @@ const AddMember = () => {
     "w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500";
 
   return (
-    <div className="space-y-5">
+    <div className="">
       {/* HEADER */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Member Registration
-        </h2>
-        <button
-          onClick={() => navigate("/member/member-list")}
-          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-        >
-          Member List
-        </button>
+
+ <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-between items-center px-6 py-4 h-25">
+          <div className="flex  gap-3">
+            <div className="flex flex-col ">
+              <h2 className="text-xl font-semibold text-white ">
+               Add Member Registration
+              </h2>
+              <p className="text-sm text-blue-100">
+                Fill in the details below to add a new member to the Namo Gange Trust.
+              </p>
+            </div>
+          </div>
+          <div>
+            <button
+             onClick={() => navigate("/member/member-list")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+            >
+              {" "}
+              Member List
+            </button>
+          </div>
+        </div>
       </div>
+
+       <div className="space-y-3 p-5">
       {/* FORM */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -1186,6 +1208,7 @@ const AddMember = () => {
             </div>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );
