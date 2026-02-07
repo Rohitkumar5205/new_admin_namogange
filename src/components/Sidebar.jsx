@@ -420,7 +420,7 @@ export default function Sidebar() {
   const sidebarData = processSidebarData();
 
   return (
-    <aside className="w-64 bg-white shadow-md h-screen flex flex-col">
+    <aside className="w-64 shrink-0 bg-white shadow-md h-screen flex flex-col">
       {/* LOGO */}
       <div className="h-15 px-4 flex justify-center items-center shadow-md">
         <img

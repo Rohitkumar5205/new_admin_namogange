@@ -34,16 +34,37 @@ const SupportList = () => {
   }, [dispatch]);
 
   return (
-    <div className=" space-y-6">
+    <div className=" ">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Support List Management
-        </h2>
-      </div>
+      
+        <div
+        
+className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                {" "}
+                Support List Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Manage and view all user supports in one place.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+<div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
       <CommonTable data={supports || []} columns={columns} />
+    </div>
     </div>
   );
 };

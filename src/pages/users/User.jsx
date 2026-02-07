@@ -195,17 +195,34 @@ const User = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
-      <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add User Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update user details and roles.
-        </p>
+       <div
+
+className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                {" "}
+                User Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update user details and roles. Manage user access and permissions effectively to ensure secure and efficient operations within the system.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
+<div className="space-y-3 p-5">
       {/* ================= FORM (DESIGN SAME) ================= */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -588,6 +605,7 @@ hover:after:w-full"
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

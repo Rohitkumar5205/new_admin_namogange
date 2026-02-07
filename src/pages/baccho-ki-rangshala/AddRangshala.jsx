@@ -112,7 +112,7 @@ const AddRangshala = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* ================= HEADER ================= */}
       <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
         <h2 className="text-lg font-medium text-gray-800">

@@ -122,7 +122,7 @@ const Table = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       {/* TOOLBAR */}
       <div className="flex flex-col lg:flex-row justify-between gap-4 bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center gap-2 text-sm">
