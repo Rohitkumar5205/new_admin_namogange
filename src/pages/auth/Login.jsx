@@ -138,8 +138,10 @@ const Login = () => {
   // UI
   // ======================
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-md border border-gray-200 rounded-md px-8 pb-10 pt-6 w-[90%] max-w-sm">
+<div className="w-full h-screen flex items-center justify-center 
+bg-gradient-to-r from-orange-200 via-cyan-200 to-blue-300">
+
+      <div className="bg-white shadow-md border border-gray-200 rounded-md px-8 pb-10 pt-6 w-[90%] max-w-md">
         {/* Logo */}
         <div className="w-full flex justify-center mb-4">
           <img

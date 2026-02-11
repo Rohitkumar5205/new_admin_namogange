@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
+import { createVolunteer } from "../../redux/slices/volunteer/volunteerSlice";
 
 const AddVolunteer = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const initialFormState = {
     title: "",
@@ -106,6 +109,27 @@ const AddVolunteer = () => {
     } else {
       console.log("SUBMIT DATA 👉", formData);
       alert("Member Added Successfully ✅");
+      const data = new FormData();
+      Object.keys(formData).forEach((key) => {
+        data.append(key, formData[key]);
+      });
+
+      // Add user_id for activity log
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?._id) {
+        data.append("user_id", user._id);
+      }
+
+      dispatch(createVolunteer(data))
+        .unwrap()
+        .then(() => {
+          alert("Volunteer Added Successfully ✅");
+          setFormData(initialFormState);
+          navigate("/volunteer/volunteer-list");
+        })
+        .catch((err) => {
+          alert("Error adding volunteer: " + (err.message || err));
+        });
     }
 
     setFormData(initialFormState);
@@ -118,18 +142,7 @@ const AddVolunteer = () => {
   return (
     <div className="">
       {/* HEADER */}
-
-      {/* <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Volunteer Registration
-        </h2>
-        <button
-          onClick={() => navigate("/volunteer/volunteer-list")}
-          className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-        >
-          Volunteer List
-        </button>
-      </div> */}
+      
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"

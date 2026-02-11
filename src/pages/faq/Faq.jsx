@@ -148,35 +148,36 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
       <div className="space-y-3 p-5">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-base font-medium text-gray-800 mb-4">
+          <h3 className="text-base font-medium text-gray-800 mb-2">
             {isEdit ? "Update FAQ" : "Add New FAQ"}
           </h3>
           <form onSubmit={handleSubmit} className={`grid grid-cols-1 gap-6 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
-              <textarea name="question" value={formData.question} onChange={handleChange} rows="3" className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500" required disabled={isFormDisabled} />
+              <textarea name="question" value={formData.question} onChange={handleChange} rows="3" className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500" required disabled={isFormDisabled} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Answer</label>
               <Editor value={formData.answer} onTextChange={handleEditorChange} style={{ height: "180px" }} className="w-full text-sm outline-none" readOnly={isFormDisabled} />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500" disabled={isFormDisabled} />
+                <input type="text" name="category" value={formData.category} onChange={handleChange} className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500" disabled={isFormDisabled} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none" disabled={isFormDisabled}>
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none" disabled={isFormDisabled}>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+              <div className="flex justify-end mt-6 gap-3">
+              <button type="button" onClick={resetForm} disabled={isSubmitting || isFormDisabled} className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
+              <button type="submit" disabled={isSubmitting || isFormDisabled} className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update FAQ" : "Add FAQ"}</button>
             </div>
-            <div className="flex justify-end gap-3">
-              <button type="button" onClick={resetForm} disabled={isSubmitting || isFormDisabled} className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
-              <button type="submit" disabled={isSubmitting || isFormDisabled} className={`px-6 py-1.5 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update FAQ" : "Add FAQ"}</button>
             </div>
+            
           </form>
         </div>
 
@@ -206,7 +207,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     </td>
                     {(canWrite || canDelete) && (
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           {canWrite && <button onClick={() => handleEdit(faq)} className="text-green-600">Edit</button>}
                           {canDelete && <button onClick={() => handleDelete(faq._id)} className="text-red-600">Delete</button>}
                         </div>

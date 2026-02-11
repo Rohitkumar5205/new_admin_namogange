@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
+import { createMember } from "../../redux/slices/membership/memberSlice";
+import { showSuccess, showError } from "../../utils/toastService";
 
 const AddMember = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const initialFormState = {
     title: "",
@@ -43,6 +47,7 @@ const AddMember = () => {
   };
   const [formData, setFormData] = useState(initialFormState);
   const [isEdit, setIsEdit] = useState(false);
+  const { loading } = useSelector((state) => state.member);
 
   const { isFormDisabled } = useRoleRights(PageNames.ADD_MEMBER);
 
@@ -80,12 +85,28 @@ const AddMember = () => {
       console.log("UPDATE DATA 👉", formData);
       alert("Member updated successfully ✅");
     } else {
-      console.log("SUBMIT DATA 👉", formData);
-      alert("Member Added Successfully ✅");
-    }
+      const data = new FormData();
+      Object.keys(formData).forEach((key) => {
+        data.append(key, formData[key]);
+      });
 
-    setFormData(initialFormState);
-    setIsEdit(false);
+      // Add user_id for activity log
+      const authUser = JSON.parse(localStorage.getItem("user"));
+      if (authUser?.id) {
+        data.append("user_id", authUser.id);
+      }
+
+      dispatch(createMember(data))
+        .unwrap()
+        .then(() => {
+          showSuccess("Member Added Successfully ✅");
+          setFormData(initialFormState);
+          navigate("/member/member-list");
+        })
+        .catch((err) => {
+          showError("Error adding member: " + (err.message || err));
+        });
+    }
   };
 
   const inputClass =
@@ -134,7 +155,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         </h3>
         <form
           onSubmit={handleSubmit}
-          className={`grid grid-cols-1 md:grid-cols-6 gap-4  ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4  ${isFormDisabled || loading ? "opacity-60 cursor-not-allowed" : ""}`}
         >
           {/* BASIC DETAILS */}
           <div>
@@ -147,7 +168,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               onChange={handleChange}
               className={inputClass}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Select Title</option>
               <option>Mr</option>
@@ -167,7 +188,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -182,7 +203,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -197,7 +218,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
           <div>
@@ -210,7 +231,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               onChange={handleChange}
               className={inputClass}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Gender</option>
               <option>Male</option>
@@ -229,7 +250,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -243,7 +264,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               onChange={handleChange}
               className={inputClass}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Occupation</option>
               <option>Service</option>
@@ -261,7 +282,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               onChange={handleChange}
               className={inputClass}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Organisation Type</option>
               <option>Private</option>
@@ -279,7 +300,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               onChange={handleChange}
               className={inputClass}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Designation</option>
               <option>Manager</option>
@@ -298,7 +319,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -315,7 +336,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
           <div>
@@ -330,7 +351,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
           <div>
@@ -344,7 +365,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
           <div>
@@ -358,7 +379,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -373,7 +394,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -388,7 +409,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Country</option>
               <option>India</option>
@@ -405,7 +426,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">State</option>
               <option>Uttar Pradesh</option>
@@ -423,7 +444,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">City</option>
               <option>Lucknow</option>
@@ -441,7 +462,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -455,7 +476,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             >
               <option value="">Select Blood Group</option>
 
@@ -489,7 +510,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
           <div>
@@ -503,7 +524,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               onChange={handleChange}
               required
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || loading}
             />
           </div>
 
@@ -530,7 +551,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("Arogya Sangoshti")}
                   onChange={() => handleCheckbox("Arogya Sangoshti")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Arogya Sangoshti
               </label>
@@ -544,7 +565,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("Panchkarma Clinic")}
                   onChange={() => handleCheckbox("Panchkarma Clinic")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Panchkarma Clinic
               </label>
@@ -560,7 +581,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "The Grand Master of Yoga"
                   )}
                   onChange={() => handleCheckbox("The Grand Master of Yoga")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 The Grand Master of Yoga
               </label>
@@ -576,7 +597,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "Arogya Film Festival"
                   )}
                   onChange={() => handleCheckbox("Arogya Film Festival")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Arogya Film Festival
               </label>
@@ -592,7 +613,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "Bachchon Ki Rangshala"
                   )}
                   onChange={() => handleCheckbox("Bachchon Ki Rangshala")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Bachchon Ki Rangshala
               </label>
@@ -608,7 +629,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "Shrimad Bhagwat Katha"
                   )}
                   onChange={() => handleCheckbox("Shrimad Bhagwat Katha")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Shrimad Bhagwat Katha
               </label>
@@ -624,7 +645,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "The Yogshalajobs.com"
                   )}
                   onChange={() => handleCheckbox("The Yogshalajobs.com")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 The Yogshalajobs.com
               </label>
@@ -638,7 +659,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("Ayush Mitra")}
                   onChange={() => handleCheckbox("Ayush Mitra")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Ayush Mitra
               </label>
@@ -656,7 +677,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={() =>
                     handleCheckbox("Indian Contemporary Art (ICOA)")
                   }
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Indian Contemporary Art (ICOA)
               </label>
@@ -672,7 +693,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "Swachh Bharat Sankalp"
                   )}
                   onChange={() => handleCheckbox("Swachh Bharat Sankalp")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Swachh Bharat Sankalp
               </label>
@@ -686,7 +707,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("The Yogshala Expo")}
                   onChange={() => handleCheckbox("The Yogshala Expo")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 The Yogshala Expo
               </label>
@@ -700,7 +721,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("Ann Sewa")}
                   onChange={() => handleCheckbox("Ann Sewa")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Ann Sewa
               </label>
@@ -716,7 +737,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     "Meri Beti Mera Abhimaan"
                   )}
                   onChange={() => handleCheckbox("Meri Beti Mera Abhimaan")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Meri Beti Mera Abhimaan
               </label>
@@ -730,7 +751,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("The Yogshala Clinic")}
                   onChange={() => handleCheckbox("The Yogshala Clinic")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 The Yogshala Clinic
               </label>
@@ -744,7 +765,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("AcharyajiOnline.com")}
                   onChange={() => handleCheckbox("AcharyajiOnline.com")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 AcharyajiOnline.com
               </label>
@@ -758,7 +779,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("NGT Farms")}
                   onChange={() => handleCheckbox("NGT Farms")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 NGT Farms
               </label>
@@ -772,7 +793,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   type="checkbox"
                   checked={formData.initiatives.includes("Vaidhyashala Clinic")}
                   onChange={() => handleCheckbox("Vaidhyashala Clinic")}
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Vaidhyashala Clinic
               </label>
@@ -790,7 +811,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={() =>
                     handleCheckbox("Swachh Ghaziabad Swasth Ghaziabad")
                   }
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Swachh Ghaziabad Swasth Ghaziabad
               </label>
@@ -819,7 +840,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 7 Days in a Month
               </label>
@@ -832,7 +853,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.volunteering_for === "15_days"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 15 Days in a Month
               </label>
@@ -845,7 +866,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.volunteering_for === "weekends"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Weekends
               </label>
@@ -858,7 +879,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.volunteering_for === "specific_events"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Specific Events & Campaigns
               </label>
@@ -877,7 +898,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 NGT Membership
               </label>
@@ -890,7 +911,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.networking_for === "partnership"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Partnership
               </label>
@@ -903,7 +924,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.networking_for === "associations"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Associations
               </label>
@@ -916,7 +937,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.networking_for === "awareness_drives"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Awareness Drives
               </label>
@@ -935,7 +956,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   className="accent-[#DF562C]"
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Health & Education
               </label>
@@ -948,7 +969,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.area_of_interest === "art_culture"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Art & Culture
               </label>
@@ -961,7 +982,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.area_of_interest === "environment"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Environment
               </label>
@@ -974,7 +995,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   checked={formData.area_of_interest === "women_empowerment"}
                   onChange={handleChange}
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Women Empowerment
               </label>
@@ -993,7 +1014,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   value="donation"
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Donation
               </label>
@@ -1007,7 +1028,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   value="charity"
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Charity
               </label>
@@ -1021,7 +1042,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   value="sponsorships"
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Sponsorships
               </label>
@@ -1037,7 +1058,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   onChange={handleChange}
                   value="fund_raising_activities"
                   className="accent-[#DF562C]"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
                 Fund Raising Activities
               </label>
@@ -1063,7 +1084,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
               <div>
@@ -1077,7 +1098,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
               <div>
@@ -1091,7 +1112,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
               <div>
@@ -1105,7 +1126,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
               <div>
@@ -1119,7 +1140,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
               <div>
@@ -1133,7 +1154,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   className={inputClass}
                   onChange={handleChange}
                   required
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 />
               </div>
             </div>
@@ -1159,7 +1180,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     accept="image/*"
                     onChange={handleChange}
                     required
-                    disabled={isFormDisabled}
+                    disabled={isFormDisabled || loading}
                     className={` w-full text-sm text-gray-700
         file:mr-4 file:py-1 file:px-4
         file:rounded file:border-0
@@ -1169,7 +1190,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         border border-gray-300 rounded
         cursor-pointer focus:outline-none
         focus:ring-1 focus:ring-blue-500
-        ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        ${isFormDisabled || loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                 </div>
 
@@ -1189,15 +1210,15 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     setIsEdit(false);
                   }}
                   className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 cursor-pointer"
-                  disabled={isFormDisabled}
+                  disabled={isFormDisabled || loading}
                 >
                   {" "}
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={isFormDisabled}
-                  className={`px-6 py-1 text-sm rounded text-white ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""} ${isEdit
+                  disabled={isFormDisabled || loading}
+                  className={`px-6 py-1 text-sm rounded text-white ${isFormDisabled || loading ? "opacity-50 cursor-not-allowed" : ""} ${isEdit
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-green-600 hover:bg-green-700"
                     }`}

@@ -25,6 +25,8 @@ import ImageCategory from "./pages/add_by_admin/ImageCategory";
 import User from "./pages/users/User";
 import ListMember from "./pages/member/ListMember";
 import AddMember from "./pages/member/AddMember";
+import VolunteerOverview from "./pages/volunteer/VolunteerOverview";
+import MemberOverview from "./pages/member/MemberOverview";
 import AddVolunteer from "./pages/volunteer/AddVolunteer";
 import ListVolunteer from "./pages/volunteer/ListVolunteer";
 import ActivityLog from "./pages/users/ActivityLog";
@@ -83,6 +85,7 @@ import IP from "./pages/add_by_admin/IP";
 import Role from "./pages/add_by_admin/Role";
 import RoleRights from "./pages/role_rights/RoleRights";
 import AddSidebar from "./pages/add_by_admin/AddSidebar";
+import Overview from "./pages/overview/Overview";
 
 function App() {
   return (
@@ -133,6 +136,8 @@ function App() {
             {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
             <Route path="/member/add-member" element={<AddMember />} />
             <Route path="/member/member-list" element={<ListMember />} />
+            <Route path="/volunteer/volunteer-overview/:id" element={<VolunteerOverview />} />
+            <Route path="/member/member-overview/:id" element={<MemberOverview />} />
             <Route path="/volunteer/add-volunteer" element={<AddVolunteer />} />
             <Route
               path="/volunteer/volunteer-list"
@@ -162,6 +167,7 @@ function App() {
             <Route path="/role-rights" element={<RoleRights />} />
             <Route path="/enquiry/enquiry-list" element={<EnquiryList />} />
             <Route path="/support/support-list" element={<SupportList />} />
+            <Route path="/overview/profile/:id" element={<Overview />} />
             <Route path="/donation/add-donation" element={<AddDonation />} />
             <Route path="/donation/donation-list" element={<DonationList />} />
             <Route

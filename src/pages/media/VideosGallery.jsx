@@ -135,7 +135,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
               <h2 className="text-xl font-semibold text-white text-center">
                 Videos Gallery Management
@@ -172,7 +172,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 placeholder="Enter title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 required
                 disabled={isFormDisabled}
               />
@@ -188,7 +188,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               />
             </div>
@@ -202,7 +202,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
@@ -223,7 +223,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 name="orderBy"
                 value={formData.orderBy}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               >
                 <option value="">Select Order</option>
@@ -246,7 +246,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 placeholder="Enter location"
                 value={formData.location}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               />
             </div>
@@ -263,7 +263,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 required
                 onChange={handleChange}
                 placeholder="https://youtube.com/embed/xxxx"
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               />
             </div>
@@ -277,7 +277,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
@@ -291,7 +291,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
                   isSubmitting || isFormDisabled
                     ? "opacity-50 cursor-not-allowed"
                     : ""
@@ -303,7 +303,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded-md text-white ${
+                className={`px-6 py-1 text-sm rounded text-white ${
                   isEdit
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-green-600 hover:bg-green-700"

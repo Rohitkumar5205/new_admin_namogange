@@ -106,10 +106,10 @@ const FollowUpContestant = () => {
           </h2>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <button
             onClick={() => navigate("/tgym/add-contestant")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             ADD CONTESTANTS DATA
           </button>

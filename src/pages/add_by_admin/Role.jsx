@@ -170,7 +170,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
                 <div className="absolute inset-0 bg-white/10"></div>
                 <div className="relative flex justify-center items-center px-6 py-4 h-25">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                         <div className="flex flex-col text-center">
                             <h2 className="text-xl font-semibold text-white text-center">
                                 Role Management
@@ -304,7 +304,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                             />
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                             {["All", "Active", "Inactive"].map((status) => (
                                 <button
                                     key={status}

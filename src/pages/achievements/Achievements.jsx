@@ -207,7 +207,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 value={formData.title}
                                 onChange={handleChange}
                                 placeholder="Enter achievement title"
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                                 disabled={isFormDisabled}
                                 required
                             />
@@ -240,7 +240,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 onChange={handleChange}
                                 placeholder="Enter link"
                                 disabled={isFormDisabled}
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
 
@@ -255,7 +255,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 name="image"
                                 onChange={handleChange}
                                 disabled={isFormDisabled}
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
 
@@ -269,7 +269,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 value={formData.status}
                                 onChange={handleChange}
                                 disabled={isFormDisabled}
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none"
                             >
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
@@ -287,7 +287,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 onChange={handleChange}
                                 placeholder="Enter meta keywords"
                                 disabled={isFormDisabled}
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
 
@@ -303,7 +303,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 placeholder="Enter meta description"
                                 rows={1}
                                 disabled={isFormDisabled}
-                                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                             />
                         </div>
 
@@ -329,7 +329,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 type="button"
                                 onClick={handleCancel}
                                 disabled={isSubmitting || isFormDisabled}
-                                className={`px-5 py-1.5 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                                className={`px-5 py-1 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
                                 Cancel
@@ -338,7 +338,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                             <button
                                 type="submit"
                                 disabled={isSubmitting || isFormDisabled}
-                                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                                className={`px-6 py-1 text-sm rounded text-white ${isEdit
                                     ? "bg-blue-600 hover:bg-blue-700"
                                     : "bg-green-600 hover:bg-green-700"
                                     } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -411,7 +411,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                         </td>
                                         {(canWrite || canDelete) && (
                                             <td className="px-4 py-3">
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-4">
                                                     {canWrite && (
                                                         <button
                                                             className="text-green-600 hover:underline"

@@ -3,30 +3,36 @@ import api from "../../api/axiosInstance";
 import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 /* ===============================
-   CREATE MEMBER
+   CREATE VOLUNTEER
 ================================ */
-export const createMember = createAsyncThunk(
-  "member/create",
+export const createVolunteer = createAsyncThunk(
+  "volunteer/create",
   async (formData, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
+
     try {
-      const res = await api.post("/members/create", formData, {
+      const res = await api.post("/volunteers/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-      dispatch(
-        createActivityLogThunk({
-          user_id: formData.get("user_id"),
-          message: "New member created",
-          section: "Member Management",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/member/member-create`,
-        })
-      );
+
+      const userId = formData.get("user_id");
+      if (userId) {
+        dispatch(
+          createActivityLogThunk({
+            user_id: userId,
+            message: "New volunteer created",
+            section: "Volunteer Management",
+            link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/add-volunteer`,
+          })
+        );
+      }
+
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -35,13 +41,13 @@ export const createMember = createAsyncThunk(
 );
 
 /* ===============================
-   GET ALL MEMBERS
+   GET ALL VOLUNTEERS
 ================================ */
-export const getAllMembers = createAsyncThunk(
-  "member/getAll",
+export const getAllVolunteers = createAsyncThunk(
+  "volunteer/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/members");
+      const res = await api.get("/volunteers");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -50,13 +56,13 @@ export const getAllMembers = createAsyncThunk(
 );
 
 /* ===============================
-   GET MEMBER BY ID
+   GET VOLUNTEER BY ID
 ================================ */
-export const getMemberById = createAsyncThunk(
-  "member/getById",
+export const getVolunteerById = createAsyncThunk(
+  "volunteer/getById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/members/${id}`);
+      const res = await api.get(`/volunteers/${id}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -65,30 +71,36 @@ export const getMemberById = createAsyncThunk(
 );
 
 /* ===============================
-   UPDATE MEMBER
+   UPDATE VOLUNTEER
 ================================ */
-export const updateMember = createAsyncThunk(
-  "member/update",
+export const updateVolunteer = createAsyncThunk(
+  "volunteer/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
+
     try {
-      const res = await api.put(`/members/${id}`, formData, {
+      const res = await api.put(`/volunteers/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-      dispatch(
-        createActivityLogThunk({
-          user_id: formData.get("user_id"),
-          message: "Member updated",
-          section: "Member Management",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/member/edit-member/${id}`,
-        })
-      );
+
+      const userId = formData.get("user_id");
+      if (userId) {
+        dispatch(
+          createActivityLogThunk({
+            user_id: userId,
+            message: "Volunteer updated",
+            section: "Volunteer Management",
+            link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/edit-volunteer/${id}`,
+          })
+        );
+      }
+
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -97,27 +109,32 @@ export const updateMember = createAsyncThunk(
 );
 
 /* ===============================
-   DELETE MEMBER
+   DELETE VOLUNTEER
 ================================ */
-export const deleteMember = createAsyncThunk(
-  "member/delete",
+export const deleteVolunteer = createAsyncThunk(
+  "volunteer/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
+
     try {
-      await api.delete(`/members/${id}`, {
+      await api.delete(`/volunteers/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      dispatch(
-        createActivityLogThunk({
-          user_id,
-          message: "Member deleted",
-          section: "Member Management",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/member/member-list`,
-        })
-      );
+
+      if (user_id) {
+        dispatch(
+          createActivityLogThunk({
+            user_id,
+            message: "Volunteer deleted",
+            section: "Volunteer Management",
+            link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/volunteer-list`,
+          })
+        );
+      }
+
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -128,98 +145,100 @@ export const deleteMember = createAsyncThunk(
 /* ===============================
    SLICE
 ================================ */
-const memberSlice = createSlice({
-  name: "member",
+const volunteerSlice = createSlice({
+  name: "volunteer",
   initialState: {
-    members: [],
-    singleMember: null,
+    volunteers: [],
+    singleVolunteer: null,
     loading: false,
     error: null,
   },
 
   reducers: {
-    clearMemberError: (state) => {
+    clearVolunteerError: (state) => {
       state.error = null;
     },
-    clearSingleMember: (state) => {
-      state.singleMember = null;
+    clearSingleVolunteer: (state) => {
+      state.singleVolunteer = null;
     },
   },
 
   extraReducers: (builder) => {
     builder
       /* CREATE */
-      .addCase(createMember.pending, (state) => {
+      .addCase(createVolunteer.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createMember.fulfilled, (state, action) => {
+      .addCase(createVolunteer.fulfilled, (state, action) => {
         state.loading = false;
-        state.members.unshift(action.payload);
+        state.volunteers.unshift(action.payload);
       })
-      .addCase(createMember.rejected, (state, action) => {
+      .addCase(createVolunteer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET ALL */
-      .addCase(getAllMembers.pending, (state) => {
+      .addCase(getAllVolunteers.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllMembers.fulfilled, (state, action) => {
+      .addCase(getAllVolunteers.fulfilled, (state, action) => {
         state.loading = false;
-        state.members = action.payload;
+        state.volunteers = action.payload;
       })
-      .addCase(getAllMembers.rejected, (state, action) => {
+      .addCase(getAllVolunteers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* GET BY ID */
-      .addCase(getMemberById.pending, (state) => {
+      .addCase(getVolunteerById.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getMemberById.fulfilled, (state, action) => {
+      .addCase(getVolunteerById.fulfilled, (state, action) => {
         state.loading = false;
-        state.singleMember = action.payload;
+        state.singleVolunteer = action.payload;
       })
-      .addCase(getMemberById.rejected, (state, action) => {
+      .addCase(getVolunteerById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* UPDATE */
-      .addCase(updateMember.pending, (state) => {
+      .addCase(updateVolunteer.pending, (state) => {
         state.loading = true;
       })
-      .addCase(updateMember.fulfilled, (state, action) => {
+      .addCase(updateVolunteer.fulfilled, (state, action) => {
         state.loading = false;
-        state.members = state.members.map((item) =>
+        state.volunteers = state.volunteers.map((item) =>
           item._id === action.payload._id ? action.payload : item
         );
       })
-      .addCase(updateMember.rejected, (state, action) => {
+      .addCase(updateVolunteer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* DELETE */
-      .addCase(deleteMember.pending, (state) => {
+      .addCase(deleteVolunteer.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteMember.fulfilled, (state, action) => {
+      .addCase(deleteVolunteer.fulfilled, (state, action) => {
         state.loading = false;
-        state.members = state.members.filter(
+        state.volunteers = state.volunteers.filter(
           (item) => item._id !== action.payload
         );
       })
-      .addCase(deleteMember.rejected, (state, action) => {
+      .addCase(deleteVolunteer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { clearMemberError, clearSingleMember } =
-  memberSlice.actions;
+export const {
+  clearVolunteerError,
+  clearSingleVolunteer,
+} = volunteerSlice.actions;
 
-export default memberSlice.reducer;
+export default volunteerSlice.reducer;

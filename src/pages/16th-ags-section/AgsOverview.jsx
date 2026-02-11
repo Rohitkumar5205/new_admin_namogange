@@ -192,16 +192,31 @@ const AgsOverview = () => {
       <div className="w-full h-auto ">
         {/* Header */}
 
-        <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-          <div>
-            <h2 className="text-lg font-medium text-gray-800">
-              Individual Data
-            </h2>
+         <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+                Individual Data
+              </h2>
+              <p className="text-sm text-blue-100">
+                  View and manage individual contestant data, including personal details, registration information, and communication history.
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
+<div className="space-y-3 p-5">
         {/* Main Content */}
-        <div className="flex flex-col mt-4 gap-4">
+        <div className="flex flex-col  gap-4">
           {/* Client Details Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
             <div className="flex justify-between items-center mb-2">
@@ -211,7 +226,7 @@ const AgsOverview = () => {
                 {selectedRows?.contestant?.surname}
                 {selectedRows?.contestant?.surname} Information
               </h2>
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <button
                   onClick={() =>
                     // navigate(`/16th-ags-section/ags-payment/${selectedRows.id}`, {
@@ -411,7 +426,7 @@ const AgsOverview = () => {
                         </label>
                         <select
                           name=""
-                          className="w-full px-2 py-1 text-xs font-semibold border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                          className="w-full px-2 py-1.5 rounded text-xs font-semibold border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                         >
                           <option value="">Select Here</option>
                           {forwordOpt.map((value, index) => (
@@ -434,7 +449,7 @@ const AgsOverview = () => {
                     id=""
                     className="w-full px-2 py-1.5 text-xs font-semibold 
               border border-gray-300 focus:ring-1
-               focus:ring-blue-500 focus:border-transparent focus:outline-none bg-gray-200"
+               focus:ring-blue-500 rounded focus:border-transparent focus:outline-none bg-gray-200"
                     readOnly
                   />
                 </div>
@@ -444,12 +459,12 @@ const AgsOverview = () => {
                   Description
                 </label>
                 <textarea
-                  className="w-full px-2 text-sm border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
+                  className="w-full px-2 text-sm border rounded  border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                   rows={4}
                   placeholder="Update Status..."
                 ></textarea>
                 <div className="flex justify-end mt-2">
-                  <button className="px-4 py-2 text-xs bg-[#3598dc] text-white cursor-pointer">
+                  <button className="px-4 py-2 text-xs bg-[#3598dc] rounded text-white cursor-pointer">
                     SAVE
                   </button>
                 </div>
@@ -465,7 +480,7 @@ const AgsOverview = () => {
                 {selectedRows?.volunteer?.Title} {selectedRows?.volunteer?.name}{" "}
                 {selectedRows?.volunteer?.surname} Conversation History
               </h1>
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <button className="p-1.5 border border-gray-300 rounded bg-white cursor-pointer hover:bg-gray-50 text-blue-500">
                   <BsChatDots size={18} />
                 </button>
@@ -695,6 +710,7 @@ const AgsOverview = () => {
               </div>
             </>
           )}
+        </div>
         </div>
       </div>
     </>

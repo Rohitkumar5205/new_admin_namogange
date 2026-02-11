@@ -10,16 +10,18 @@ const columns = [
     key: "name",
     label: "Full Name",
     render: (row) => (
-      <Link to="/dashboard" className="text-blue-600 hover:underline">
+      <Link
+        to={`/overview/profile/${row._id}`}
+        state={{ data: row, type: "support" }}
+        className="text-blue-600 hover:underline"
+      >
         {row.name}
       </Link>
     ),
   },
   { key: "email", label: "Email Id" },
   { key: "mobile", label: "Mobile No" },
-  { key: "dob", label: "Date of Birth" },
   { key: "supportType", label: "Support Type" },
-  { key: "fullAddress", label: "Full Address" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },
   { key: "prefferedContribution", label: "Preferred Contribution" },
@@ -48,7 +50,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
               <h2 className="text-xl font-semibold text-white text-center">
                 {" "}

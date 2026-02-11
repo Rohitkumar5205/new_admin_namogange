@@ -53,6 +53,7 @@ const data = [
 ];
 
 const NewData = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     description: "",
     image: null,
@@ -73,40 +74,64 @@ const NewData = () => {
     e.target.reset();
   };
   return (
-    <div className=" space-y-6">
+    <div className=" ">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <div>
-          {/* <h2 className="text-lg font-medium text-gray-800">
-         Delegate Section 2023-24
-          </h2> */}
-          <h2 className="text-lg font-medium text-gray-800">New Client List</h2>
-        </div>
-        <div className="flex gap-2">
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
+     
+       <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10">
+
+        {/* Content */}
+        <div className="relative flex justify-between items-center px-6 py-4 h-25">
+          <div className="flex  gap-3">
+            <div className="flex flex-col ">
+              <h2 className="text-xl font-semibold text-white ">
+                Web Registration Management
+              </h2>
+             
+            </div>
+          </div>
+         <div className="flex gap-1">
+          <button
+              onClick={() => navigate("/16th-ags-section/ags-add-data")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
             ADD NEW DATA
           </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
+          <button
+              onClick={() => navigate("/16th-ags-section/web-enquiry")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
             WEB REGISTRATION
           </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
-            NEW DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
+       
+          <button
+              onClick={() => navigate("/16th-ags-section/warm-data")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
             WARM DATA
           </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
+          <button
+              onClick={() => navigate("/16th-ags-section/hot-data")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
             HOT DATA
           </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
-            COLD DATA
+          <button
+              onClick={() => navigate("/16th-ags-section/delegate-list")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
+           CONFIRM DATA
           </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded">
+          <button
+              onClick={() => navigate("/16th-ags-section/master-delegate-data")}
+           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
             MASTER DATA
           </button>
         </div>
+        </div>
+      </div>
       </div>
 
+<div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
       <CommonTable data={data} columns={columns} />
 
@@ -143,7 +168,7 @@ const NewData = () => {
               name="image"
               onChange={handleFileChange}
               required
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div className="md:col-span-1">
@@ -155,7 +180,7 @@ const NewData = () => {
               name="document"
               onChange={handleFileChange}
               required
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -170,6 +195,7 @@ const NewData = () => {
           </div>
           {/* </div> */}
         </form>
+      </div>
       </div>
     </div>
   );
