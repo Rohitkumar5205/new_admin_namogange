@@ -1,52 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import CommonTable from "../../components/CommonTable";
+import { getAllVolunteers } from "../../redux/slices/volunteer/volunteerSlice";
 
-const data = [
-  {
-    id: 1,
-    applicant_name: "Mr. Rahul Verma",
-    mobile: "9876543210",
-    email: "rahul@example.com",
-    occupation: "Service",
-    organisation_type: "Private",
-    designation: "Manager",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-  },
-  {
-    id: 2,
-    applicant_name: "Mr. Amit Kumar",
-    mobile: "9876543211",
-    email: "amit@example.com",
-    occupation: "Business",
-    organisation_type: "Private",
-    designation: "Director",
-    city: "Gurgaon",
-    state: "Haryana",
-  },
-];
 const columns = [
   // { key: "applicant_name", label: "Applicant Name" },
   {
     key: "applicant_name",
     label: "Applicant Name",
     render: (row) => (
-      <Link to="/#" className="text-blue-600 hover:underline">
-        {row.applicant_name}
+      <Link to={`/volunteer/volunteer-overview/${row._id}`} state={{ data: row }} className="text-blue-600 hover:underline">
+        {row.title} {row.applicantName} {row.surname}
       </Link>
     ),
   },
   { key: "mobile", label: "Mobile No" },
   { key: "email", label: "Email ID" },
   { key: "occupation", label: "Occupation" },
-  { key: "organisation_type", label: "Organisation Type" },
   { key: "designation", label: "Designation" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },
 ];
 const ListVolunteer = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { volunteers, loading } = useSelector((state) => state.volunteer);
+
+  useEffect(() => {
+    dispatch(getAllVolunteers());
+  }, [dispatch]);
 
   return (
     <div className=" ">
@@ -60,7 +43,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-between items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col ">
               <h2 className="text-xl font-semibold text-white ">
                 Lists Volunteer Management
@@ -85,7 +68,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
       </div>
  <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
-      <CommonTable data={data} columns={columns} />
+      <CommonTable data={volunteers || []} columns={columns} loading={loading} />
       </div>
     </div>
   );

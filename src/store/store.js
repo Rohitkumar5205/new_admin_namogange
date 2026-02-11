@@ -39,6 +39,9 @@ import ipReducer from "../redux/slices/add_by_admin/ipSlice";
 import roleReducer from "../redux/slices/add_by_admin/roleSlice";
 import roleRightsReducer from "../redux/slices/role_rights/roleRightsSlice";
 import sidebarReducer from "../redux/slices/add_by_admin/addSidebarSlice";
+import memberReducer from "../redux/slices/membership/memberSlice";
+import volunteerReducer from "../redux/slices/volunteer/volunteerSlice";
+import agsDelegateReducer from "../redux/slices/ags/agsDelegateSlice";
 
 const store = configureStore({
   reducer: {
@@ -82,6 +85,9 @@ const store = configureStore({
     role: roleReducer,
     roleRights: roleRightsReducer,
     sidebar: sidebarReducer,
+    member: memberReducer,
+    volunteer: volunteerReducer,
+    agsDelegate: agsDelegateReducer,
   },
 });
 

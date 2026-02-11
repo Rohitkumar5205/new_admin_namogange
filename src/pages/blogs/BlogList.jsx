@@ -124,7 +124,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     </td>
                     {(canWrite || canDelete) && (
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           {canWrite && <button onClick={() => handleEdit(blog)} className="text-green-600 hover:underline">Edit</button>}
                           {canDelete && <button onClick={() => handleDelete(blog._id)} className="text-red-600 hover:underline">Delete</button>}
                         </div>

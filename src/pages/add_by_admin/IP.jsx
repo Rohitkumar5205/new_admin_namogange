@@ -150,7 +150,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
                 <div className="absolute inset-0 bg-white/10"></div>
                 <div className="relative flex justify-center items-center px-6 py-4 h-25">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                         <div className="flex flex-col text-center">
                             <h2 className="text-xl font-semibold text-white text-center">
                                 IP Management
@@ -265,7 +265,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
                     <div className="px-5 bg-gray-50  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
                         <h3 className="text-base font-medium text-gray-800">IP List</h3>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => {

@@ -449,7 +449,7 @@ export default function Sidebar() {
                       onClick={() => setOpenMenu(isOpen ? "" : item.label)}
                       className="flex items-center justify-between px-4 py-1.5 rounded cursor-pointer text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <Icon />
                         {item.label}
                       </div>

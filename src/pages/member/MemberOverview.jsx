@@ -6,82 +6,7 @@ import { BsChatDots } from "react-icons/bs";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 
-const TgymOverview = () => {
-  const rows = [
-    {
-      id: 1,
-      registration: { number: "TGMY-2021-536" },
-      contestant: {
-        Title: "Mr.",
-        name: "Vikas",
-        surname: "Mehra",
-        status: "Active",
-      },
-      mobile: { number: "9812345678" },
-      volunteer: { Title: "Mr.", name: "Rohit", surname: "Sharma" },
-      profession: { name: "Video Editor" },
-      gender: { name: "Male" },
-      event: "Audition Delhi",
-      category: "Senior",
-      email_address: "vikas@gmail.com",
-      alternate_mobile_number: "9812300000",
-      address: "Sector 45",
-      country: "India",
-      pincode: "122003",
-      contestants_type: "Individual",
-      university: "MDU",
-      college_name: "XYZ College",
-      main_coordinator: "Rohit",
-      sub_coordinator: "Amit",
-      enquiry_for: "Audition",
-      status: "Active",
-      contest: { name: "TGMY" },
-      enquiry: { for: "Audition" },
-      source: { name: "Instagram" },
-      city: { name: "Gurgaon" },
-      state: { name: "Haryana" },
-      fees: { amount: "400" },
-      user: { name: "Admin" },
-      updated: { date: "2025-02-01" },
-    },
-    {
-      id: 2,
-      registration: { number: "TGMY-2021-537" },
-      contestant: {
-        Title: "Ms.",
-        name: "Kritika",
-        surname: "Soni",
-        status: "Pending",
-      },
-      mobile: { number: "9823456789" },
-      volunteer: { Title: "Ms.", name: "Neha", surname: "Gupta" },
-      profession: { name: "Makeup Artist" },
-      gender: { name: "Female" },
-      event: "Video Round",
-      category: "Junior",
-      email_address: "kritika@gmail.com",
-      alternate_mobile_number: "9823400000",
-      address: "Town Hall",
-      country: "India",
-      pincode: "313001",
-      contestants_type: "Individual",
-      university: "MLSU",
-      college_name: "ABC College",
-      main_coordinator: "Neha",
-      sub_coordinator: "Pooja",
-      enquiry_for: "Video Round",
-      status: "Pending",
-      contest: { name: "TGMY" },
-      enquiry: { for: "Video Round" },
-      source: { name: "Facebook" },
-      city: { name: "Udaipur" },
-      state: { name: "Rajasthan" },
-      fees: { amount: "600" },
-      user: { name: "Coordinator" },
-      updated: { date: "2025-02-02" },
-    },
-  ];
-
+const MemberOverview = () => {
   // option data
 
   const forwordOpt = [
@@ -172,8 +97,10 @@ const TgymOverview = () => {
   // useNavigation logic
   const navigate = useNavigate();
 
-  const { id } = useParams();
-  const selectedRows = rows.find((item) => item.id === Number(id));
+  const location = useLocation();
+  const { data } = location.state || {};
+  const selectedRows = data;
+
   const printRef1 = useRef();
   //   const handlePrint1 = useReactToPrint({
   //     content: () => printRef1.current,
@@ -192,22 +119,37 @@ const TgymOverview = () => {
       <div className="w-full h-auto ">
         {/* Header */}
 
-        <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-          <div>
-            <h2 className="text-lg font-medium text-gray-800">Contestants</h2>
-          </div>
-        </div>
 
+   <div
+              className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+            >
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-white/10"></div>
+      
+              {/* Content */}
+              <div className="relative flex justify-center items-center px-6 py-4 h-25">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col ">
+                    <h2 className="text-xl font-semibold text-center text-white ">
+                        Member Overview & Profile Management
+                    </h2>
+                    <p className="text-sm text-blue-100">
+                        View and manage detailed member profiles, activities, and interactions in one place.    
+                    </p>
+                  </div>
+                </div>
+               
+              </div>
+            </div>
         {/* Main Content */}
-        <div className="flex flex-col mt-4 gap-4">
+        <div className="flex flex-col space-y-3 p-5">
           {/* Client Details Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold text-gray-600">
-                {selectedRows?.contestant?.Title}{" "}
-                {selectedRows?.contestant?.name}{" "}
-                {selectedRows?.contestant?.surname}
-                {selectedRows?.contestant?.surname} Information
+                {selectedRows?.title} {selectedRows?.applicantName}{" "}
+                {selectedRows?.surname} Information
               </h2>
               <div className="flex gap-1">
                 <button
@@ -215,9 +157,9 @@ const TgymOverview = () => {
                     // navigate(`/16th-ags-section/ags-payment/${selectedRows.id}`, {
                     //   state: selectedRows,
                     // })
-                    navigate("/tgym/tgym-payment")
+                    navigate("/16th-ags-section/ags-payment ")
                   }
-                  className="px-3 py-1 text-sm text-gray-700 bg-white hover:bg-gray-300 border border-gray-300 cursor-pointer"
+                  className="px-3 py-1 text-sm rounded text-gray-700 bg-white hover:bg-gray-300 border border-gray-300 cursor-pointer"
                 >
                   Account
                 </button>
@@ -229,15 +171,15 @@ const TgymOverview = () => {
                     //     state: selectedRows,
                     //   }
                     // )
-                    navigate("/tgym/edit-contestant")
+                    navigate("/16th-ags-section/ags-edit-data")
                   }
-                  className="flex items-center justify-center px-2.5 py-1.5 border border-gray-300 hover:bg-gray-100"
+                  className="flex items-center justify-center px-2.5 py-1.5 rounded border border-gray-300 hover:bg-gray-100"
                 >
                   <FaPencilAlt className="w-3 h-3" color="gray" />
                 </button>
                 <button
-                  // onClick={handlePrint1}
-                  className="bg-white px-2.5 py-1.5 text-xs cursor-pointer border border-gray-300 hover:bg-gray-100"
+                  onClick={handlePrint1}
+                  className="bg-white px-2.5 py-1.5 text-xs rounded cursor-pointer border border-gray-300 hover:bg-gray-100"
                 >
                   <FaPrint color="gray" />
                 </button>
@@ -256,50 +198,50 @@ const TgymOverview = () => {
                       colSpan={6}
                       className="bg-gray-300 px-2 py-1 text-[#3598dc] text-left"
                     >
-                      Contestant Personal Information
+                      Member Personal Information
                     </th>
                   </tr>
                   <tr className="text-left text-sm ">
-                    <th className="px-2 text-left py-2">Registration No.</th>
+                    <th className="px-2 text-left py-2">Member ID</th>
                     <td className="px-2 py-2 ">
-                      {selectedRows?.registration?.number}
+                      {selectedRows?._id}
                     </td>
 
-                    <th className="px-2 text-left py-2">Contestant Name</th>
+                    <th className="px-2 text-left py-2">Member Name</th>
                     <td className="px-2 py-2">
                       {" "}
-                      {selectedRows?.contestant?.name}
+                      {selectedRows?.title} {selectedRows?.applicantName} {selectedRows?.surname}
                     </td>
 
                     <th className="px-2 text-left py-2">Gender </th>
-                    <td className="px-2 py-2">{selectedRows?.gender?.name}</td>
+                    <td className="px-2 py-2">{selectedRows?.gender}</td>
                   </tr>
                   <tr className="text-left text-sm ">
-                    <th className="px-2 text-left py-2">Event</th>
-                    <td className="px-2 py-2">{selectedRows?.event}</td>
+                    <th className="px-2 text-left py-2">Occupation</th>
+                    <td className="px-2 py-2">{selectedRows?.occupation}</td>
 
-                    <th className="px-2 text-left py-2">Profession</th>
+                    <th className="px-2 text-left py-2">Designation</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.profession?.name}
+                      {selectedRows?.designation}
                     </td>
 
-                    <th className="px-2 text-left py-2">Category</th>
-                    <td className="px-2 py-2">{selectedRows?.category}</td>
+                    <th className="px-2 text-left py-2">Org Type</th>
+                    <td className="px-2 py-2">{selectedRows?.organizationType}</td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Email Address</th>
-                    <td className="px-2 py-2">{selectedRows?.email_address}</td>
+                    <td className="px-2 py-2">{selectedRows?.email}</td>
 
                     <th className="px-2 text-left py-2">Mobile No.</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.mobile?.number}
+                      {selectedRows?.mobile}
                     </td>
 
                     <th className="px-2 text-left py-2">
                       Alternate Mobile No.{" "}
                     </th>
                     <td className="px-2 py-2">
-                      {selectedRows?.alternate_mobile_number}
+                      {selectedRows?.alternateNo}
                     </td>
                   </tr>
                   <tr className="text-left text-sm ">
@@ -310,26 +252,19 @@ const TgymOverview = () => {
                     <td className="px-2 py-2">{selectedRows?.country}</td>
 
                     <th className="px-2 text-left py-2">State</th>
-                    <td className="px-2 py-2">{selectedRows?.state?.name}</td>
+                    <td className="px-2 py-2">{selectedRows?.state}</td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">City</th>
-                    <td className="px-2 py-2">{selectedRows?.city?.name}</td>
+                    <td className="px-2 py-2">{selectedRows?.city}</td>
 
                     <th className="px-2 text-left py-2">Pincode</th>
-                    <td className="px-2 py-2">{selectedRows?.pincode}</td>
+                    <td className="px-2 py-2">{selectedRows?.pinCode}</td>
 
-                    <th className="px-2 text-left py-2">Contestants Type</th>
+                    <th className="px-2 text-left py-2">Qualification</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.contestants_type}
+                      {selectedRows?.qualification}
                     </td>
-                  </tr>
-                  <tr className="text-left text-sm ">
-                    <th className="px-2 text-left py-2">University</th>
-                    <td className="px-2 py-2">{selectedRows?.university}</td>
-
-                    <th className="px-2 text-left py-2">College Name</th>
-                    <td className="px-2 py-2">{selectedRows?.college_name}</td>
                   </tr>
                 </tbody>
 
@@ -340,26 +275,26 @@ const TgymOverview = () => {
                       colSpan={6}
                       className="bg-gray-300 px-2 py-1 text-[#3598dc] text-left"
                     >
-                      Source Coordinator Detail
+                      References & Other Details
                     </th>
                   </tr>
                   <tr className="text-left text-sm">
-                    <th className="px-2 py-2">Main Coordinator | Referral</th>
+                    <th className="px-2 py-2">Reference 1</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.main_coordinator}
+                      {selectedRows?.reference1?.name} ({selectedRows?.reference1?.mobile})
                     </td>
 
-                    <th className="px-2 py-2">Sub Coordinator | Source</th>
+                    <th className="px-2 py-2">Reference 2</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.sub_coordinator}
+                      {selectedRows?.reference2?.name} ({selectedRows?.reference2?.mobile})
                     </td>
 
-                    <th className="px-2 py-2">Enquiry For</th>
-                    <td className="px-2 py-2">{selectedRows?.enquiry_for}</td>
+                    <th className="px-2 py-2">Volunteering For</th>
+                    <td className="px-2 py-2">{selectedRows?.volunteeringFor}</td>
                   </tr>
                   <tr className="text-left text-sm">
-                    <th className="px-2 py-2">Status</th>
-                    <td className="px-2 py-2">{selectedRows?.status}</td>
+                    <th className="px-2 py-2">Initiatives</th>
+                    <td className="px-2 py-2" colSpan={5}>{selectedRows?.initiatives?.join(", ")}</td>
                   </tr>
                 </tbody>
               </table>
@@ -460,11 +395,10 @@ const TgymOverview = () => {
             <div className="flex sm:flex col md:flex-row md:justify-between ">
               <h1 className="text-xl font-semibold text-gray-500">
                 {" "}
-                {selectedRows?.volunteer?.Title} {selectedRows?.volunteer?.name}{" "}
-                {selectedRows?.volunteer?.surname} Conversation History
+                {selectedRows?.title} {selectedRows?.applicantName} Conversation History
               </h1>
               <div className="flex gap-1">
-                {/* <button className="p-1.5 border border-gray-300 rounded bg-white cursor-pointer hover:bg-gray-50 text-blue-500">
+                <button className="p-1.5 border border-gray-300 rounded bg-white cursor-pointer hover:bg-gray-50 text-blue-500">
                   <BsChatDots size={18} />
                 </button>
                 <button
@@ -472,12 +406,6 @@ const TgymOverview = () => {
                   className="p-1.5 border border-gray-300 rounded bg-white cursor-pointer hover:bg-gray-50 text-green-500"
                 >
                   <FaWhatsapp size={18} />
-                </button> */}
-                <button
-                  // onClick={handlePrint1}
-                  className="bg-white px-2.5 py-1.5 text-xs cursor-pointer border border-gray-300 hover:bg-gray-100"
-                >
-                  <FaPrint color="gray" />
                 </button>
               </div>
             </div>
@@ -700,9 +628,10 @@ const TgymOverview = () => {
             </>
           )}
         </div>
+
       </div>
     </>
   );
 };
 
-export default TgymOverview;
+export default MemberOverview;

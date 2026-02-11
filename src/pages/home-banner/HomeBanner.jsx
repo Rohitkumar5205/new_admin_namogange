@@ -217,7 +217,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
               <h2 className="text-xl font-semibold text-white text-center">
                 {" "}
@@ -254,7 +254,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Enter banner title"
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
                 required
               />
@@ -271,7 +271,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 value={formData?.link}
                 onChange={handleChange}
                 placeholder="https://example.com"
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
             </div>
@@ -285,7 +285,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="file"
                 name="image"
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               />
             </div>
@@ -299,7 +299,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 name="status"
                 value={formData?.status}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none"
                 disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
@@ -314,7 +314,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={() => setShowScheduleModal(true)}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                className={`px-5 py-1 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
                 Schedule
@@ -323,7 +323,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
+                className={`px-6 py-1 text-sm rounded text-white ${isEdit
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-green-600 hover:bg-green-700"
                   } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -340,7 +340,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}
               >
                 Cancel

@@ -1,38 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllMembers } from "../../redux/slices/membership/memberSlice";
 import CommonTable from "../../components/CommonTable";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
 
-const data = [
-  {
-    id: 1,
-    applicant_name: "Rahul Verma",
-    mobile: "9876543210",
-    email: "rahul@example.com",
-    occupation: "Service",
-    designation: "Manager",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-  },
-  {
-    id: 2,
-    applicant_name: "Amit Sharma",
-    mobile: "9876543211",
-    email: "amit@example.com",
-    occupation: "Business",
-    designation: "Director",
-    city: "Gurgaon",
-    state: "Haryana",
-  },
-];
 const columns = [
   {
-    key: "applicant_name",
+    key: "applicantName",
     label: "Applicant Name",
     render: (row) => (
-      <Link to="/#" className="text-blue-600 hover:underline">
-        {row.applicant_name}
+      <Link
+        to={`/member/member-overview/${row._id}`}
+        state={{ data: row }}
+        className="text-blue-600 hover:underline"
+      >
+        {row.applicantName || row.applicant_name} {row.surname}
       </Link>
     ),
   },
@@ -45,24 +29,18 @@ const columns = [
 ];
 const ListMember = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { members } = useSelector((state) => state.member);
   const { canRead: canAdd } = useRoleRights(PageNames.ADD_MEMBER);
+
+  useEffect(() => {
+    dispatch(getAllMembers());
+  }, [dispatch]);
 
   return (
     <div className=" ">
       {/* ================= HEADER ================= */}
-      {/* <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Member List Management
-        </h2>
-        {canAdd && (
-          <button
-            onClick={() => navigate("/member/add-member")}
-            className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-          >
-            Add Member
-          </button>
-        )}
-      </div> */}
+      
         <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
@@ -72,7 +50,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-between items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col ">
               <h2 className="text-xl font-semibold text-white ">
                  Member Management Lists
@@ -98,7 +76,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
       
 <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
-      <CommonTable data={data} columns={columns} />
+      <CommonTable data={members || []} columns={columns} />
       </div>
     </div>
   );

@@ -140,7 +140,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
         {/* Content */}
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
               <h2 className="text-xl font-semibold text-white text-center">
                 Profession Management
@@ -275,7 +275,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     </td>
                     {(canWrite || canDelete) && (
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           {canWrite && (
                             <button
                               className="relative text-sm text-green-600 transition

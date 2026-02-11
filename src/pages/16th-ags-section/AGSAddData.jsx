@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { createAgsDelegate } from "../../redux/slices/ags/agsDelegateSlice";
+import { showError, showSuccess } from "../../utils/toastService";
 
 const AGSAddData = () => {
   const navigate = useNavigate();
-  const initialForm = {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const initialDelegateFormData = {
     title: "",
     firstName: "",
     lastName: "",
@@ -32,23 +37,108 @@ const AGSAddData = () => {
     // Business Fields
     companyName: "",
     companyAddress: "",
-    country1: "",
-    state1: "",
-    city1: "",
-    pin1: "",
+    companyCountry: "",
+    companyState: "",
+    companyCity: "",
+    companyPin: "",
   };
 
-  const [formData, setFormData] = useState(initialForm);
+  const [formData, setFormData] = useState(initialDelegateFormData);
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+
+    const restrictions = {
+      mobile: { maxLength: 10, numeric: true },
+      alternate: { maxLength: 10, numeric: true },
+      pin: { maxLength: 6, numeric: true },
+      companyPin: { maxLength: 6, numeric: true },
+      age: { maxLength: 3, numeric: true },
+      landline: { numeric: true },
+    };
+
+    if (restrictions[name]) {
+      if (restrictions[name].numeric) {
+        value = value.replace(/[^0-9]/g, "");
+      }
+      if (restrictions[name].maxLength && value.length > restrictions[name].maxLength) {
+        value = value.slice(0, restrictions[name].maxLength);
+      }
+    }
+
     setFormData({ ...formData, [name]: value });
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const validate = () => {
+    let tempErrors = {};
+    const phoneRegex = /^\d{10}$/;
+    const pinRegex = /^\d{6}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.title.trim()) tempErrors.title = "Title is required.";
+    if (!formData.firstName.trim()) tempErrors.firstName = "First name is required.";
+    if (!formData.lastName.trim()) tempErrors.lastName = "Last name is required.";
+    if (!formData.profession) tempErrors.profession = "Profession is required.";
+    if (formData.age && (isNaN(formData.age) || formData.age < 1 || formData.age > 120)) {
+      tempErrors.age = "Please enter a valid age.";
+    }
+    if (!formData.event) tempErrors.event = "Event is required.";
+    if (!formData.mobile.trim() || !phoneRegex.test(formData.mobile)) {
+      tempErrors.mobile = "Mobile number must be 10 digits.";
+    }
+    if (formData.alternate && !phoneRegex.test(formData.alternate)) {
+      tempErrors.alternate = "Alternate number must be 10 digits.";
+    }
+    if (formData.landline && !/^\d+$/.test(formData.landline)) {
+      tempErrors.landline = "Landline must only contain digits.";
+    }
+    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+      tempErrors.email = "Invalid email format.";
+    }
+    if (!formData.country) tempErrors.country = "Country is required.";
+    if (!formData.state) tempErrors.state = "State is required.";
+    if (!formData.city) tempErrors.city = "City is required.";
+    if (!formData.pin.trim() || !pinRegex.test(formData.pin)) {
+      tempErrors.pin = "PIN code must be 6 digits.";
+    }
+
+    if (formData.companyPin && !pinRegex.test(formData.companyPin)) {
+      tempErrors.companyPin = "Company PIN code must be 6 digits.";
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
-    alert("Data submitted successfully!");
-    setFormData(initialForm);
+    if (!validate()) {
+      showError("Please fix the validation errors and try again.");
+      return;
+    }
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+    if (user?._id) {
+      data.append("user_id", user._id);
+    }
+
+    dispatch(createAgsDelegate(data))
+      .unwrap()
+      .then(() => {
+        console.log("Submitted Data:", formData);
+        showSuccess("Delegate submitted successfully!");
+        setFormData(initialDelegateFormData);
+      })
+      .catch((err) => {
+        console.error("Failed to create delegate:", err);
+        showError("Failed to submit delegate data.");
+      });
   };
 
   const inputClass =
@@ -57,44 +147,63 @@ const AGSAddData = () => {
   return (
     <div className="">
       {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <div>
-          <h2 className="text-lg font-medium text-gray-800">Individual Data</h2>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => navigate("/16th-ags-section/ags-add-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
-          >
-            NEW DELEGATE
-          </button>
-          <button
-            onClick={() => navigate("/16th-ags-section/warm-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
-          >
-            WARM DELEGATES
-          </button>
-          <button
-            onClick={() => navigate("/16th-ags-section/hot-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
-          >
-            HOT DELEGATES
-          </button>
-          <button
-            // onClick={() => navigate("/16th-ags-section/cold-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
-          >
-            CONFIRM DELEGATES
-          </button>
-          <button
-            onClick={() => navigate("/16th-ags-section/cold-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
-          >
-            COLD DELEGATES
-          </button>
+     
+       <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-between items-center px-6 py-4 h-25">
+          <div className="flex  gap-3">
+            <div className="flex flex-col ">
+              <h2 className="text-xl font-semibold text-white ">
+               Individual Data Entry
+              </h2>
+              {/* <p className="text-sm text-blue-100">
+                Add new delegate information using the form below. Ensure all required fields are filled out accurately before submitting.
+              </p> */}
+            </div>
+          </div>
+          <div>
+            <button
+              onClick={() => navigate("/16th-ags-section/ags-add-data")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+            >
+              {" "}
+              NEW DELEGATE
+            </button>
+            <button
+              onClick={() => navigate("/16th-ags-section/warm-data")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded ml-2"
+            >
+              WARM DELEGATES
+            </button>
+            <button
+              onClick={() => navigate("/16th-ags-section/hot-data")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded ml-2"
+            >
+              HOT DELEGATES
+            </button>
+              <button
+              onClick={() => navigate("/16th-ags-section/delegate-list")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded ml-2"
+            >
+              CONFIRM DELEGATES
+            </button> 
+            <button
+              onClick={() => navigate("/16th-ags-section/cold-data")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded ml-2"
+            >
+              COLD DELEGATES
+            </button>
+          </div>
         </div>
       </div>
 
+<div className="space-y-3 p-5">
       {/* ================= FORM ================= */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h3 className="text-base font-medium text-gray-800 mb-4">
@@ -106,20 +215,33 @@ const AGSAddData = () => {
           className="grid grid-cols-1 md:grid-cols-5 gap-4"
         >
           {/* TITLE */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Mr/Mrs/Ms"
-              className={inputClass}
-              required
-            />
-          </div>
+         <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Title <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    name="title"
+    value={formData.title}
+    onChange={handleChange}
+    className={inputClass}
+    required
+  >
+    <option value="">Select Title</option>
+    <option value="Mr">Mr</option>
+    <option value="Mrs">Mrs</option>
+    <option value="Ms">Ms</option>
+    <option value="Dr">Dr</option>
+    <option value="Prof">Prof</option>
+  </select>
+
+  {errors.title && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.title}
+    </p>
+  )}
+</div>
+
           {/* First Name */}{" "}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -133,7 +255,9 @@ const AGSAddData = () => {
               onChange={handleChange}
               placeholder="First Name"
               className={inputClass}
+              required
             />
+            {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
           </div>
           {/* Last Name */}
           <div>
@@ -149,6 +273,7 @@ const AGSAddData = () => {
               className={inputClass}
               required
             />
+            {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
           </div>
           {/* Age */}
           <div>
@@ -156,13 +281,14 @@ const AGSAddData = () => {
               Age
             </label>
             <input
-              type="number"
+              type="text"
               name="age"
               value={formData.age}
               onChange={handleChange}
               placeholder="Age"
               className={inputClass}
             />
+            {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
           </div>
           {/* Profession */}
           <div>
@@ -181,6 +307,7 @@ const AGSAddData = () => {
               <option value="Business">Business</option>
               <option value="Student">Student</option>
             </select>
+            {errors.profession && <p className="text-red-500 text-xs mt-1">{errors.profession}</p>}
           </div>
           {/* Event */}
           <div>
@@ -198,6 +325,7 @@ const AGSAddData = () => {
               <option value="Event 1">Event 1</option>
               <option value="Event 2">Event 2</option>
             </select>
+            {errors.event && <p className="text-red-500 text-xs mt-1">{errors.event}</p>}
           </div>
           {/* Mobile */}
           <div>
@@ -213,6 +341,7 @@ const AGSAddData = () => {
               className={inputClass}
               required
             />
+            {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
           </div>
           {/* Alternate */}
           <div>
@@ -227,6 +356,7 @@ const AGSAddData = () => {
               placeholder="Alternate"
               className={inputClass}
             />
+            {errors.alternate && <p className="text-red-500 text-xs mt-1">{errors.alternate}</p>}
           </div>
           {/* Landline */}
           <div>
@@ -241,6 +371,7 @@ const AGSAddData = () => {
               placeholder="Landline"
               className={inputClass}
             />
+            {errors.landline && <p className="text-red-500 text-xs mt-1">{errors.landline}</p>}
           </div>
           {/* Email */}
           <div>
@@ -256,6 +387,7 @@ const AGSAddData = () => {
               className={inputClass}
               required
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
           {/* Address */}
           <div className="md:col-span-2">
@@ -286,6 +418,7 @@ const AGSAddData = () => {
               <option value="">Select Country</option>
               <option value="India">India</option>
             </select>
+            {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
           </div>
           {/* State */}
           <div>
@@ -303,6 +436,7 @@ const AGSAddData = () => {
               <option value="Delhi">Delhi</option>
               <option value="UP">UP</option>
             </select>
+            {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
           </div>
           {/* City */}
           <div>
@@ -320,6 +454,7 @@ const AGSAddData = () => {
               <option value="New Delhi">New Delhi</option>
               <option value="Noida">Noida</option>
             </select>
+            {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
           </div>
           {/* Pin */}
           <div>
@@ -335,6 +470,7 @@ const AGSAddData = () => {
               className={inputClass}
               required
             />
+            {errors.pin && <p className="text-red-500 text-xs mt-1">{errors.pin}</p>}
           </div>
           {/* Category */}
           <div>
@@ -351,6 +487,7 @@ const AGSAddData = () => {
               <option value="">Select Category</option>
               <option value="Cat1">Cat1</option>
             </select>
+            {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
           </div>
           {/* College */}
           <div>
@@ -367,6 +504,7 @@ const AGSAddData = () => {
               <option value="">Select College</option>
               <option value="College1">College1</option>
             </select>
+            {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college}</p>}
           </div>
           {/* University */}
           <div>
@@ -383,6 +521,7 @@ const AGSAddData = () => {
               <option value="">Select University</option>
               <option value="Uni1">Uni1</option>
             </select>
+            {errors.university && <p className="text-red-500 text-xs mt-1">{errors.university}</p>}
           </div>
           {/* Enquiry For */}
           <div>
@@ -399,6 +538,7 @@ const AGSAddData = () => {
               <option value="">Select Enquiry For</option>
               <option value="Option1">Option1</option>
             </select>
+            {errors.enquiryFor && <p className="text-red-500 text-xs mt-1">{errors.enquiryFor}</p>}
           </div>
           {/* Lead Forward */}
           <div>
@@ -415,6 +555,7 @@ const AGSAddData = () => {
               <option value="">Select Lead Forward</option>
               <option value="Option1">Option1</option>
             </select>
+            {errors.leadForward && <p className="text-red-500 text-xs mt-1">{errors.leadForward}</p>}
           </div>
           {/* Source */}
           <div>
@@ -432,6 +573,7 @@ const AGSAddData = () => {
               <option value="Social Media">Social Media</option>
               <option value="Website">Website</option>
             </select>
+            {errors.source && <p className="text-red-500 text-xs mt-1">{errors.source}</p>}
           </div>
           {/* Mode */}
           <div>
@@ -449,6 +591,7 @@ const AGSAddData = () => {
               <option value="Online">Online</option>
               <option value="Offline">Offline</option>
             </select>
+            {errors.mode && <p className="text-red-500 text-xs mt-1">{errors.mode}</p>}
           </div>
           {/* Status */}
           <div>
@@ -480,6 +623,7 @@ const AGSAddData = () => {
               <option value="">Select Coordinator</option>
               <option value="Coord1">Coord1</option>
             </select>
+            {errors.coordinator && <p className="text-red-500 text-xs mt-1">{errors.coordinator}</p>}
           </div>
           {/* Remark */}
           <div className="md:col-span-4">
@@ -495,6 +639,7 @@ const AGSAddData = () => {
               rows={1}
               required
             />
+            {errors.remark && <p className="text-red-500 text-xs mt-1">{errors.remark}</p>}
           </div>
           {/* Business Fields Header */}
           <div className="md:col-span-5">
@@ -536,8 +681,8 @@ const AGSAddData = () => {
               Country
             </label>
             <select
-              name="country1"
-              value={formData.country1}
+              name="companyCountry"
+              value={formData.companyCountry}
               onChange={handleChange}
               className={inputClass}
             >
@@ -551,8 +696,8 @@ const AGSAddData = () => {
               State
             </label>
             <select
-              name="state1"
-              value={formData.state1}
+              name="companyState"
+              value={formData.companyState}
               onChange={handleChange}
               className={inputClass}
             >
@@ -566,8 +711,8 @@ const AGSAddData = () => {
               City
             </label>
             <select
-              name="city1"
-              value={formData.city1}
+              name="companyCity"
+              value={formData.companyCity}
               onChange={handleChange}
               className={inputClass}
             >
@@ -582,33 +727,35 @@ const AGSAddData = () => {
             </label>
             <input
               type="text"
-              name="pin1"
-              value={formData.pin1}
+              name="companyPin"
+              value={formData.companyPin}
               onChange={handleChange}
               placeholder="Pin Code"
               className={inputClass}
             />
+            {errors.companyPin && <p className="text-red-500 text-xs mt-1">{errors.companyPin}</p>}
           </div>
           {/* ACTION BUTTONS */}
           <div className="md:col-span-2 flex justify-end gap-6 mt-6">
             <button
               type="button"
               onClick={() => {
-                setFormData(initialForm);
+                setFormData(initialDelegateFormData);
               }}
-              className="px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-6 py-1.5 text-sm rounded text-white bg-green-600 hover:bg-green-700"
+              className="px-6 py-1 text-sm rounded text-white bg-green-600 hover:bg-green-700"
             >
               Submit
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

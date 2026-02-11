@@ -64,34 +64,34 @@ const TgymEditData = () => {
             Contestant Edit Data
           </h2>
         </div>
-        {/* <div className="flex gap-2">
+        {/* <div className="flex gap-1">
           <button
             onClick={() => navigate("/16th-ags-section/ags-add-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             NEW DELEGATE
           </button>
           <button
             onClick={() => navigate("/16th-ags-section/warm-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             WARM DELEGATES
           </button>
           <button
             onClick={() => navigate("/16th-ags-section/hot-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             HOT DELEGATES
           </button>
           <button
             // onClick={() => navigate("/16th-ags-section/cold-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             CONFIRM DELEGATES
           </button>
           <button
             onClick={() => navigate("/16th-ags-section/cold-data")}
-            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-3 rounded"
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
           >
             COLD DELEGATES
           </button>

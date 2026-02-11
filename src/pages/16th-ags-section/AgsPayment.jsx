@@ -179,23 +179,47 @@ const AgsPayment = () => {
 
   return (
     <>
-      <div className="w-full h-auto space-y-6">
-        <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
+      <div className="w-full h-auto">
+
+        {/* <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
           <div>
             <h2 className="text-lg font-medium text-gray-800">
               {data?.name || "AGS"} Individual Data
             </h2>
           </div>
+        </div> */}
+         <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-white text-center">
+               {data?.name || "AGS"} Individual Data
+              </h2>
+              <p className="text-sm text-blue-100">
+                  Manage and review individual payment details for {data?.name || "AGS"}, including registration information, payment history, and transaction records.
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
+
+ <div className="space-y-3 p-5">
         {/*main container */}
-        <div className="w-full bg-white rounded-md shadow-sm border border-gray-200 p-6">
-          <h1 className="text-gray-500 font-semibold text-xl">Payment</h1>
+        <div className="w-full bg-white rounded-md shadow-sm border border-gray-200 p-4">
+          <h1 className="text-gray-800 font-normal text-xl">Payment</h1>
           <hr className="w-full opacity-10 my-2" />
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 gap-3 my-2">
               {/* Payment For */}
               <div className="col-span-2">
-                <label className="text-sm font-semibold mb-1 block">
+                <label className="text-sm font-normal mb-1 block">
                   Payment For
                 </label>
                 <select
@@ -218,7 +242,7 @@ const AgsPayment = () => {
               </div>
               {/* Seminar day  */}
               <div className="col-span-2">
-                <label className="text-sm font-semibold mb-1 block">
+                <label className="text-sm font-normal mb-1 block">
                   Seminar day
                 </label>
                 <select
@@ -242,7 +266,7 @@ const AgsPayment = () => {
               </div>
               {/* Registration No. */}
               <div className="col-span-2">
-                <label className="text-sm font-semibold mb-1 block">
+                <label className="text-sm font-normal mb-1 block">
                   Registration No.
                 </label>
                 <input
@@ -256,7 +280,7 @@ const AgsPayment = () => {
               </div>
               {/* Adhar No./Pan no. */}
               <div className="col-span-3">
-                <label className="text-sm font-semibold mb-1 block">
+                <label className="text-sm font-normal mb-1 block">
                   Adhar No./Pan no.
                 </label>
                 <input
@@ -270,7 +294,7 @@ const AgsPayment = () => {
               </div>
               {/* Amount */}
               <div className="col-span-3">
-                <label className="text-sm font-semibold mb-1 block">
+                <label className="text-sm font-normal mb-1 block">
                   Amount
                 </label>
                 <input
@@ -295,7 +319,7 @@ const AgsPayment = () => {
             <div>
               <div>
                 <div className="inline-flex gap-6 mb-3">
-                  <label className="text-sm font-semibold flex gap-1">
+                  <label className="text-sm font-normal flex gap-1">
                     <input
                       type="radio"
                       name="paymentMode"
@@ -305,7 +329,7 @@ const AgsPayment = () => {
                     />
                     Cash Payment
                   </label>
-                  <label className="text-sm font-semibold flex gap-1">
+                  <label className="text-sm font-normal flex gap-1">
                     <input
                       type="radio"
                       name="paymentMode"
@@ -315,7 +339,7 @@ const AgsPayment = () => {
                     />
                     Cheque Payment
                   </label>
-                  <label className="text-sm font-semibold flex gap-1">
+                  <label className="text-sm font-normal flex gap-1">
                     <input
                       type="radio"
                       name="paymentMode"
@@ -325,7 +349,7 @@ const AgsPayment = () => {
                     />
                     Paytm
                   </label>
-                  <label className="text-sm font-semibold flex gap-1">
+                  <label className="text-sm font-normal flex gap-1">
                     <input
                       type="radio"
                       name="paymentMode"
@@ -335,7 +359,7 @@ const AgsPayment = () => {
                     />
                     NEFT/RTGS
                   </label>
-                  <label className="text-sm font-semibold flex gap-1">
+                  <label className="text-sm font-normal flex gap-1">
                     <input
                       type="radio"
                       name="paymentMode"
@@ -351,7 +375,7 @@ const AgsPayment = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 my-1">
                     {/* Bank Name */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Bank Name <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -371,7 +395,7 @@ const AgsPayment = () => {
 
                     {/* Cheque No */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Cheque No <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -386,7 +410,7 @@ const AgsPayment = () => {
 
                     {/* Date Of Issue */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Date Of Issue <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -400,7 +424,7 @@ const AgsPayment = () => {
 
                     {/* Branch*/}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Branch <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -419,7 +443,7 @@ const AgsPayment = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 my-1">
                     {/* Paytm No */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Paytm No <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -434,7 +458,7 @@ const AgsPayment = () => {
 
                     {/* Transaction id  */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Transaction id <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -449,7 +473,7 @@ const AgsPayment = () => {
 
                     {/* UPI ID  */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         UPI ID <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -468,7 +492,7 @@ const AgsPayment = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 my-1">
                     {/* Bank Reference No */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Bank Reference No{" "}
                         <span className="text-red-500">*</span>
                       </label>
@@ -488,7 +512,7 @@ const AgsPayment = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 my-1">
                     {/* Payment Gateway */}
                     <div>
-                      <label className="text-sm font-semibold mb-1 block">
+                      <label className="text-sm font-normal mb-1 block">
                         Order No <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -524,7 +548,7 @@ const AgsPayment = () => {
           <div className="flex justify-between items-center px-5 py-3 border-b border-gray-200">
             <div className="flex items-center gap-2">
               <FaMessage className="text-gray-500" />
-              <h3 className="text-base font-medium text-gray-800">
+              <h3 className="text-base font-normal text-gray-800">
                 {data?.name || "AGS"} payment
               </h3>
             </div>
@@ -557,13 +581,13 @@ const AgsPayment = () => {
                   <td className="px-4 py-3">
                     <p
                       onClick={() => navigate("/16th-ags-section/receipt")}
-                      className="text-blue-600 hover:underline cursor-pointer font-medium"
+                      className="text-blue-600 hover:underline cursor-pointer font-normal"
                     >
                       Registration No.: AGS/15th/02/093 For Seminar For 2nd Day
                     </p>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm font-normal">
                       Received payment of Rs. 700 on 10 Jul 25 via Paytm (Txn
                       No: 519132934247) from Dr Y.k Chauhan (Reg. No:
                       AGS/15th/02/093) towards For Seminar registration for the
@@ -594,7 +618,7 @@ const AgsPayment = () => {
           <div className="flex justify-between items-center px-5 py-3 border-b border-gray-200">
             <div className="flex items-center gap-2">
               <FaMessage className="text-gray-500" />
-              <h3 className="text-base font-medium text-gray-800">
+              <h3 className="text-base font-normal text-gray-800">
                 {data?.name || "AGS"} payment
               </h3>
             </div>
@@ -655,7 +679,7 @@ const AgsPayment = () => {
           <div className="flex justify-between items-center px-5 py-3 border-b border-gray-200">
             <div className="flex items-center gap-2">
               <FaMessage className="text-gray-500" />
-              <h3 className="text-base font-medium text-gray-800">
+              <h3 className="text-base font-normal text-gray-800">
                 {data?.name || "AGS"} Cancelled payment
               </h3>
             </div>
@@ -709,6 +733,7 @@ const AgsPayment = () => {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </div>
     </>

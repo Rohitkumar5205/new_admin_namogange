@@ -260,7 +260,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </div>
 
             <div className="flex justify-end gap-3">
-              <button type="button" onClick={() => navigate("/blogs/blog-list")} disabled={isSubmitting} className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
+              <button type="button" onClick={() => navigate("/blogs/blog-list")} disabled={isSubmitting} className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
               <button type="submit" disabled={isSubmitting || isFormDisabled} className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update Blog" : "Add Blog"}</button>
             </div>
           </form>

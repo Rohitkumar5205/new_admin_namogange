@@ -149,7 +149,7 @@ className="
     <thead className="sticky top-0 z-20 bg-gray-50 border-b border-gray-300">
       <tr>
         {showCheckbox && (
-          <th className="sticky left-0 z-30 w-12 bg-gray-50 px-4 py-3">
+          <th className="sticky left-0 z-30 w-12 bg-gray-50 px-2 py-3">
             <input type="checkbox" />
           </th>
         )}
@@ -161,7 +161,7 @@ className="
             className="
               px-4 py-3
               cursor-pointer select-none
-              font-semibold text-gray-700
+              font-medium text-gray-800
               whitespace-nowrap
             "
           >
@@ -182,7 +182,7 @@ className="
           className="border-b border-gray-300 hover:bg-gray-50"
         >
           {showCheckbox && (
-            <td className="sticky left-0 z-10 w-12 bg-white px-2 py-3">
+            <td className="sticky left-0 z-10 w-12 bg-white px-2 py-1.5">
               <input type="checkbox" />
             </td>
           )}
@@ -190,11 +190,7 @@ className="
           {columns.map((col) => (
             <td
               key={col.key}
-              className="
-                px-4 py-3
-                font-medium text-gray-800
-                whitespace-nowrap
-              "
+              className="px-4 py-1.5 text-sm font-normal text-gray-600 whitespace-nowrap "
             >
               {col.render ? col.render(row) : row[col.key]}
             </td>
@@ -219,7 +215,7 @@ className="
         {showCheckbox && <td className="sticky left-0 bg-white" />}
 
         {columns.map((col) => (
-          <td key={col.key} className="px-3 py-2">
+          <td key={col.key} className="px-3 py-1">
             <input
               placeholder={`Search ${col.label}`}
               onChange={(e) =>
@@ -229,10 +225,10 @@ className="
                 })
               }
               className="
-                w-full
+                w-30
                 border border-gray-300
                 rounded
-                px-2 py-1
+                px-2 py-0.5
                 text-sm
                 focus:outline-none
                 focus:ring-1 focus:ring-blue-500
