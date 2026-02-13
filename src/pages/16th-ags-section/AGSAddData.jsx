@@ -37,7 +37,7 @@ const AGSAddData = () => {
     // leadForward: "",
     // source: "",
     mode: "",
-    status: "",
+   status: "Active",
     coordinator: "",
     remark: "",
     // Business Fields
@@ -91,34 +91,34 @@ const AGSAddData = () => {
     const pinRegex = /^\d{6}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.title.trim()) tempErrors.title = "Title is required.";
-    if (!formData.firstName.trim()) tempErrors.firstName = "First name is required.";
-    if (!formData.lastName.trim()) tempErrors.lastName = "Last name is required.";
-    if (!formData.profession) tempErrors.profession = "Profession is required.";
-    if (formData.age && (isNaN(formData.age) || formData.age < 1 || formData.age > 120)) {
+    if (!formData?.title?.trim()) tempErrors.title = "Title is required.";
+    if (!formData?.firstName?.trim()) tempErrors.firstName = "First name is required.";
+    if (!formData?.lastName?.trim()) tempErrors.lastName = "Last name is required.";
+    if (!formData?.profession) tempErrors.profession = "Profession is required.";
+    if (formData?.age && (isNaN(formData.age) || formData.age < 1 || formData.age > 120)) {
       tempErrors.age = "Please enter a valid age.";
     }
-    if (!formData.event) tempErrors.event = "Event is required.";
-    if (!formData.mobile.trim() || !phoneRegex.test(formData.mobile)) {
+    if (!formData?.event) tempErrors.event = "Event is required.";
+    if (!formData?.mobile?.trim() || !phoneRegex.test(formData.mobile)) {
       tempErrors.mobile = "Mobile number must be 10 digits.";
     }
-    if (formData.alternate && !phoneRegex.test(formData.alternate)) {
+    if (formData?.alternate && !phoneRegex.test(formData.alternate)) {
       tempErrors.alternate = "Alternate number must be 10 digits.";
     }
-    if (formData.landline && !/^\d+$/.test(formData.landline)) {
+    if (formData?.landline && !/^\d+$/.test(formData.landline)) {
       tempErrors.landline = "Landline must only contain digits.";
     }
-    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+    if (!formData?.email?.trim() || !emailRegex.test(formData.email)) {
       tempErrors.email = "Invalid email format.";
     }
-    if (!formData.country) tempErrors.country = "Country is required.";
-    if (!formData.state) tempErrors.state = "State is required.";
-    if (!formData.city) tempErrors.city = "City is required.";
-    if (!formData.pin.trim() || !pinRegex.test(formData.pin)) {
+    if (!formData?.country) tempErrors.country = "Country is required.";
+    if (!formData?.state) tempErrors.state = "State is required.";
+    if (!formData?.city) tempErrors.city = "City is required.";
+    if (!formData?.pin?.trim() || !pinRegex.test(formData.pin)) {
       tempErrors.pin = "PIN code must be 6 digits.";
     }
 
-    if (formData.companyPin && !pinRegex.test(formData.companyPin)) {
+    if (formData?.companyPin && !pinRegex.test(formData.companyPin)) {
       tempErrors.companyPin = "Company PIN code must be 6 digits.";
     }
 
@@ -132,14 +132,12 @@ const AGSAddData = () => {
       showError("Please fix the validation errors and try again.");
       return;
     }
-    const data = new FormData();
-    for (const key in formData) {
-      data.append(key, formData[key]);
-    }
-    if (user?._id) {
-      data.append("user_id", user._id);
-    }
+    const data = { ...formData };
 
+    if (user?._id) {
+      data.user_id = user._id;
+    }
+    console.log("Submitting Delegate Data:", data);
     dispatch(createAgsDelegate(data))
       .unwrap()
       .then(() => {
@@ -181,7 +179,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           </div>
           <div>
             <button
-              onClick={() => navigate("/16th-ags-section/ags-add-data")}
+              onClick={() => navigate("/16th-ags-section/delegate-list")}
               className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
             >
               {" "}
@@ -234,7 +232,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
   <select
     name="title"
-    value={formData.title}
+    value={formData?.title || ""}
     onChange={handleChange}
     className={inputClass}
     required

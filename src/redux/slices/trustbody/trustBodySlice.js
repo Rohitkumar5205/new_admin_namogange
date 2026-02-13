@@ -15,7 +15,7 @@ export const createTrustBody = createAsyncThunk(
       const res = await api.post("/trust-bodies/create", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          // ❌ Content-Type मत दो
+      
         },
       });
 
