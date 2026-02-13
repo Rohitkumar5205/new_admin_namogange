@@ -7,12 +7,16 @@ import {
   clearSingleAgsDelegate,
 } from "../../redux/slices/ags/agsDelegateSlice";
 import { showError } from "../../utils/toastService";
+import { getAllProfessions } from "../../redux/slices/add_by_admin/professionSlice";
+import { getAllAGSEvents } from "../../redux/slices/add_by_admin/agsEventSlice";
 
 const AGSEditData = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // This 'id' is used to fetch data for editing.
   const dispatch = useDispatch();
   const { singleDelegate } = useSelector((state) => state.agsDelegate);
+  const { professions } = useSelector((state) => state.profession);
+  const { agsEvents } = useSelector((state) => state.agsEvent);
   const { user } = useSelector((state) => state.auth);
   const initialDelegateFormData = {
     title: "",
@@ -34,8 +38,8 @@ const AGSEditData = () => {
     college: "",
     university: "",
     enquiryFor: "",
-    leadForward: "",
-    source: "",
+    // leadForward: "",
+    // source: "",
     mode: "",
     status: "",
     coordinator: "",
@@ -116,6 +120,8 @@ const AGSEditData = () => {
     if (id) {
       dispatch(getAgsDelegateById(id));
     }
+    dispatch(getAllProfessions());
+    dispatch(getAllAGSEvents());
     return () => {
       dispatch(clearSingleAgsDelegate());
     };
@@ -123,7 +129,13 @@ const AGSEditData = () => {
 
   useEffect(() => {
     if (singleDelegate) {
-      setFormData(singleDelegate);
+      const delegateData = { ...initialDelegateFormData };
+      for (const key in delegateData) {
+        if (singleDelegate.hasOwnProperty(key) && singleDelegate[key] !== null) {
+          delegateData[key] = singleDelegate[key];
+        }
+      }
+      setFormData(delegateData);
     }
   }, [singleDelegate]);
 
@@ -312,9 +324,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Profession</option>
-              <option value="Service">Service</option>
-              <option value="Business">Business</option>
-              <option value="Student">Student</option>
+              {professions?.map((prof) => (
+                <option key={prof._id} value={prof.name}>
+                  {prof.name}
+                </option>
+              ))}
             </select>
             {errors.profession && <p className="text-red-500 text-xs mt-1">{errors.profession}</p>}
           </div>
@@ -331,8 +345,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Event</option>
-              <option value="Event 1">Event 1</option>
-              <option value="Event 2">Event 2</option>
+              {agsEvents?.map((event) => (
+                <option key={event._id} value={event.name}>
+                  {event.name}
+                </option>
+              ))}
             </select>
             {errors.event && <p className="text-red-500 text-xs mt-1">{errors.event}</p>}
           </div>
@@ -426,6 +443,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select Country</option>
               <option value="India">India</option>
+              <option value="USA">USA</option>
             </select>
           </div>
           {/* State */}
@@ -442,7 +460,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select State</option>
               <option value="Delhi">Delhi</option>
-              <option value="UP">UP</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Maharashtra">Maharashtra</option>
             </select>
           </div>
           {/* City */}
@@ -460,6 +481,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <option value="">Select City</option>
               <option value="New Delhi">New Delhi</option>
               <option value="Noida">Noida</option>
+              <option value="Gurgaon">Gurgaon</option>
+              <option value="Lucknow">Lucknow</option>
+              <option value="Mumbai">Mumbai</option>
             </select>
           </div>
           {/* Pin */}
@@ -543,7 +567,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </select>
           </div>
           {/* Lead Forward */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Lead Forward To <span className="text-red-500">*</span>
             </label>
@@ -557,9 +581,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <option value="">Select Lead Forward</option>
               <option value="Option1">Option1</option>
             </select>
-          </div>
+          </div> */}
           {/* Source */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Source/Sub Coordinator <span className="text-red-500">*</span>
             </label>
@@ -574,7 +598,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <option value="Social Media">Social Media</option>
               <option value="Website">Website</option>
             </select>
-          </div>
+          </div> */}
           {/* Mode */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -612,7 +636,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Main Coordinator/Referral <span className="text-red-500">*</span>
             </label>
-            <select
+            {/* <select
               name="coordinator"
               value={formData.coordinator}
               onChange={handleChange}
@@ -621,10 +645,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select Coordinator</option>
               <option value="Coord1">Coord1</option>
-            </select>
+            </select> */}
+            <input type="text" name="coordinator" value={formData.coordinator} onChange={handleChange} placeholder="Coordinator/Referral" className={inputClass} required /> 
           </div>
           {/* Remark */}
-          <div className="md:col-span-4">
+          <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Remark by Admin | Director <span className="text-red-500">*</span>
             </label>
@@ -640,7 +665,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           </div>
           {/* Business Fields Header */}
           <div className="md:col-span-5">
-            <h4 className="text-md font-medium text-gray-800 border-b pb-1">
+            <h4 className="text-md font-medium text-gray-800 border-b">
               Business Details
             </h4>
           </div>
@@ -685,6 +710,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select Country</option>
               <option value="India">India</option>
+              <option value="USA">USA</option>
             </select>
           </div>
           {/* State1 */}
@@ -700,6 +726,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select State</option>
               <option value="Delhi">Delhi</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Maharashtra">Maharashtra</option>
             </select>
           </div>
           {/* City1 */}
@@ -715,6 +745,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             >
               <option value="">Select City</option>
               <option value="New Delhi">New Delhi</option>
+              <option value="Noida">Noida</option>
+              <option value="Gurgaon">Gurgaon</option>
+              <option value="Lucknow">Lucknow</option>
+              <option value="Mumbai">Mumbai</option>
             </select>
           </div>
           {/* Pin1 */}

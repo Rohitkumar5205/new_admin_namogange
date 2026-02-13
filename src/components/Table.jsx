@@ -175,7 +175,7 @@ const Table = () => {
         <table className="w-full text-sm text-left text-gray-600">
           <thead className="text-sm bg-gray-50 border-b border-gray-300">
             <tr>
-              <th className="px-4 py-3">
+              <th className="px-4 py-3 font-medium">
                 <input
                   type="checkbox"
                   className="w-4 h-4 rounded border-gray-300"

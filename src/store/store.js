@@ -42,6 +42,7 @@ import sidebarReducer from "../redux/slices/add_by_admin/addSidebarSlice";
 import memberReducer from "../redux/slices/membership/memberSlice";
 import volunteerReducer from "../redux/slices/volunteer/volunteerSlice";
 import agsDelegateReducer from "../redux/slices/ags/agsDelegateSlice";
+import agsEventReducer from "../redux/slices/add_by_admin/agsEventSlice";
 
 const store = configureStore({
   reducer: {
@@ -88,6 +89,7 @@ const store = configureStore({
     member: memberReducer,
     volunteer: volunteerReducer,
     agsDelegate: agsDelegateReducer,
+    agsEvent: agsEventReducer,
   },
 });
 

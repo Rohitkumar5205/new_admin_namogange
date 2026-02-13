@@ -398,13 +398,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <table className="w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-50 border-b  border-gray-200">
               <tr>
-                <th className="px-4 py-3">S.No</th>
-                <th className="px-4 py-3">Objective Title</th>
-                <th className="px-4 py-3">Slug</th>
-                <th className="px-4 py-3">Logo</th>
-                <th className="px-4 py-3">Image</th>
-                <th className="px-4 py-3">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
+                <th className="px-4 py-3 font-medium">S.No</th>
+                <th className="px-4 py-3 font-medium">Objective Title</th>
+                <th className="px-4 py-3 font-medium">Slug</th>
+                <th className="px-4 py-3 font-medium">Logo</th>
+                <th className="px-4 py-3 font-medium">Image</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
               </tr>
             </thead>
 
