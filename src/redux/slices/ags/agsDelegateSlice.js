@@ -24,9 +24,9 @@ export const createAgsDelegate = createAsyncThunk(
       return rejectWithValue("No token provided");
     }
     try {
-      const response = await api.post("/ags-delegates", formData, {
+      const response = await api.post("/ags-delegates/create", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
@@ -72,7 +72,7 @@ export const updateAgsDelegate = createAsyncThunk(
     try {
       const response = await api.put(`/ags-delegates/${id}`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
