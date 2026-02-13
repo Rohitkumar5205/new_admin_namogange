@@ -358,11 +358,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <table className="w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-50 border-b  border-gray-200">
               <tr>
-                <th className="px-4 py-3">S.No</th>
-                <th className="px-4 py-3">Banner Title</th>
-                <th className="px-4 py-3">Redirect Link</th>
-<th className="px-4 py-3 whitespace-nowrap">Banner Image</th>                <th className="px-4 py-3">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3">Action</th>}
+                <th className="px-4 py-3 font-medium">S.No</th>
+                <th className="px-4 py-3 font-medium">Banner Title</th>
+                <th className="px-4 py-3 font-medium">Redirect Link</th>
+<th className="px-4 py-3 whitespace-nowrap">Banner Image</th>                <th className="px-4 py-3 font-medium">Status</th>
+                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
               </tr>
             </thead>
 

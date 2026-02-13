@@ -3,16 +3,15 @@ import { Editor } from "primereact/editor";
 import { useDispatch, useSelector } from "react-redux";
 import { showSuccess, showError } from "../../utils/toastService";
 import {
-  getAllEvents,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} from "../../redux/slices/add_by_admin/eventSlice";
-import adminBanner from "../../assets/banners/bg.jpg";
+  createAGSEvent,
+  getAllAGSEvents,
+  updateAGSEvent,
+  deleteAGSEvent,
+} from "../../redux/slices/add_by_admin/agsEventSlice";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
 
-const Event = () => {
+const AGSEvent = () => {
   const dispatch = useDispatch();
   const [form, setForm] = useState({
     _id: null,
@@ -32,12 +31,12 @@ const Event = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { events, loading } = useSelector((state) => state.event);
-  console.log("EVENTS..", events);
+  const { agsEvents, loading } = useSelector((state) => state.agsEvent);
+  // console.log("AGS EVENTS..", agsEvents);
   const authUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    dispatch(getAllEvents());
+    dispatch(getAllAGSEvents());
   }, [dispatch]);
 
   const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_EVENT);
@@ -49,7 +48,7 @@ const Event = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm({ ...form, [name]: files ? files[0] : value });
+    setForm((prev) => ({ ...prev, [name]: files ? files[0] : value }));
   };
   const resetForm = () => {
     setForm({
@@ -101,16 +100,16 @@ const Event = () => {
         dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateEvent({ id: form._id, data: dataToSend })
+          updateAGSEvent({ id: form._id, data: dataToSend })
         ).unwrap();
         showSuccess("Event updated successfully ✅");
       } else {
         dataToSend.append("created_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
-        await dispatch(createEvent(dataToSend)).unwrap();
+        await dispatch(createAGSEvent(dataToSend)).unwrap();
         showSuccess("Event added successfully ✅");
       }
-      dispatch(getAllEvents());
+      dispatch(getAllAGSEvents());
       resetForm();
       setCurrentPage(1);
     } catch (err) {
@@ -123,18 +122,18 @@ const Event = () => {
   const handleDelete = async (id) => {
     const currentUserId = authUser?.id || null;
     try {
-      await dispatch(deleteEvent({ id, user_id: currentUserId })).unwrap();
+      await dispatch(deleteAGSEvent({ id, user_id: currentUserId })).unwrap();
       showSuccess("Event deleted successfully");
-      dispatch(getAllEvents());
+      dispatch(getAllAGSEvents());
     } catch (error) {
       showError("Failed to delete event", error);
     }
   };
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil((events?.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((agsEvents?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = events?.slice(startIndex, endIndex) || [];
+  const currentData = agsEvents?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
@@ -166,10 +165,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
               <h2 className="text-xl font-semibold text-white text-center">
-                Event Management
+               AGS Event Management
               </h2>
               <p className="text-sm text-blue-100">
-                Add or update Event content including reporting details.
+                Manage and view all AGS events in one place.
               </p>
             </div>
           </div>
@@ -179,7 +178,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         {/* ================= FORM ================= */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-base font-medium text-gray-800 mb-4">
-            {isEdit ? "Update Event" : "Add New Event"}
+            {isEdit ? "Update AGS Event" : "Add New AGS Event"}
           </h3>
 
           <form
@@ -188,7 +187,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Event Name <span className="text-red-500">*</span>
+               AGS Event Name <span className="text-red-500">*</span>
               </label>
               <input
                 name="name"
@@ -262,15 +261,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 inputMode="numeric"
                 pattern="[0-9]{10}"
                 onChange={(e) => {
-                  const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
-                  if (onlyNumbers.length <= 10) {
-                    handleChange({
-                      target: {
-                        name: "coordinator_contact",
-                        value: onlyNumbers,
-                      },
-                    });
-                  }
+                  const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+                  setForm((prev) => ({ ...prev, coordinator_contact: value }));
                 }}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
@@ -289,18 +281,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 value={form.reporting_time}
                 maxLength={5}
                 onChange={(e) => {
-                  let value = e.target.value;
-
-                  // allow only digits and :
-                  value = value.replace(/[^0-9:]/g, "");
-
-                  // prevent multiple :
-                  if ((value.match(/:/g) || []).length > 1) return;
-
-                  setForm((prev) => ({
-                    ...prev,
-                    reporting_time: value,
-                  }));
+                  let value = e.target.value.replace(/[^0-9:]/g, "");
+                  if ((value.match(/:/g) || []).length > 1) {
+                    value = value.substring(0, value.lastIndexOf(':'));
+                  }
+                  setForm((prev) => ({ ...prev, reporting_time: value }));
                 }}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
@@ -376,11 +361,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               </label>
 
               <Editor
-                value={form.description}
+                value={form.description || ""}
                 name="description"
                 readOnly={isFormDisabled}
                 onTextChange={(e) =>
-                  setForm({ ...form, description: e.htmlValue })
+                  setForm((prev) => ({ ...prev, description: e.htmlValue || "" }))
                 }
                 style={{
                   height: "150px",
@@ -422,13 +407,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
-            <h3 className="text-base font-medium text-gray-800">Events List</h3>
+            <h3 className="text-base font-medium text-gray-800">AGS Events List</h3>
           </div>
           <table className="w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-50 border-b  border-gray-200">
               <tr>
                 <th className="px-4 py-3 font-medium">S.No</th>
-                <th className="px-4 py-3 font-medium">Event Name</th>
+                <th className="px-4 py-3 font-medium">AGS Event Name</th>
                 <th className="px-4 py-3 font-medium">Start Date</th>
                 <th className="px-4 py-3 font-medium">End Date</th>
                 <th className="px-4 py-3 font-medium">Image</th>
@@ -437,7 +422,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               </tr>
             </thead>
             <tbody>
-              {loading && events?.length === 0 ? (
+              {loading && agsEvents?.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="text-center py-4">
                     Loading...
@@ -518,8 +503,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           {/* ================= PAGINATION ================= */}
           <div className="flex justify-between items-center p-4">
             <span className="text-sm text-gray-500">
-              Showing {startIndex + 1}–{Math.min(endIndex, events?.length || 0)}{" "}
-              of {events?.length || 0}
+              Showing {startIndex + 1}–{Math.min(endIndex, agsEvents?.length || 0)}{" "}
+              of {agsEvents?.length || 0}
             </span>
 
             <div className="flex space-x-1">
@@ -567,4 +552,4 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
   );
 };
 
-export default Event;
+export default AGSEvent;

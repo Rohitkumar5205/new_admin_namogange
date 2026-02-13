@@ -86,6 +86,7 @@ import Role from "./pages/add_by_admin/Role";
 import RoleRights from "./pages/role_rights/RoleRights";
 import AddSidebar from "./pages/add_by_admin/AddSidebar";
 import Overview from "./pages/overview/Overview";
+import AGSEvent from "./pages/add_by_admin/AGSEvent";
 
 function App() {
   return (
@@ -119,6 +120,7 @@ function App() {
               element={<CoordinatorStatus />}
             />
             <Route path="/add_by_admin/event" element={<Event />} />
+            <Route path="/add_by_admin/add-ags_event" element={<AGSEvent />} />
             <Route path="/add_by_admin/source" element={<Source />} />
             <Route path="/add_by_admin/target" element={<Target />} />
             <Route path="/add_by_admin/bank" element={<Bank />} />

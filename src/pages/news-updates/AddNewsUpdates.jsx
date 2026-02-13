@@ -236,7 +236,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   setFormData({ ...formData, description: e.htmlValue })
                 }
                 style={{
-                  height: "200px",
+                  height: "150px",
                   borderRadius: "4px", // rounded
                   borderBottom: "1px solid #e5e7eb", // border-gray-200
                   overflow: "hidden", // corners properly clip ho

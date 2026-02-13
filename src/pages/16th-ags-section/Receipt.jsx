@@ -54,7 +54,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         </div>
       </div>
 
-        <div className="bg-[#5DBED5] py-4 ">
+        <div className="bg-gray-100 py-4 ">
           <div
             ref={printRef}
             className="max-w-[210mm] mx-auto bg-white shadow-lg  "
@@ -109,7 +109,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         className="w-28 h-28 object-contain"
       />
 
-      <p className="text-sm font-semibold text-gray-700">
+      <p className="text-sm font-medium text-gray-700">
         AGS/15th/02/093
       </p>
     </div>
@@ -128,7 +128,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td
-                      className="py-0.5 leading-tight"
+                      className=" leading-tight"
                       style={{ width: "30%" }}
                     >
                       <span className="font-medium text-[#555555] text-sm">
@@ -141,7 +141,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td className="py-0.5 leading-tight">
+                    <td className=" leading-tight">
                       <span className="font-medium text-[#555555] text-sm">
                         Event Date :
                       </span>
@@ -150,7 +150,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td colSpan="2" className="py-0.5 leading-tight">
+                    <td colSpan="2" className=" leading-tight">
                       <span className="font-medium text-[#555555] text-sm">
                         Event Venue :
                       </span>
@@ -168,7 +168,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td className="py-0.5 leading-tight">
+                    <td className=" leading-tight">
                       <span className="font-medium text-[#555555] text-sm">
                         Event Timing
                       </span>
@@ -186,20 +186,20 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <tr>
                     <td colSpan="2" className="pb-2">
                       <p className="leading-tight">
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-medium text-[#555555] text-sm">
                           Note:
                         </span>{" "}
-                        <span className="text-[15px]">
+                        <span className="text-sm font-normal">
                           This pass is valid for the 15th edition of the Arogya
                           Sangosthi Seminar on
                         </span>{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           12 Jul 2025
                         </span>{" "}
-                        <span className="text-[15px]">
+                        <span className="text-sm">
                           and includes access to the exhibition area for
                         </span>{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           all three days
                         </span>
                         .
@@ -209,25 +209,25 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   {/* Payment Info */}
                   <tr>
-                    <td colSpan="2" className="pb-3">
-                      <p className=" text-[15px] leading-tight font-sans">
+                    <td colSpan="2" className="">
+                      <p className=" text-sm leading-tight font-sans">
                         The total payment amount is{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           ₹ 700/-
                         </span>
                         . The payment has been successfully received, confirming
                         the completion of the transaction. The payment was made
                         through{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           Paytm
                         </span>
                         , ensuring a smooth and secure transfer. The transaction
                         number for this payment is{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           519132934247
                         </span>
                         , and the payment was completed on{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           10 Jul 2025
                         </span>
                         .
@@ -237,8 +237,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   {/* About Section */}
                   <tr>
-                    <td colSpan="2">
-                      <p className="font-semibold text-[16px]">
+                    <td colSpan="2" className="py-1.5">
+                      <p className="font-medium text-[1rem] ">
                         About the 15th Edition of Arogya Sangosthi Seminar &
                         Expo:
                       </p>
@@ -247,13 +247,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         The{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           Arogya Sangosthi Seminar
                         </span>
                         , a key highlight of the{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           International Health & Wellness Expo
                         </span>
                         , is a premier platform uniting industry experts,
@@ -266,10 +266,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         The expo will showcase a diverse range of products and
                         services in{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           AYUSH, Nutrition, Fitness, Organic Farming, Herbal
                           Products, and overall wellness
                         </span>
@@ -281,7 +281,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   {/* Features List */}
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <ul className="list-disc ml-6 text-[15px]">
+                      <ul className="list-disc ml-6 text-sm">
                         <li className="leading-tight">
                           Organic products & health supplements
                         </li>
@@ -303,9 +303,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         This year's{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-semibold text-[#555555] text-sm">
                           15th Edition of Arogya Sangosthi Seminar
                         </span>{" "}
                         will focus on transformative trends that are shaping the
@@ -319,29 +319,29 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td colSpan="2" className="pb-1">
                       <ul className="list-disc ml-6 space-y-0">
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Globalizing Ayurveda
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Expanding Ayurveda's influence as a globally
                             recognized complementary and alternative medicine.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Ayurveda Meets Modern Science
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Integrating traditional wisdom with cutting-edge
                             medical research to enhance credibility and
                             efficacy.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Holistic Healthcare
                           </span>
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             {" "}
                             – Promoting a 360-degree wellness approach,
                             addressing physical, mental, and spiritual
@@ -349,65 +349,65 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Evidence-Based Ayurveda
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Showcasing clinical trials, scientific studies,
                             and real-world case reports to validate Ayurvedic
                             treatments.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Sustainability & Medicinal Plants
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Advocating for ethical sourcing, conservation, and
                             responsible cultivation of Ayurvedic herbs.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Ayurveda for Lifestyle Disorders
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Offering time-tested solutions for diabetes,
                             hypertension, obesity, and mental health challenges.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Ayurveda & Pandemic Resilience
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Exploring Ayurveda's role in immune strengthening,
                             disease prevention, and post-pandemic recovery.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Tech-Driven Ayurveda
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Leveraging AI, telemedicine, and digital health to
                             modernize Ayurvedic diagnosis and treatment.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Regulations & Standardization
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Strengthening quality control, global compliance,
                             and standardization in Ayurvedic medicine.
                           </span>
                         </li>
                         <li className=" leading-tight">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                          <span className="font-medium text-[#555555] text-sm">
                             Ayurveda in Education & Research
                           </span>{" "}
-                          <span className="text-[15px]">
+                          <span className="text-sm">
                             – Fostering innovation through academic
                             collaborations, research advancements, and clinical
                             practice improvements.
@@ -419,7 +419,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="pt-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         This seminar presents a unique opportunity to engage
                         with global experts, researchers, and industry pioneers,
                         shaping the future of Ayurveda and holistic wellness.
@@ -434,8 +434,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   {/* Stall Booking */}
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                      <p className=" text-sm leading-tight font-sans">
+                        <span className="font-medium text-[#555555] text-sm">
                           Note:
                         </span>{" "}
                         Book Your Stall for the 8th Edition of the International
@@ -446,9 +446,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                    <td colSpan="2" className="">
+                      <p className=" text-sm leading-tight font-sans">
+                        <span className="font-medium text-[#555555] text-sm">
                           How to Book? : Secure your stall by clicking the link
                           below and completing your registration:
                         </span>
@@ -457,8 +457,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td colSpan="2" className="pb-2">
-                      <button className="bg-[#2DBDC7] text-white font-semibold px-6 py-2 cursor-pointer">
+                    <td colSpan="2" className="py-2.5">
+                      <button className="bg-[#2DBDC7] text-white font-semibold px-6 py-1 cursor-pointer">
                         Register for Expo Stall Booking
                       </button>
                     </td>
@@ -466,7 +466,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="pb-3">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         Do not miss this incredible opportunity to connect,
                         network, and grow. We look forward to your
                         participation!
@@ -481,7 +481,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <div className="w-6 h-6 bg-gray-300">
                           <img src={imgMobile} alt="" />
                         </div>
-                        <p className="font-semibold">
+                        <p className="font-medium text-sm">
                           Follow Us on social media for International Health &
                           Wellness Expo Updates:
                         </p>
@@ -526,8 +526,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   {/* How to Reach */}
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className="font-semibold text-[14px]">
-                        How to Reach the Venue
+                      <p className="font-medium text-sm">
+                        How to reach the venue
                       </p>
                     </td>
                   </tr>
@@ -538,8 +538,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <div className="w-6 h-6 bg-blue-600 rounded-full shrink-0 mt-0.5">
                           <img src={imgMetro} alt="" />
                         </div>
-                        <p className=" text-[15px] leading-tight font-sans">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                        <p className=" text-sm leading-tight font-sans">
+                          <span className="font-medium text-[#555555] text-sm">
                             By Metro:
                           </span>{" "}
                           If you are traveling by metro, please get down at
@@ -557,8 +557,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <div className="w-6 h-6 bg-orange-500 rounded shrink-0 mt-0.5">
                           <img src={imgBus} alt="" />
                         </div>
-                        <p className=" text-[15px] leading-tight font-sans">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                        <p className=" text-sm leading-tight font-sans">
+                          <span className="font-medium text-[#555555] text-sm">
                             By Public Transport:
                           </span>{" "}
                           If you are arriving by bus, auto, or taxi, please
@@ -575,8 +575,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <div className="w-6 h-6 bg-red-600 rounded shrink-0 mt-0.5">
                           <img src={imgCar} alt="" />
                         </div>
-                        <p className=" text-[15px] leading-tight font-sans">
-                          <span className="font-semibold text-[#555555] text-[15px]">
+                        <p className=" text-sm leading-tight font-sans">
+                          <span className="font-medium text-[#555555] text-sm">
                             By Car:
                           </span>{" "}
                           If you are coming by your own vehicle, you can park
@@ -591,7 +591,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   {/* Contact Info */}
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         If you need any further information or any help, feel
                         free to contact our team members, who will be happy to
                         assist you:
@@ -654,7 +654,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <img
                           src={imgPannel}
                           alt=""
-                          className="w-[400px] h-[561px]"
+                          className="w-[400px] h-[516px]"
                         />
                       </div>
                     </td>
@@ -667,7 +667,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <img
                           src={imgVisitor}
                           alt=""
-                          className="w-[400px] h-[561px]"
+                          className="w-[400px] h-[516px]"
                         />
                       </div>
                     </td>
@@ -676,14 +676,14 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   {/* Closing */}
                   <tr>
                     <td colSpan="2" className="pb-2">
-                      <p className=" text-[15px] leading-tight font-sans">
+                      <p className=" text-sm leading-tight font-sans">
                         We look forward to welcoming you to the{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-medium text-[#555555] text-sm">
                           International Health & Wellness Expo, Agritech
                           Innovate India
                         </span>
                         , and the{" "}
-                        <span className="font-semibold text-[#555555] text-[15px]">
+                        <span className="font-medium text-[#555555] text-sm">
                           Arogya Sangosthi
                         </span>{" "}
                         Seminar. See you there!
@@ -693,7 +693,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td colSpan="2" className="pb-1 text-[15px]">
+                    <td colSpan="2" className="pb-1 text-sm">
                       <p>Warm regards,</p>
                     </td>
                   </tr>
@@ -705,7 +705,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td colSpan="2" className="pb-6 text-[15px]">
+                    <td colSpan="2" className="pb-6 text-sm">
                       <p>Chairman - Namo Gange Trust</p>
                     </td>
                   </tr>
