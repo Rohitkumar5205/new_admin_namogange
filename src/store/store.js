@@ -43,6 +43,9 @@ import memberReducer from "../redux/slices/membership/memberSlice";
 import volunteerReducer from "../redux/slices/volunteer/volunteerSlice";
 import agsDelegateReducer from "../redux/slices/ags/agsDelegateSlice";
 import agsEventReducer from "../redux/slices/add_by_admin/agsEventSlice";
+import collegeReducer from "../redux/slices/college/collegeSlice";
+import clientStatusReducer from "../redux/slices/ags/clientStatusSlice";
+import paymentsReducer from "../redux/slices/ags/agsPaymentSlice";
 
 const store = configureStore({
   reducer: {
@@ -90,6 +93,9 @@ const store = configureStore({
     volunteer: volunteerReducer,
     agsDelegate: agsDelegateReducer,
     agsEvent: agsEventReducer,
+    college: collegeReducer,
+    clientStatus: clientStatusReducer,
+    payments: paymentsReducer ,
   },
 });
 

@@ -193,18 +193,18 @@ function App() {
               element={<AGSAddData />}
             />
             <Route
-              path="/16th-ags-section/ags-edit-data"
+              path="/16th-ags-section/ags-edit-data/:id"
               element={<AGSEditData />}
             />
             <Route
-              path="/16th-ags-section/ags-overview"
+              path="/16th-ags-section/ags-overview/:id"
               element={<AgsOverview />}
             />
             <Route
-              path="/16th-ags-section/ags-payment"
+              path="/16th-ags-section/ags-payment/:id"
               element={<AgsPayment />}
             />
-            <Route path="/16th-ags-section/receipt" element={<Receipt />} />
+            <Route path="/16th-ags-section/receipt/:id" element={<Receipt />} />
             <Route
               path="/tgym/add-contestant"
               element={<AddNewContestants />}

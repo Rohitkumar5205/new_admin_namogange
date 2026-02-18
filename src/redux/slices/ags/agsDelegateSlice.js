@@ -31,7 +31,10 @@ export const createAgsDelegate = createAsyncThunk(
         },
       });
       const userId = formData.get("user_id");
+              console.log("Dispatching activity log for user ID:", userId, "with formData:", formData);
+
       if (userId) {
+        console.log("Dispatching activity log for user ID:", userId);
         dispatch(
           createActivityLogThunk({
             user_id: userId,

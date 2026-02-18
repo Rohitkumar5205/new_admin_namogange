@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import imgHead from "../../assets/receipt/header.png";
 import imgFooter from "../../assets/receipt/footer.png";
 import imgVisitor from "../../assets/receipt/visitor.png";
@@ -12,8 +12,59 @@ import imgMobile from "../../assets/receipt/images5.png";
 import imgQR from "../../assets/receipt/QR.png";
 import { FaPrint } from "react-icons/fa";
 import { useReactToPrint } from "react-to-print";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { getAllAgsPayments } from "../../redux/slices/ags/agsPaymentSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllEvents } from "../../redux/slices/add_by_admin/eventSlice";
+import { getAllClientStatuses } from "../../redux/slices/ags/clientStatusSlice";
+import { fetchAgsDelegates } from "../../redux/slices/ags/agsDelegateSlice";
 
 const Receipt = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { payments } = useSelector((state) => state.payments);
+  const { events } = useSelector((state) => state.event);
+  console.log("Events from Redux Store in Receipt:", events);
+  const { clientStatuses } = useSelector((state) => state.clientStatus);
+  const { delegates } = useSelector((state) => state.agsDelegate);
+  // console.log("Payments from Redux:", payments);
+
+  const matchedPayment =
+    location.state?.payment || payments?.find((payment) => payment._id === id);
+  console.log("Matched Payment:", matchedPayment);
+
+  const matchedClientStatuses =
+    location.state?.matchedClientStatuses ||
+    (matchedPayment
+      ? clientStatuses?.filter(
+          (status) => status.client_id === matchedPayment.client_id,
+        )
+      : []);
+  console.log("Matched Client Statuses:", matchedClientStatuses);
+
+  const singleDelegate =
+    location.state?.singleDelegate ||
+    delegates?.find((d) => d._id === matchedPayment?.client_id);
+
+  // Find the status that has a selected_event, instead of just taking the first one
+  const statusWithEvent = matchedClientStatuses?.find(
+    (status) => status.selected_event,
+  );
+
+  const matchedEvent = events?.find(
+    (event) => event.name === statusWithEvent?.selected_event,
+  );
+  console.log("Matched Event Data:", matchedEvent);
+
+  useEffect(() => {
+    dispatch(getAllAgsPayments());
+    dispatch(getAllEvents());
+    dispatch(getAllClientStatuses());
+    dispatch(fetchAgsDelegates());
+  }, [dispatch]);
+
   // print logic
   const printRef = useRef();
   const handlePrint = useReactToPrint({
@@ -21,38 +72,63 @@ const Receipt = () => {
     documentTitle: "Receipt PDF",
   });
 
+  const formatTimeWithOffset = (time, offsetHours = 0) => {
+    if (!time) return "N/A";
+
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const date = new Date();
+    date.setHours(hours + offsetHours);
+    date.setMinutes(minutes);
+    date.setSeconds(0);
+
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  if (!matchedPayment || !singleDelegate) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <p className="text-lg font-semibold text-gray-600">
+          Loading Receipt Details...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="w-full">
-
-{/* header  */}
-         <div
-        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+        {/* header  */}
+        <div
+          className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-      >
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-white/10"></div>
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-white/10"></div>
 
-        {/* Content */}
-        <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex items-center justify-between w-full">
-            <div className=" ">
-              <h2 className="text-xl font-semibold text-white text-center">
-                Receipt Management
-              </h2>
-              
+          {/* Content */}
+          <div className="relative flex justify-center items-center px-6 py-4 h-25">
+            <div className="flex items-center justify-between w-full">
+              <div className=" ">
+                <h2 className="text-xl font-semibold text-white text-center">
+                  Receipt Management
+                </h2>
+              </div>
+              <div>
+                <button
+                  onClick={handlePrint}
+                  className="px-3 py-1 text-gray-400 border-2 border-gray-300 cursor-pointer bg-gray-100 hover:bg-gray-900 hover:text-white"
+                >
+                  <FaPrint />
+                </button>
+              </div>
             </div>
-<div>
-  <button
-            onClick={handlePrint}
-            className="px-3 py-1 text-gray-400 border-2 border-gray-300 cursor-pointer bg-gray-100 hover:bg-gray-900 hover:text-white"
-          >
-            <FaPrint />
-          </button>
-</div>
           </div>
         </div>
-      </div>
 
         <div className="bg-gray-100 py-4 ">
           <div
@@ -67,7 +143,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <div className="px-6 py-2">
               {/* Title */}
               <h1 className="text-left text-[#555555] font-medium text-lg  pb-1 ">
-                Confirmation Letter for 15th Edition of Arogya Sangosthi Seminar
+                Confirmation Letter for 16th Edition of Arogya Sangosthi Seminar
               </h1>
               <hr className="w-full opacity-90 py-2" />
               {/* Main Table */}
@@ -75,47 +151,49 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <tbody>
                   {/* Greeting and QR Section */}
                   <tr className="border-b border-gray-200">
-  {/* LEFT CONTENT */}
-  <td className="align-top w-[70%]">
-    <p className="mb-1 text-base font-medium text-gray-800">
-      Dear Dr. Y.K. Chauhan,
-    </p>
+                    {/* LEFT CONTENT */}
+                    <td className="align-top w-[70%]">
+                      <p className="mb-1 text-base font-medium text-gray-800">
+                        Dear {singleDelegate?.title} {singleDelegate?.firstName}{" "}
+                        {singleDelegate?.lastName},
+                      </p>
 
-    <p className="text-sm leading-relaxed text-gray-700 font-normal">
-      We are pleased to confirm your participation in the{" "}
-      <span className="font-medium text-gray-800">
-        15th Edition of the Arogya Sangosthi Seminar
-      </span>
-      , held alongside the{" "}
-      <span className="font-medium text-gray-800">
-        8th Edition of the International Health & Wellness Expo
-      </span>{" "}
-      and the{" "}
-      <span className="font-medium text-gray-800">
-        2nd Edition of Agritech Innovate India
-      </span>
-      . This prestigious event serves as a platform to bring together experts,
-      exhibitors, and visitors from various sectors of health, wellness, and
-      agriculture.
-    </p>
-  </td>
+                      <p className="text-sm leading-relaxed text-gray-700 font-normal">
+                        We are pleased to confirm your participation in the{" "}
+                        <span className="font-medium text-gray-800">
+                          {statusWithEvent?.selected_event || "N/A"}
+                        </span>
+                        , held alongside the{" "}
+                        <span className="font-medium text-gray-800">
+                          8th Edition of the International Health & Wellness
+                          Expo
+                        </span>{" "}
+                        and the{" "}
+                        <span className="font-medium text-gray-800">
+                          2nd Edition of Agritech Innovate India
+                        </span>
+                        . This prestigious event serves as a platform to bring
+                        together experts, exhibitors, and visitors from various
+                        sectors of health, wellness, and agriculture.
+                      </p>
+                    </td>
 
-  {/* RIGHT QR SECTION */}
-  <td className="align-top py-2 w-[30%] text-right">
-    <div className="flex flex-col items-end gap-2">
-      <img
-        src={imgQR}
-        alt="QR Code"
-        className="w-28 h-28 object-contain"
-      />
+                    {/* RIGHT QR SECTION */}
+                    <td className="align-top py-1 w-[30%] text-right">
+                      <div className="flex flex-col items-end gap-1">
+                        <img
+                          src={imgQR}
+                          alt="QR Code"
+                          className="w-28 h-28 object-contain"
+                        />
 
-      <p className="text-sm font-medium text-gray-700">
-        AGS/15th/02/093
-      </p>
-    </div>
-  </td>
-</tr>
-
+                        <p className="text-sm font-medium text-gray-700">
+                          {matchedPayment?.registration_no ||
+                            "Registration Number Not Available"}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
 
                   {/* Event Details */}
                   <tr>
@@ -127,15 +205,12 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
 
                   <tr>
-                    <td
-                      className=" leading-tight"
-                      style={{ width: "30%" }}
-                    >
+                    <td className=" leading-tight" style={{ width: "30%" }}>
                       <span className="font-medium text-[#555555] text-sm">
                         Event Name :
                       </span>
                       <span className="px-2 text-sm font-normal text-[#555555]">
-                        15th Edition of Arogya Sangosthi Seminar
+                        {statusWithEvent?.selected_event || "N/A"}
                       </span>
                     </td>
                   </tr>
@@ -145,7 +220,17 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                       <span className="font-medium text-[#555555] text-sm">
                         Event Date :
                       </span>
-                                            <span className="px-2 text-sm font-normal text-[#555555]"> 12 Jul 2025</span>
+                      <span className="px-2 text-sm font-normal text-[#555555]">
+                        {matchedEvent?.start_date
+                          ? new Date(
+                              matchedEvent.start_date,
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "N/A"}
+                      </span>
                     </td>
                   </tr>
 
@@ -154,10 +239,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                       <span className="font-medium text-[#555555] text-sm">
                         Event Venue :
                       </span>
-                                           <span className="px-2 text-sm font-normal text-[#555555]">
-
-                        {" "}
-                         Hall No- 12 Pargati Maidan New Delhi-110001{" "}
+                      <span className="px-2 text-sm font-normal text-[#555555]">
+                        {matchedEvent?.reporting_point ||
+                          "Hall No- 12 Pargati Maidan New Delhi-110001"}
                         <a href="">
                           <span className="text-blue-600 underline text-sm ml-5">
                             Direction
@@ -172,7 +256,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                       <span className="font-medium text-[#555555] text-sm">
                         Event Timing
                       </span>
-                      <span className="py-2"> : 09:30 AM to 06:00 PM</span>
+                      <span className="py-2">
+                        : {formatTimeWithOffset(matchedEvent?.reporting_time)} -{" "}
+                        {formatTimeWithOffset(matchedEvent?.reporting_time, 8)}
+                      </span>
                     </td>
                   </tr>
 
@@ -190,17 +277,25 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                           Note:
                         </span>{" "}
                         <span className="text-sm font-normal">
-                          This pass is valid for the 15th edition of the Arogya
+                          This pass is valid for the 16th edition of the Arogya
                           Sangosthi Seminar on
                         </span>{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          12 Jul 2025
+                          {matchedEvent?.start_date
+                            ? new Date(
+                                matchedEvent.start_date,
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                            : "N/A"}
                         </span>{" "}
                         <span className="text-sm">
                           and includes access to the exhibition area for
                         </span>{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          all three days
+                          {matchedPayment?.Seminar_day || "N/A"}
                         </span>
                         .
                       </p>
@@ -213,13 +308,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                       <p className=" text-sm leading-tight font-sans">
                         The total payment amount is{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          ₹ 700/-
+                          ₹ {matchedPayment?.amount || "0"} /-
                         </span>
                         . The payment has been successfully received, confirming
                         the completion of the transaction. The payment was made
                         through{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          Paytm
+                          {matchedPayment?.paymentMode || "N/A"}
                         </span>
                         , ensuring a smooth and secure transfer. The transaction
                         number for this payment is{" "}
@@ -228,7 +323,15 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         </span>
                         , and the payment was completed on{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          10 Jul 2025
+                          {matchedPayment?.createdAt
+                            ? new Date(
+                                matchedPayment.createdAt,
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                            : "N/A"}
                         </span>
                         .
                       </p>
@@ -239,7 +342,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <tr>
                     <td colSpan="2" className="py-1.5">
                       <p className="font-medium text-[1rem] ">
-                        About the 15th Edition of Arogya Sangosthi Seminar &
+                        About the 16th Edition of Arogya Sangosthi Seminar &
                         Expo:
                       </p>
                     </td>
@@ -306,7 +409,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                       <p className=" text-sm leading-tight font-sans">
                         This year's{" "}
                         <span className="font-semibold text-[#555555] text-sm">
-                          15th Edition of Arogya Sangosthi Seminar
+                          16th Edition of Arogya Sangosthi Seminar
                         </span>{" "}
                         will focus on transformative trends that are shaping the
                         future of Ayurveda and integrative health:
@@ -458,9 +561,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
                   <tr>
                     <td colSpan="2" className="py-2.5">
-                      <button className="bg-[#2DBDC7] text-white font-semibold px-6 py-1 cursor-pointer">
+                      <Link
+                        to="https://namogangewellness.com/exhibitor-enquiry?expo=1"
+                        target="_blank"
+                        className="bg-[#2DBDC7] text-white font-semibold px-6 py-1.5 cursor-pointer"
+                      >
                         Register for Expo Stall Booking
-                      </button>
+                      </Link>
                     </td>
                   </tr>
 
@@ -495,28 +602,40 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         <div className="w-5 h-5 bg-gray-300">
                           <img src={imgKeel} alt="" />
                         </div>
-                        <a href="">
+                        <a
+                          href="https://www.facebook.com/namogangewellness.event"
+                          target="_blank"
+                        >
                           <p className="text-blue-600 underline">Facebook</p>
                         </a>
                         <span>|</span>
                         <div className="w-5 h-5 bg-gray-300">
                           <img src={imgKeel} alt="" />
                         </div>
-                        <a href="">
+                        <a
+                          href="https://www.instagram.com/namogangewellness.event"
+                          target="_blank"
+                        >
                           <p className="text-blue-600 underline">Instagram</p>
                         </a>
                         <span>|</span>
                         <div className="w-5 h-5 bg-gray-300">
                           <img src={imgKeel} alt="" />
                         </div>
-                        <a href="">
+                        <a
+                          href="https://namogangewellness.com/"
+                          target="_blank"
+                        >
                           <p className="text-blue-600 underline">Website</p>
                         </a>
                         <span>|</span>
                         <div className="w-5 h-5 bg-gray-300">
                           <img src={imgKeel} alt="" />
                         </div>
-                        <a href="">
+                        <a
+                          href="https://www.linkedin.com/company/namo-gange-wellness-event"
+                          target="_blank"
+                        >
                           <p className="text-blue-600 underline">LinkedIn</p>
                         </a>
                       </div>

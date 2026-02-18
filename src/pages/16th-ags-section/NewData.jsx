@@ -11,7 +11,7 @@ const columns = [
     label: "Delegate Name",
     render: (row) => (
       <Link
-        to={`/16th-ags-section/ags-overview`}
+        to={`/16th-ags-section/ags-overview/${row._id}`}
         className="text-blue-600 hover:underline"
       >
         {`${row?.title || ""} ${row?.firstName || ""} ${row?.lastName || ""}`}
@@ -31,7 +31,10 @@ const NewData = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { delegates, loading } = useSelector((state) => state.agsDelegate);
-  // console.log("AGS Delegates from Redux Store:", delegates);
+
+  // Filter delegates where clientStatus is empty or null
+  const filteredDelegates = delegates?.filter((item) => !item.clientStatus);
+
   const [formData, setFormData] = useState({
     description: "",
     image: null,
@@ -116,7 +119,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
 <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
-      <CommonTable data={delegates || []} columns={columns} loading={loading} />
+      <CommonTable data={filteredDelegates || []} columns={columns} loading={loading} />
 
       {/* form  */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

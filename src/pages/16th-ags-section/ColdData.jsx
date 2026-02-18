@@ -1,79 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CommonTable from "../../components/CommonTable";
+import { fetchAgsDelegates } from "../../redux/slices/ags/agsDelegateSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const columns = [
   {
     key: "name",
-    label: "Name",
+    label: "Delegate Name",
     render: (row) => (
-      <Link to="/16th-ags-section/ags-overview" className="text-blue-600 hover:underline">
-        {row.name}
+      <Link
+        to={`/16th-ags-section/ags-overview/${row._id}`}
+        className="text-blue-600 hover:underline"
+      >
+        {`${row?.title || ""} ${row?.firstName || ""} ${row?.lastName || ""}`}
       </Link>
     ),
   },
   { key: "mobile", label: "Mobile No" },
+  { key: "email", label: "Email" },
   { key: "profession", label: "Profession" },
+  { key: "event", label: "Event" },
   { key: "category", label: "Category" },
-  { key: "college", label: "College" },
-  { key: "source", label: "Source" },
-  { key: "event", label: "Deal For|Event" },
-  { key: "status", label: "Status" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },
-  { key: "updated", label: "Updated Details" },
-];
-
-const data = [
-  {
-    id: 1,
-    name: "Rahul Verma",
-    mobile: "9876543210",
-    profession: "Service",
-    category: "Donation",
-    college: "Donation",
-    source: "Donation",
-    event: "Donation",
-    status: "Donation",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-    updated: "Updated Details",
-  },
-  {
-    id: 2,
-    name: "Amit Sharma",
-    mobile: "9876543211",
-    profession: "Business",
-    category: "Volunteer",
-    college: "Volunteer",
-    source: "Volunteer",
-    event: "Volunteer",
-    status: "Volunteer",
-    city: "Gurgaon",
-    state: "Haryana",
-    updated: "Updated Details",
-  },
-  {
-    id: 3,
-    name: "Ravi Kumar",
-    mobile: "9876543212",
-    profession: "Service",
-    category: "Donation",
-    college: "Donation",
-    source: "Donation",
-    event: "Donation",
-    status: "Donation",
-    city: "Delhi",
-    state: "Delhi",
-    updated: "Updated Details",
-  },
 ];
 
 const ColdData = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { delegates, loading } = useSelector((state) => state.agsDelegate);
+  // Filter delegates where clientStatus is "Not Interested"
+  const filteredDelegates = delegates?.filter((item) => item.clientStatus === "Not Interested");
   const [formData, setFormData] = useState({
     description: "",
+    image: null,
+    document: null,
   });
+
+  useEffect(() => {
+    dispatch(fetchAgsDelegates());
+  }, [dispatch]);
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -91,36 +58,6 @@ const ColdData = () => {
   return (
     <div className=" space-y-6">
       {/* ================= HEADER ================= */}
-      {/* <div className="flex justify-between items-center bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <div>
-          <h2 className="text-lg font-medium text-gray-800">
-            Not Interested Delegates{" "}
-          </h2>
-        </div>
-        <div className="flex gap-1">
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            ADD NEW DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            WEB REGISTRATION
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            NEW DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            WARM DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            HOT DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            CONFIRM DATA
-          </button>
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            MASTER DATA
-          </button>
-        </div>
-      </div> */}
          <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
@@ -180,7 +117,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
 <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
-      <CommonTable data={data} columns={columns} />
+      <CommonTable data={filteredDelegates || []} columns={columns} loading={loading} />
 
       {/* form  */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
