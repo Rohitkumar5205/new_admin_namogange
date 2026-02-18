@@ -1,47 +1,86 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
+import { createCollege, updateCollege } from "../../redux/slices/college/collegeSlice";
+import { showSuccess, showError } from "../../utils/toastService";
 
 const AddCollege = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    college_name: "",
-    category: "",
-    website: "",
-    address: "",
-    country: "",
-    state: "",
-    city: "",
-    pincode: "",
-    affilated_to: "",
-    status: "Active",
-    contacts: [
-      {
-        contact_person: "",
-        designation: "",
-        email: "",
-        mobile: "",
-        alternate: "",
-        landline: "",
-      },
-    ],
-  });
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.college);
 
+    const [formData, setFormData] = useState({
+      college_name: "",
+      category: "",
+      website: "",
+      address: "",
+      country: "",
+      state: "",
+      city: "",
+      pincode: "",
+      affilated_to: "",
+      status: "Active",
+      contacts: [
+        {
+          contact_person: "",
+          designation: "",
+          email: "",
+          mobile: "",
+          alternate: "",
+          landline: "",
+        },
+      ],
+    });
+
+  const [errors, setErrors] = useState({});
   const [isEdit, setIsEdit] = useState(false);
 
   const { isFormDisabled } = useRoleRights(PageNames.ADD_COLLEGE);
 
+  useEffect(() => {
+    if (location.state) {
+      setIsEdit(true);
+      setFormData(location.state);
+    }
+  }, [location.state]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    let newValue = value;
+
+    // Pincode validation: numeric only, max 6 digits
+    if (name === "pincode") {
+      newValue = value.replace(/[^0-9]/g, "").slice(0, 6);
+    }
+
+    setFormData({ ...formData, [name]: newValue });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
   };
 
   const handleContactChange = (index, e) => {
     const { name, value } = e.target;
+    let newValue = value;
+
+    // Phone numbers validation: numeric only, max 10 digits
+    if (["mobile", "alternate", "landline"].includes(name)) {
+      newValue = value.replace(/[^0-9]/g, "").slice(0, 10);
+    }
+
     const updatedContacts = [...formData.contacts];
-    updatedContacts[index][name] = value;
+    updatedContacts[index][name] = newValue;
     setFormData({ ...formData, contacts: updatedContacts });
+
+    // Clear error for this field if it exists
+    const errorKey = `${name}_${index}`;
+    if (errors[errorKey]) {
+      setErrors({ ...errors, [errorKey]: null });
+    }
   };
 
   const addContact = () => {
@@ -66,37 +105,78 @@ const AddCollege = () => {
     setFormData({ ...formData, contacts: updatedContacts });
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+    const pinRegex = /^[0-9]{6}$/;
+
+    if (!formData.college_name?.trim()) newErrors.college_name = "College Name is required";
+    if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.website?.trim()) newErrors.website = "Website is required";
+    if (!formData.address?.trim()) newErrors.address = "Address is required";
+    if (!formData.country) newErrors.country = "Country is required";
+    if (!formData.state) newErrors.state = "State is required";
+    if (!formData.city) newErrors.city = "City is required";
+    
+    if (!formData.pincode?.trim()) {
+      newErrors.pincode = "Pincode is required";
+    } else if (!pinRegex.test(formData.pincode)) {
+      newErrors.pincode = "Pincode must be 6 digits";
+    }
+
+    if (!formData.affilated_to?.trim()) newErrors.affilated_to = "Affiliation is required";
+
+    if (formData.contacts.length > 0) {
+      formData.contacts.forEach((contact, index) => {
+        // First contact mandatory fields
+        if (index === 0) {
+          if (!contact.contact_person?.trim()) newErrors[`contact_person_${index}`] = "Contact Person Name is required";
+          if (!contact.mobile?.trim()) {
+            newErrors[`mobile_${index}`] = "Mobile is required";
+          } else if (!phoneRegex.test(contact.mobile)) {
+            newErrors[`mobile_${index}`] = "Mobile must be 10 digits";
+          }
+        } else if (contact.mobile?.trim() && !phoneRegex.test(contact.mobile)) {
+           newErrors[`mobile_${index}`] = "Mobile must be 10 digits";
+        }
+
+        if (contact.email?.trim() && !emailRegex.test(contact.email)) {
+          newErrors[`email_${index}`] = "Invalid email format";
+        }
+        if (contact.alternate?.trim() && !phoneRegex.test(contact.alternate)) {
+          newErrors[`alternate_${index}`] = "Alternate No. must be 10 digits";
+        }
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
-    alert(
-      isEdit
-        ? "College updated successfully ✅"
-        : "College added successfully ✅"
-    );
-    setFormData({
-      college_name: "",
-      category: "",
-      website: "",
-      address: "",
-      country: "",
-      state: "",
-      city: "",
-      pincode: "",
-      affilated_to: "",
-      status: "Active",
-      contacts: [
-        {
-          contact_person: "",
-          designation: "",
-          email: "",
-          mobile: "",
-          alternate: "",
-          landline: "",
-        },
-      ],
-    });
-    setIsEdit(false);
+    if (!validate()) {
+      showError("Please fill all required fields");
+      return;
+    }
+
+    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const userId = authUser?._id || authUser?.id;
+    const payload = { ...formData, user_id: userId };
+
+    try {
+      if (isEdit) {
+        await dispatch(updateCollege({ id: formData._id, data: payload })).unwrap();
+        showSuccess("College updated successfully ✅");
+      } else {
+        await dispatch(createCollege(payload)).unwrap();
+        showSuccess("College added successfully ✅");
+      }
+      navigate("/collage/college-list");
+    } catch (err) {
+      showError(err || "Something went wrong");
+    }
   };
 
   return (
@@ -159,6 +239,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 required
                 disabled={isFormDisabled}
               />
+              {errors.college_name && <p className="text-red-500 text-xs mt-1">{errors.college_name}</p>}
             </div>
 
             {/* CATEGORY */}
@@ -175,10 +256,22 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 disabled={isFormDisabled}
               >
                 <option value="">Select Category</option>
-                <option value="Health">Health</option>
-                <option value="Education">Education</option>
-                <option value="Environment">Environment</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="Asscociations">Asscociations</option>
+              <option value="Ayurveda">Ayurveda</option>
+              <option value="Bio-Technology">Bio-Technology</option>
+              <option value="College">College</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Govt.Departments">Govt.Departments</option>
+              <option value="Hospital">Hospital</option>
+              <option value="Naturopathy">Naturopathy</option>
+              <option value="NGO">NGO</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
+              <option value="Research">Research</option>
+              <option value="University">University</option>
+              <option value="Yoga">Yoga</option>
               </select>
+              {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
             </div>
             {/* WEBSITE */}
             <div>
@@ -194,6 +287,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {errors.website && <p className="text-red-500 text-xs mt-1">{errors.website}</p>}
             </div>
 
             {/* AFFILIATED TO */}
@@ -210,6 +304,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {errors.affilated_to && <p className="text-red-500 text-xs mt-1">{errors.affilated_to}</p>}
             </div>
 
             {/* ADDRESS */}
@@ -226,6 +321,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
             </div>
 
             {/* COUNTRY */}
@@ -246,6 +342,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <option value="USA">USA</option>
                 <option value="UK">UK</option>
               </select>
+              {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
             </div>
             {/* STATE */}
             <div>
@@ -266,6 +363,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <option value="Delhi">Delhi</option>
                 <option value="Haryana">Haryana</option>
               </select>
+              {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
             </div>
 
             {/* CITY */}
@@ -286,6 +384,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <option value="Delhi">Delhi</option>
                 <option value="Gurgaon">Gurgaon</option>
               </select>
+              {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
             </div>
 
             {/* PINCODE */}
@@ -302,6 +401,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
             </div>
             {/* STATUS */}
             <div>
@@ -368,6 +468,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                     disabled={isFormDisabled}
                   />
+                  {errors[`contact_person_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`contact_person_${index}`]}</p>}
                 </div>
 
                 {/* Designation */}
@@ -375,18 +476,16 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     Designation <span className="text-red-500">*</span>
                   </label>
-                  <select
+                  <input
+                    type="text"
                     name="designation"
                     value={contact.designation}
                     onChange={(e) => handleContactChange(index, e)}
+                    placeholder="Designation"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                     disabled={isFormDisabled}
-                  >
-                    <option value="">Select Designation</option>
-                    <option value="Principal">Principal</option>
-                    <option value="Dean">Dean</option>
-                    <option value="HOD">HOD</option>
-                  </select>
+                  />
+                   
                 </div>
 
                 {/* Email */}
@@ -403,6 +502,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                     disabled={isFormDisabled}
                   />
+                  {errors[`email_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`email_${index}`]}</p>}
                 </div>
 
                 {/* Mobile */}
@@ -419,6 +519,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                     disabled={isFormDisabled}
                   />
+                  {errors[`mobile_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`mobile_${index}`]}</p>}
                 </div>
 
                 {/* Alternate */}
@@ -435,6 +536,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                     disabled={isFormDisabled}
                   />
+                  {errors[`alternate_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`alternate_${index}`]}</p>}
                 </div>
 
                 {/* Landline */}
@@ -497,10 +599,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={`px-6 py-1 text-sm rounded text-white ${isEdit
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-green-600 hover:bg-green-700"
-                } ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-              disabled={isFormDisabled}
+                } ${(isFormDisabled || loading) ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={isFormDisabled || loading}
             >
-              {isEdit ? "Update" : "Add"}
+              {loading ? "Processing..." : (isEdit ? "Update" : "Add")}
             </button>
           </div>
         </form>

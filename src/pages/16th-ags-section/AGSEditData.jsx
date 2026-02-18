@@ -6,9 +6,12 @@ import {
   updateAgsDelegate,
   clearSingleAgsDelegate,
 } from "../../redux/slices/ags/agsDelegateSlice";
-import { showError } from "../../utils/toastService";
 import { getAllProfessions } from "../../redux/slices/add_by_admin/professionSlice";
 import { getAllAGSEvents } from "../../redux/slices/add_by_admin/agsEventSlice";
+import { getAllColleges } from "../../redux/slices/college/collegeSlice";
+import { getAllUniversities } from "../../redux/slices/add_by_admin/universitySlice";
+import { getAllEnquiries } from "../../redux/slices/add_by_admin/enquirySlice";
+import { showError, showSuccess } from "../../utils/toastService";
 
 const AGSEditData = () => {
   const navigate = useNavigate();
@@ -17,6 +20,9 @@ const AGSEditData = () => {
   const { singleDelegate } = useSelector((state) => state.agsDelegate);
   const { professions } = useSelector((state) => state.profession);
   const { agsEvents } = useSelector((state) => state.agsEvent);
+  const { colleges } = useSelector((state) => state.college);
+  const { universities } = useSelector((state) => state.university);
+  const { enquiries } = useSelector((state) => state.enquiry);
   const { user } = useSelector((state) => state.auth);
   const initialDelegateFormData = {
     title: "",
@@ -41,7 +47,7 @@ const AGSEditData = () => {
     // leadForward: "",
     // source: "",
     mode: "",
-    status: "",
+    status: "Active",
     coordinator: "",
     remark: "",
     // Business Fields
@@ -122,6 +128,9 @@ const AGSEditData = () => {
     }
     dispatch(getAllProfessions());
     dispatch(getAllAGSEvents());
+    dispatch(getAllColleges());
+    dispatch(getAllUniversities());
+    dispatch(getAllEnquiries());
     return () => {
       dispatch(clearSingleAgsDelegate());
     };
@@ -135,6 +144,18 @@ const AGSEditData = () => {
           delegateData[key] = singleDelegate[key];
         }
       }
+      
+      // Robust mapping for Company Fields (Handles camelCase, snake_case, and variations)
+      delegateData.companyName = singleDelegate.companyName || singleDelegate.company_name || "";
+      delegateData.companyAddress = singleDelegate.companyAddress || singleDelegate.company_address || "";
+      delegateData.companyCountry = singleDelegate.companyCountry || singleDelegate.company_country || "";
+      delegateData.companyState = singleDelegate.companyState || singleDelegate.company_state || "";
+      delegateData.companyCity = singleDelegate.companyCity || singleDelegate.company_city || "";
+      delegateData.companyPin = singleDelegate.companyPin || singleDelegate.company_pin || singleDelegate.companyPincode || "";
+
+      // Ensure status is set
+      delegateData.status = singleDelegate.status || "Active";
+
       setFormData(delegateData);
     }
   }, [singleDelegate]);
@@ -145,26 +166,31 @@ const AGSEditData = () => {
       showError("Please fix the validation errors and try again.");
       return;
     }
-    const data = new FormData();
-    for (const key in formData) {
-      if (key !== "_id" && key !== "__v" && key !== "createdAt" && key !== "updatedAt") {
-        data.append(key, formData[key]);
-      }
+    
+    // Create a clean JSON object for update
+    const data = { ...formData };
+    const systemFields = ["_id", "__v", "createdAt", "updatedAt"];
+    systemFields.forEach((field) => delete data[field]);
+
+    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const userId = authUser?._id || authUser?.id;
+    if (userId) {
+      data.user_id = userId;
     }
-    if (user?._id) {
-      data.append("user_id", user._id);
-    }
+
+    // Add .get() method to support Redux slice expecting FormData (matching AGSAddData logic)
+    data.get = (key) => data[key];
 
     dispatch(updateAgsDelegate({ id, formData: data }))
       .unwrap()
       .then(() => {
         console.log("Updated Data:", formData);
-        alert("Delegate data updated successfully!");
-        navigate("/16th-ags-section/delegate-list");
+        showSuccess("Delegate data updated successfully!");
+        navigate("/16th-ags-section/new-data");
       })
       .catch((err) => {
         console.error("Failed to update delegate:", err);
-        alert("Failed to update delegate data.");
+        showError("Failed to update delegate data.");
       });
   };
 
@@ -254,11 +280,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Title</option>
-              <option value="Mr.">Mr.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Mrs.">Mrs.</option>
-              <option value="Dr.">Dr.</option>
-              <option value="Prof.">Prof.</option>
+              <option value="Mr">Mr</option>
+              <option value="Ms">Ms</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Dr">Dr</option>
+              <option value="Prof">Prof</option>
             </select>
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
@@ -514,8 +540,21 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               required
             >
-              <option value="">Select Category</option>
-              <option value="Cat1">Cat1</option>
+                <option value="">Select Category</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="Asscociations">Asscociations</option>
+              <option value="Ayurveda">Ayurveda</option>
+              <option value="Bio-Technology">Bio-Technology</option>
+              <option value="College">College</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Govt.Departments">Govt.Departments</option>
+              <option value="Hospital">Hospital</option>
+              <option value="Naturopathy">Naturopathy</option>
+              <option value="NGO">NGO</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
+              <option value="Research">Research</option>
+              <option value="University">University</option>
+              <option value="Yoga">Yoga</option>
             </select>
           </div>
           {/* College */}
@@ -531,7 +570,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select College</option>
-              <option value="College1">College1</option>
+              {colleges
+                ?.filter((college) => college.status === "Active")
+                .map((college) => (
+                  <option key={college._id} value={college.college_name}>
+                    {college.college_name}
+                  </option>
+                ))}
             </select>
           </div>
           {/* University */}
@@ -547,7 +592,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select University</option>
-              <option value="Uni1">Uni1</option>
+              {universities
+                ?.filter((uni) => uni.status === "Active")
+                .map((uni) => (
+                  <option key={uni._id} value={uni.name}>
+                    {uni.name}
+                  </option>
+                ))}
             </select>
           </div>
           {/* Enquiry For */}
@@ -563,7 +614,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Enquiry For</option>
-              <option value="Option1">Option1</option>
+              {enquiries
+                ?.filter((enq) => enq.status === "Active")
+                .map((enq) => (
+                  <option key={enq._id} value={enq.name}>
+                    {enq.name}
+                  </option>
+                ))}
             </select>
           </div>
           {/* Lead Forward */}
@@ -612,8 +669,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Mode</option>
-              <option value="Online">Online</option>
-              <option value="Offline">Offline</option>
+              <option value="Organic">Organic</option>
+              <option value="Paid">Paid</option>
+              <option value="Other">Other</option>
             </select>
           </div>
           {/* Status */}

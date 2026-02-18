@@ -5,14 +5,21 @@ import { createAgsDelegate } from "../../redux/slices/ags/agsDelegateSlice";
 import { showError, showSuccess } from "../../utils/toastService";
 import { getAllProfessions } from "../../redux/slices/add_by_admin/professionSlice";
 import { getAllAGSEvents } from "../../redux/slices/add_by_admin/agsEventSlice";
+import {getAllColleges} from "../../redux/slices/college/collegeSlice";
+import { getAllUniversities } from "../../redux/slices/add_by_admin/universitySlice";
+import {  getAllEnquiries } from "../../redux/slices/add_by_admin/enquirySlice";
+
 const AGSAddData = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+    const { colleges } = useSelector((state) => state.college);
   const { user } = useSelector((state) => state.auth);
   const { professions } = useSelector((state) => state.profession);
   // console.log("Professions from Redux:", professions);
   const { agsEvents } = useSelector((state) => state.agsEvent);
   // console.log("AGS Events from Redux:", agsEvents);
+const { universities } = useSelector((state) => state.university);
+const { enquiries} = useSelector((state) => state.enquiry);
 
   const initialDelegateFormData = {
     title: "",
@@ -47,6 +54,9 @@ const AGSAddData = () => {
     companyState: "",
     companyCity: "",
     companyPin: "",
+    clientStatus: "",
+    updatedStatusBy:"",
+
   };
   const [formData, setFormData] = useState(initialDelegateFormData);
   const [errors, setErrors] = useState({});
@@ -54,6 +64,9 @@ const AGSAddData = () => {
   useEffect(() => {
   dispatch(getAllProfessions());
   dispatch(getAllAGSEvents());
+  dispatch(getAllColleges());
+  dispatch(getAllUniversities());
+  dispatch(getAllEnquiries());
 }, [dispatch]);
 
 
@@ -126,6 +139,7 @@ const AGSAddData = () => {
     return Object.keys(tempErrors).length === 0;
   };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) {
@@ -134,9 +148,15 @@ const AGSAddData = () => {
     }
     const data = { ...formData };
 
-    if (user?._id) {
-      data.user_id = user._id;
+    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const userId = authUser?._id || authUser?.id;
+    if (userId) {
+      data.user_id = userId;
     }
+
+    // Add .get() method to support Redux slice expecting FormData
+    data.get = (key) => data[key];
+
     console.log("Submitting Delegate Data:", data);
     dispatch(createAgsDelegate(data))
       .unwrap()
@@ -144,6 +164,7 @@ const AGSAddData = () => {
         console.log("Submitted Data:", formData);
         showSuccess("Delegate submitted successfully!");
         setFormData(initialDelegateFormData);
+        navigate("/16th-ags-section/new-data");
       })
       .catch((err) => {
         console.error("Failed to create delegate:", err);
@@ -506,8 +527,21 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               className={inputClass}
               required
             >
-              <option value="">Select Category</option>
-              <option value="Cat1">Cat1</option>
+               <option value="">Select Category</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="Asscociations">Asscociations</option>
+              <option value="Ayurveda">Ayurveda</option>
+              <option value="Bio-Technology">Bio-Technology</option>
+              <option value="College">College</option>
+              <option value="Corporate">Corporate</option>
+              <option value="Govt.Departments">Govt.Departments</option>
+              <option value="Hospital">Hospital</option>
+              <option value="Naturopathy">Naturopathy</option>
+              <option value="NGO">NGO</option>
+              <option value="Pharmaceutical">Pharmaceutical</option>
+              <option value="Research">Research</option>
+              <option value="University">University</option>
+              <option value="Yoga">Yoga</option>
             </select>
             {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
           </div>
@@ -524,27 +558,47 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select College</option>
-              <option value="College1">College1</option>
+              {colleges
+                ?.filter((college) => college.status === "Active")
+                .map((college) => (
+                  <option key={college._id} value={college.college_name}>
+                    {college.college_name}
+                  </option>
+                ))}
             </select>
             {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college}</p>}
           </div>
           {/* University */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              University <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="university"
-              value={formData.university}
-              onChange={handleChange}
-              className={inputClass}
-              required
-            >
-              <option value="">Select University</option>
-              <option value="Uni1">Uni1</option>
-            </select>
-            {errors.university && <p className="text-red-500 text-xs mt-1">{errors.university}</p>}
-          </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    University <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    name="university"
+    value={formData.university}
+    onChange={handleChange}
+    className={inputClass}
+    required
+  >
+    <option value="">Select University</option>
+
+    {universities
+      ?.filter((uni) => uni.status === "Active")
+      .map((uni) => (
+        <option key={uni._id} value={uni.name}>
+          {uni.name}
+        </option>
+      ))}
+  </select>
+
+  {errors.university && (
+    <p className="text-red-500 text-xs mt-1">
+      {errors.university}
+    </p>
+  )}
+</div>
+
           {/* Enquiry For */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -558,7 +612,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Enquiry For</option>
-              <option value="Option1">Option1</option>
+              {enquiries
+                ?.filter((enq) => enq.status === "Active")
+                .map((enq) => (
+                  <option key={enq._id} value={enq.name}>
+                    {enq.name}
+                  </option>
+                ))}
             </select>
             {errors.enquiryFor && <p className="text-red-500 text-xs mt-1">{errors.enquiryFor}</p>}
           </div>
@@ -610,8 +670,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               required
             >
               <option value="">Select Mode</option>
-              <option value="Online">Online</option>
-              <option value="Offline">Offline</option>
+              <option value="Organic">Organic</option>
+              <option value="Paid">Paid</option>
+              <option value="Other">Other</option>
             </select>
             {errors.mode && <p className="text-red-500 text-xs mt-1">{errors.mode}</p>}
           </div>

@@ -1,65 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CommonTable from "../../components/CommonTable";
 import { Editor } from "primereact/editor";
+import { fetchAgsDelegates } from "../../redux/slices/ags/agsDelegateSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 const columns = [
   {
-    key: "delegate",
-    label: "Delegate Details",
+    key: "name",
+    label: "Delegate Name",
     render: (row) => (
-      <Link to="/16th-ags-section/ags-overview" className="text-blue-600 hover:underline">
-        {row.delegate}
+      <Link
+        to={`/16th-ags-section/ags-overview/${row._id}`}
+        className="text-blue-600 hover:underline"
+      >
+        {`${row?.title || ""} ${row?.firstName || ""} ${row?.lastName || ""}`}
       </Link>
     ),
   },
-  { key: "category", label: "Category" },
-  { key: "registration", label: "Registration For" },
-  { key: "association", label: "Association" },
   { key: "mobile", label: "Mobile No" },
-  { key: "registration", label: "Registration Details" },
-  { key: "OrganizationInstitution", label: "Organization/Institution" },
+  { key: "email", label: "Email" },
+  { key: "profession", label: "Profession" },
+  { key: "event", label: "Event" },
+  { key: "category", label: "Category" },
   { key: "city", label: "City" },
   { key: "state", label: "State" },
-  { key: "updated", label: "Updated Details" },
-];
-
-const data = [
-  {
-    id: 1,
-    delegate: "Rahul Verma",
-    category: "Donation",
-    registration: "Donation",
-    association: "Donation",
-    mobile: "9876543210",
-    registration: "Donation",
-    OrganizationInstitution: "Donation",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-    updated: "Updated Details",
-  },
-  {
-    id: 2,
-    delegate: "Amit Sharma",
-    category: "Volunteer",
-    registration: "Volunteer",
-    association: "Volunteer",
-    mobile: "9876543211",
-    registration: "Volunteer",
-    OrganizationInstitution: "Volunteer",
-    city: "Gurgaon",
-    state: "Haryana",
-    updated: "Updated Details",
-  },
 ];
 
 const Delegates = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { delegates, loading } = useSelector((state) => state.agsDelegate);
+ // Filter delegates where clientStatus is "Registration Done"
+  const filteredDelegates = delegates?.filter((item) => item.clientStatus === "Registration Done");
   const [formData, setFormData] = useState({
     description: "",
     image: null,
     document: null,
   });
+
+  useEffect(() => {
+    dispatch(fetchAgsDelegates());
+  }, [dispatch]);
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -137,7 +119,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
 <div className="space-y-3 p-5">
       {/* ================= TABLE ================= */}
-      <CommonTable data={data} columns={columns} />
+      <CommonTable data={filteredDelegates || []} columns={columns} loading={loading} />
 
       {/* form  */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

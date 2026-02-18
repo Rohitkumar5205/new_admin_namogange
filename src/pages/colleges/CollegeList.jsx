@@ -1,101 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import CommonTable from "../../components/CommonTable";
+import { useDispatch, useSelector } from "react-redux";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
+import { getAllColleges, deleteCollege } from "../../redux/slices/college/collegeSlice";
+import { showSuccess, showError } from "../../utils/toastService";
 
-const data = [
-  {
-    id: 1,
-    college_name: "IIT Delhi",
-    category: "Education",
-    website: "https://home.iitd.ac.in/",
-    address: "Hauz Khas",
-    country: "India",
-    state: "Delhi",
-    city: "New Delhi",
-    pincode: "110016",
-    affilated_to: "Ministry of Education",
-    status: "Active",
-  },
-  {
-    id: 2,
-    college_name: "Banaras Hindu University",
-    category: "Education",
-    website: "https://www.bhu.ac.in/",
-    address: "Varanasi",
-    country: "India",
-    state: "Uttar Pradesh",
-    city: "Varanasi",
-    pincode: "221005",
-    affilated_to: "UGC",
-    status: "Active",
-  },
-  {
-    id: 3,
-    college_name: "Jawaharlal Nehru University",
-    category: "Education",
-    website: "https://www.jnu.ac.in/",
-    address: "New Delhi",
-    country: "India",
-    state: "Delhi",
-    city: "New Delhi",
-    pincode: "110016",
-    affilated_to: "Ministry of Education",
-    status: "Active",
-  },
-  {
-    id: 4,
-    college_name: "Jawaharlal Nehru University",
-    category: "Education",
-    website: "https://www.jnu.ac.in/",
-    address: "New Delhi",
-    country: "India",
-    state: "Delhi",
-    city: "New Delhi",
-    pincode: "110016",
-    affilated_to: "Ministry of Education",
-    status: "Active",
-  },
-  {
-    id: 5,
-    college_name: "Jawaharlal Nehru University",
-    category: "Education",
-    website: "https://www.jnu.ac.in/",
-    address: "New Delhi",
-    country: "India",
-    state: "Delhi",
-    city: "New Delhi",
-    pincode: "110016",
-    affilated_to: "Ministry of Education",
-    status: "Active",
-  },
-  {
-    id: 6,
-    college_name: "Jawaharlal Nehru University",
-    category: "Education",
-    website: "https://www.jnu.ac.in/",
-    address: "New Delhi",
-    country: "India",
-    state: "Delhi",
-    city: "New Delhi",
-    pincode: "110016",
-    affilated_to: "Ministry of Education",
-    status: "Active",
-  },
-];
-// const columns = [
-//   { key: "college_name", label: "College Name" },
-//   { key: "category", label: "Category" },
-//   { key: "website", label: "Website" },
-//   { key: "city", label: "City" },
-//   { key: "state", label: "State" },
-//   { key: "affilated_to", label: "Affiliated To" },
-//   { key: "status", label: "Status" },
-// ];
 const CollegeList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { colleges, loading } = useSelector((state) => state.college);
+  // console.log("Colleges from Redux Store:", colleges);
+  const { user } = useSelector((state) => state.auth);
   const { canRead: canAdd, canWrite, canDelete } = useRoleRights(PageNames.ADD_COLLEGE);
+
+  // Pagination state
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    dispatch(getAllColleges());
+  }, [dispatch]);
+
+  const handleDelete = async (id) => {
+      const authUser = user || JSON.parse(localStorage.getItem("user"));
+      const userId = authUser?._id || authUser?.id;
+      try {
+        await dispatch(deleteCollege({ id, user_id: userId })).unwrap();
+        showSuccess("College deleted successfully");
+      } catch (error) {
+        showError(error || "Failed to delete college");
+      }
+    
+  };
+
+  const handleEdit = (item) => {
+    navigate("/collage/add-college", { state: item });
+  };
+
+  // Pagination logic
+  const safeColleges = Array.isArray(colleges) ? colleges : [];
+  const totalPages = Math.ceil(safeColleges.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = safeColleges.slice(startIndex, endIndex);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 3;
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      for (let i = 1; i <= maxVisible; i++) pages.push(i);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
 
   return (
     <div className="">
@@ -152,46 +114,100 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
-              <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="px-4 py-3">{index + 1}.</td>
-                <td className="px-4 py-3 font-medium">{item.college_name}</td>
-                <td className="px-4 py-3">{item.category}</td>
-                <td className="px-4 py-3 text-blue-500">
-                  <a href={item.website} target="_blank" rel="noreferrer">{item.website}</a>
+            {loading ? (
+              <tr>
+                <td colSpan="9" className="text-center py-4">
+                  Loading...
                 </td>
-                <td className="px-4 py-3">{item.city}</td>
-                <td className="px-4 py-3">{item.state}</td>
-                <td className="px-4 py-3">{item.affilated_to}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded text-xs ${item.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {item.status}
-                  </span>
-                </td>
-                {(canWrite || canDelete) && (
-                  <td className="px-4 py-3 flex gap-3">
-                    {canWrite && (
-                      <button
-                        className="text-green-600 hover:text-green-800"
-                        onClick={() => navigate("/collage/add-college", { state: { id: item.id } })}
-                      >
-                        Edit
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-600 hover:text-red-800"
-                        onClick={() => alert("Delete functionality not implemented for mock data")}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </td>
-                )}
               </tr>
-            ))}
+            ) : currentData.length > 0 ? (
+              currentData.map((item, index) => (
+                <tr key={item?._id || index} className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="px-4 py-3">{startIndex + index + 1}.</td>
+                  <td className="px-4 py-3 font-medium">{item?.college_name || "N/A"}</td>
+                  <td className="px-4 py-3">{item?.category || "N/A"}</td>
+                  <td className="px-4 py-3 text-blue-500">
+                    <a href={item?.website} target="_blank" rel="noreferrer">{item?.website}</a>
+                  </td>
+                  <td className="px-4 py-3">{item?.city}</td>
+                  <td className="px-4 py-3">{item?.state}</td>
+                  <td className="px-4 py-3">{item?.affilated_to}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 rounded text-xs ${item?.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {item?.status}
+                    </span>
+                  </td>
+                  {(canWrite || canDelete) && (
+                    <td className="px-4 py-3 flex gap-3">
+                      {canWrite && (
+                        <button
+                          className="text-green-600 hover:text-green-800"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-600 hover:text-red-800"
+                          onClick={() => handleDelete(item?._id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="9" className="text-center py-4">
+                  No Data Found
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
+
+        {/* ================= PAGINATION ================= */}
+        <div className="flex justify-between items-center p-4">
+          <span className="text-sm text-gray-500">
+            Showing {startIndex + 1}–{Math.min(endIndex, safeColleges.length)}{" "}
+            of {safeColleges.length}
+          </span>
+
+          <div className="flex space-x-1">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
+            >
+              Prev
+            </button>
+
+            {getPageNumbers().map((p, i) =>
+              p === "..." ? (
+                <span key={i} className="px-3 h-8 border">…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p)}
+                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p ? "bg-blue-50 text-blue-600 font-semibold" : ""}`}
+                >
+                  {p}
+                </button>
+              )
+            )}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
       </div>
     </div>
