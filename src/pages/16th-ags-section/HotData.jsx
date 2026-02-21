@@ -32,7 +32,9 @@ const HotData = () => {
   const { delegates, loading } = useSelector((state) => state.agsDelegate);
 
   // Filter delegates where clientStatus is "Hot Client"
-  const filteredDelegates = delegates?.filter((item) => item.clientStatus === "Hot Client");
+  const filteredDelegates = delegates?.filter(
+    (item) => item.clientStatus === "Hot Client",
+  );
 
   const [formData, setFormData] = useState({
     description: "",
@@ -59,106 +61,116 @@ const HotData = () => {
   };
   return (
     <div className=" ">
-    
-   <div
+      <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10">
+          {/* Content */}
+          <div className="relative flex justify-between items-center px-6 py-4 h-25">
+            <div className="flex  gap-3">
+              <div className="flex flex-col ">
+                <h2 className="text-xl font-semibold text-white ">
+                  Hot Delegates Data
+                </h2>
+              </div>
+            </div>
+            <div className="flex gap-1">
+              <button
+                onClick={() => navigate("/16th-ags-section/ags-add-data")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                ADD NEW DATA
+              </button>
+              <button
+                onClick={() => navigate("/16th-ags-section/web-enquiry")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                WEB REGISTRATION
+              </button>
+              <button
+                onClick={() => navigate("/16th-ags-section/new-data")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                NEW DATA
+              </button>
+              <button
+                onClick={() => navigate("/16th-ags-section/warm-data")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                WARM DATA
+              </button>
 
-        {/* Content */}
-        <div className="relative flex justify-between items-center px-6 py-4 h-25">
-          <div className="flex  gap-3">
-            <div className="flex flex-col ">
-              <h2 className="text-xl font-semibold text-white ">
-                Hot Delegates Data
-              </h2>
-             
+              <button
+                onClick={() => navigate("/16th-ags-section/cold-data")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                COLD DATA
+              </button>
+              <button
+                onClick={() => navigate("/16th-ags-section/delegate-list")}
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                CONFIRM DATA
+              </button>
+              <button
+                onClick={() =>
+                  navigate("/16th-ags-section/master-delegate-data")
+                }
+                className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded"
+              >
+                MASTER DATA
+              </button>
             </div>
           </div>
-        <div className="flex gap-1">
-          <button
-                      onClick={() => navigate("/16th-ags-section/ags-add-data")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            ADD NEW DATA
-          </button>
-          <button
-              onClick={() => navigate("/16th-ags-section/web-enquiry")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            WEB REGISTRATION
-          </button>
-          <button
-              onClick={() => navigate("/16th-ags-section/new-data")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            NEW DATA
-          </button>
-          <button 
-              onClick={() => navigate("/16th-ags-section/warm-data")}
-          className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            WARM DATA
-          </button>
-          
-          <button
-              onClick={() => navigate("/16th-ags-section/cold-data")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            COLD DATA
-          </button>
-           <button
-              onClick={() => navigate("/16th-ags-section/delegate-list")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            CONFIRM DATA
-          </button>
-          <button
-              onClick={() => navigate("/16th-ags-section/master-delegate-data")}
-           className="bg-blue-400 hover:bg-blue-500 text-sm text-white font-normal py-1 px-2 rounded">
-            MASTER DATA
-          </button>
         </div>
-      </div>
-      </div>
       </div>
 
       <div className="space-y-3 p-5">
-      {/* ================= TABLE ================= */}
-      <CommonTable data={filteredDelegates || []} columns={columns} loading={loading} />
+        {/* ================= TABLE ================= */}
+        <CommonTable
+          data={filteredDelegates || []}
+          columns={columns}
+          loading={loading}
+        />
 
-      {/* form  */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-3 gap-3"
-        >
-          <div className="md:col-span-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Message <span className="text-red-500">*</span>
-            </label>
+        {/* form  */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-3 gap-3"
+          >
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Message <span className="text-red-500">*</span>
+              </label>
 
-            <textarea
-              value={formData.description}
-              name="description"
-              placeholder="Enter your message here..."
-              required
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              style={{ height: "100px" }}
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+              <textarea
+                value={formData.description}
+                name="description"
+                placeholder="Enter your message here..."
+                required
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                style={{ height: "100px" }}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
 
-          <div className="md:col-span-3 flex justify-end gap-6 ">
-            <button
-              type="submit"
-              className="px-4 py-1 text-sm rounded text-white 
+            <div className="md:col-span-3 flex justify-end gap-6 ">
+              <button
+                type="submit"
+                className="px-4 py-1 text-sm rounded text-white 
                  bg-blue-400 hover:bg-blue-500"
-            >
-              POST
-            </button>
-          </div>
-        </form>
+              >
+                POST
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-</div>
     </div>
   );
 };

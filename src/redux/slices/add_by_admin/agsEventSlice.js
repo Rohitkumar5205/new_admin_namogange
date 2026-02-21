@@ -23,9 +23,9 @@ export const createAGSEvent = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: data.get("user_id"),
-          message: "Event created",
+          message: "AGS Event created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-events`,
-          section: "Event",
+          section: " AGS Event",
         })
       );
 

@@ -87,6 +87,9 @@ import RoleRights from "./pages/role_rights/RoleRights";
 import AddSidebar from "./pages/add_by_admin/AddSidebar";
 import Overview from "./pages/overview/Overview";
 import AGSEvent from "./pages/add_by_admin/AGSEvent";
+import AddSEO from "./pages/seo/AddSEO";
+import SEOList from "./pages/seo/SEOList";
+import Notification from "./pages/notification/Notification";
 
 function App() {
   return (
@@ -99,6 +102,7 @@ function App() {
             <Route path="/home-banner" element={<HomeBanner />} />
             <Route path="/media/photos-gallery" element={<PhotosGallery />} />
             <Route path="/media/videos-gallery" element={<VideosGallery />} />
+            <Route path="/notification" element={<Notification />} />
             <Route
               path="/add_by_admin/add-occupation"
               element={<AddOccupation />}
@@ -126,6 +130,7 @@ function App() {
             <Route path="/add_by_admin/bank" element={<Bank />} />
             <Route
               path="/add_by_admin/image-category"
+              Add
               element={<ImageCategory />}
             />
             <Route path="/add_by_admin/published" element={<Published />} />
@@ -138,8 +143,14 @@ function App() {
             {/* <Route path="/users/activity-log" element={<ActivityLog />} /> */}
             <Route path="/member/add-member" element={<AddMember />} />
             <Route path="/member/member-list" element={<ListMember />} />
-            <Route path="/volunteer/volunteer-overview/:id" element={<VolunteerOverview />} />
-            <Route path="/member/member-overview/:id" element={<MemberOverview />} />
+            <Route
+              path="/volunteer/volunteer-overview/:id"
+              element={<VolunteerOverview />}
+            />
+            <Route
+              path="/member/member-overview/:id"
+              element={<MemberOverview />}
+            />
             <Route path="/volunteer/add-volunteer" element={<AddVolunteer />} />
             <Route
               path="/volunteer/volunteer-list"
@@ -262,6 +273,9 @@ function App() {
             <Route path="/objective" element={<Objective />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/testimonial" element={<Testimonial />} />
+
+            <Route path="/seo/add-seo" element={<AddSEO />} />
+            <Route path="/seo/seo-list" element={<SEOList />} />
           </Route>
         </Route>
       </Routes>

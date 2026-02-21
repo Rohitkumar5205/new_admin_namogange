@@ -40,10 +40,10 @@ const ListMember = () => {
   return (
     <div className=" ">
       {/* ================= HEADER ================= */}
-      
-        <div
+
+      <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -53,10 +53,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <div className="flex items-center gap-4">
             <div className="flex flex-col ">
               <h2 className="text-xl font-semibold text-white ">
-                 Member Management Lists
+                Member Management Lists
               </h2>
               <p className="text-sm text-blue-100">
-                  Manage and view all members in one place.
+                Manage and view all members in one place.
               </p>
             </div>
           </div>
@@ -73,10 +73,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           )}
         </div>
       </div>
-      
-<div className="space-y-3 p-5">
-      {/* ================= TABLE ================= */}
-      <CommonTable data={members || []} columns={columns} />
+
+      <div className="space-y-3 p-5">
+        {/* ================= TABLE ================= */}
+        <CommonTable data={members || []} columns={columns} />
       </div>
     </div>
   );

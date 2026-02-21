@@ -31,7 +31,7 @@ const TrustBodiesList = () => {
   const filteredData = (list || []).filter(
     (item) =>
       (item.name || "").toLowerCase().includes(search.toLowerCase()) ||
-      (item.designation || "").toLowerCase().includes(search.toLowerCase())
+      (item.designation || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   /* ===== PAGINATION LOGIC ===== */
@@ -59,7 +59,7 @@ const TrustBodiesList = () => {
 
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -97,13 +97,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <h3 className="text-base font-medium text-gray-800">
               Trust Bodies List
             </h3>
-          <select
-  value={itemsPerPage}
-  onChange={(e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  }}
-  className="
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="
     border border-gray-300
     ring-0 ring-gray-300
     rounded-md
@@ -115,23 +115,23 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
     focus:ring-0 focus:ring-blue-500
     focus:border-blue-500
   "
->
-  {[5, 10, 25, 50].map((n) => (
-    <option key={n} value={n}>
-      Show {n} Entries
-    </option>
-  ))}
-</select>
+            >
+              {[5, 10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  Show {n} Entries
+                </option>
+              ))}
+            </select>
 
-           <input
-  type="text"
-  placeholder="Search..."
-  value={search}
-  onChange={(e) => {
-    setSearch(e.target.value);
-    setCurrentPage(1);
-  }}
-  className="
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="
     border border-gray-300
     ring-0 ring-gray-300
     rounded-md
@@ -143,8 +143,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
     focus:ring-0 focus:ring-blue-500
     focus:border-blue-500
   "
-/>
-
+            />
           </div>
 
           <table className="w-full text-sm text-left text-gray-600">
@@ -156,7 +155,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">Slug</th>
                 <th className="px-4 py-3 font-medium">Image</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -194,10 +195,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                       >
                         {item.status}
                       </span>
@@ -234,9 +236,11 @@ hover:after:w-full"
                                   deleteTrustBody({
                                     id: item._id,
                                     user_id: authUser?.id,
-                                  })
+                                  }),
                                 ).then(() => {
-                                  showSuccess("Trust Body deleted successfully");
+                                  showSuccess(
+                                    "Trust Body deleted successfully",
+                                  );
                                 });
                               }}
                             >
@@ -277,18 +281,21 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
               >

@@ -15,7 +15,7 @@ import { PageNames } from "../../utils/constants";
 const VideosGallery = () => {
   const dispatch = useDispatch();
   const { videos: galleryVideos, loading } = useSelector(
-    (state) => state.galleryVideo
+    (state) => state.galleryVideo,
   );
   const { list: categoryVideos } = useSelector((state) => state.categoryVideo);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +35,7 @@ const VideosGallery = () => {
   const [isEdit, setIsEdit] = useState(false);
 
   const { canWrite, canDelete, isFormDisabled } = useRoleRights(
-    PageNames.VIDEOS_GALLERY
+    PageNames.VIDEOS_GALLERY,
   );
 
   /* ===== FETCH DATA ===== */
@@ -86,7 +86,7 @@ const VideosGallery = () => {
     try {
       if (isEdit) {
         await dispatch(
-          updateGalleryVideo({ id: formData._id, formData: dataToSend })
+          updateGalleryVideo({ id: formData._id, formData: dataToSend }),
         ).unwrap();
         showSuccess("Video Gallery updated successfully");
       } else {
@@ -128,7 +128,7 @@ const VideosGallery = () => {
       {/* ================= HEADER ================= */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -137,7 +137,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Videos Gallery Management
               </h2>
               <p className="text-sm text-blue-100">
@@ -316,8 +316,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                  ? "Update Video"
-                  : "Add Video"}
+                    ? "Update Video"
+                    : "Add Video"}
               </button>
             </div>
           </form>
@@ -448,7 +448,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                               onClick={() => {
                                 if (
                                   window.confirm(
-                                    "Are you sure you want to delete this video?"
+                                    "Are you sure you want to delete this video?",
                                   )
                                 ) {
                                   const currentUserId = authUser?.id || null;
@@ -456,10 +456,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                     deleteGalleryVideo({
                                       id: item._id,
                                       user_id: currentUserId,
-                                    })
+                                    }),
                                   ).then(() => {
                                     showSuccess(
-                                      "Video Gallery deleted successfully"
+                                      "Video Gallery deleted successfully",
                                     );
                                     dispatch(getAllGalleryVideos());
                                   });
@@ -512,7 +512,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button

@@ -15,7 +15,7 @@ import { PageNames } from "../../utils/constants";
 const ImageCategory = () => {
   const dispatch = useDispatch();
   const { categoryImages, loading } = useSelector(
-    (state) => state.categoryImage
+    (state) => state.categoryImage,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const categoryOptions = useSelector((state) => state.category.categories);
@@ -37,7 +37,9 @@ const ImageCategory = () => {
     dispatch(getAllCategories());
   }, [dispatch]);
 
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.IMAGE_CATEGORY);
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.IMAGE_CATEGORY,
+  );
 
   /* ===== PAGINATION (SAME AS YOUR CODE) ===== */
   const itemsPerPage = 10;
@@ -105,7 +107,7 @@ const ImageCategory = () => {
         dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateCategoryImage({ id: formData._id, formData: dataToSend })
+          updateCategoryImage({ id: formData._id, formData: dataToSend }),
         ).unwrap();
         showSuccess("Image Category updated successfully");
       } else {
@@ -150,7 +152,7 @@ const ImageCategory = () => {
       </div> */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -159,7 +161,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Image Category Management
               </h2>
               <p className="text-sm text-blue-100">
@@ -279,8 +281,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Cancel
               </button>
@@ -288,10 +291,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -319,7 +323,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">Order</th>
                 <th className="px-4 py-3 font-medium">Image</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -349,10 +355,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                          }`}
+                        className={`px-3 py-1 text-xs rounded-full ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {item.status}
                       </span>
@@ -419,18 +426,21 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
               >

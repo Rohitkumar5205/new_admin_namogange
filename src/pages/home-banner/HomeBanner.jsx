@@ -21,6 +21,7 @@ const HomeBanner = () => {
   const [formData, setFormData] = useState({
     _id: null,
     title: "",
+    alt_text: "",
     link: "",
     image: null,
     imagePreview: "",
@@ -79,7 +80,9 @@ const HomeBanner = () => {
   }, [dispatch]);
 
   // Get permissions for the current user on "Home Banner" page
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.HOME_BANNER);
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.HOME_BANNER,
+  );
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -99,8 +102,10 @@ const HomeBanner = () => {
     setFormData({
       _id: null,
       title: "",
+      alt_text: "",
       link: "",
       image: null,
+      imagePreview: "",
       status: "Active",
       created_by: "",
       updated_by: "",
@@ -116,7 +121,6 @@ const HomeBanner = () => {
   };
 
   const handleDelete = (id) => {
-    // const currentUserName = "66ec23d89309636c42738591";
     const currentUserId = authUser?.id || null;
     // console.log("delete,,,", currentUserId);
     dispatch(deleteBanner({ id: id, user_id: currentUserId })).then(() => {
@@ -132,12 +136,25 @@ const HomeBanner = () => {
       showError("Title is required.");
       return;
     }
+    if (!formData.link?.trim()) {
+      showError("Redirect Link is required.");
+      return;
+    }
+    if (!formData.alt_text?.trim()) {
+      showError("Image Alt is required.");
+      return;
+    }
+    if (!isEdit && !formData.image) {
+      showError("Banner Image is required.");
+      return;
+    }
     // Log the form data before submitting
     console.log("Form Data to be submitted:", formData);
     setIsSubmitting(true);
 
     const dataToSend = new FormData();
     dataToSend.append("title", formData.title);
+    dataToSend.append("alt_text", formData.alt_text);
     dataToSend.append("link", formData.link);
     dataToSend.append("status", formData.status);
     if (formData.image instanceof File) {
@@ -155,7 +172,7 @@ const HomeBanner = () => {
         dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateBanner({ id: formData._id, formData: dataToSend })
+          updateBanner({ id: formData._id, formData: dataToSend }),
         ).unwrap();
         showSuccess("Banner updated successfully ✅");
       } else {
@@ -201,16 +218,8 @@ const HomeBanner = () => {
     <div className="">
       {/* ================= HEADER ================= */}
       <div
-        // className="relative overflow-hidden  shadow-sm border border-gray-200 h-25"
-        // style={{
-        //   backgroundImage: `url(${adminBanner})`,
-        //   backgroundRepeat: "no-repeat",
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center",
-        // }}
-className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -219,11 +228,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 {" "}
                 Home Banner Management
               </h2>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-gray-600">
                 Add or update homepage banner content including title, image,
                 link and status.
               </p>
@@ -268,9 +277,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <input
                 type="text"
                 name="link"
-                value={formData?.link}
+                value={formData.link}
                 onChange={handleChange}
                 placeholder="https://example.com"
+                required
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -279,14 +289,46 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Banner Image <span className="text-red-500">*</span>
+                Banner Image <span>(size: 1440x530)</span>
+                <span className="text-red-500">*</span>
+              </label>
+              <div className="w-full">
+                <input
+                  type="file"
+                  name="image"
+                  onChange={handleChange}
+                  disabled={isFormDisabled}
+                  className=" w-full text-sm  text-gray-600 border border-gray-300 rounded cursor-pointer  bg-gray-50
+      file:mr-4 
+      file:py-1 
+      file:px-4
+      file:rounded
+      file:border-0
+      file:text-sm
+      file:font-semibold
+      file:bg-blue-50
+      file:text-blue-700
+      hover:file:bg-blue-100
+      disabled:opacity-50
+    "
+                />
+              </div>
+            </div>
+
+            {/* ALT TEXT  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
               </label>
               <input
-                type="file"
-                name="image"
+                type="text"
+                name="alt_text"
+                value={formData.alt_text}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                placeholder="Enter image alt text"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
+                required
               />
             </div>
 
@@ -308,14 +350,15 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-2 flex justify-end gap-5 mt-6">
+            <div className="md:col-span-1 flex justify-end gap-5 mt-6">
               {/* Schedule BUTTON */}
               <button
                 type="button"
                 onClick={() => setShowScheduleModal(true)}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Schedule
               </button>
@@ -323,10 +366,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -340,8 +384,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Cancel
               </button>
@@ -361,8 +406,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Banner Title</th>
                 <th className="px-4 py-3 font-medium">Redirect Link</th>
-<th className="px-4 py-3 whitespace-nowrap">Banner Image</th>                <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                <th className="px-4 py-3 whitespace-nowrap">
+                  Banner Image
+                </th>{" "}
+                <th className="px-4 py-3 font-medium">Status</th>
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -394,10 +444,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                       >
                         {item?.status}
                       </span>
@@ -416,6 +467,7 @@ hover:after:w-full"
                                 setFormData({
                                   _id: item._id,
                                   title: item.title,
+                                  alt_text: item.alt_text || item.title,
                                   link: item.link,
                                   status: item.status,
                                   image: null, // 👈 IMPORTANT
@@ -494,14 +546,15 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button

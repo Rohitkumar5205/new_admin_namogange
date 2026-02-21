@@ -361,7 +361,9 @@ export default function Sidebar() {
 
     // 1. Group by Section
     // Sort sidebars by order first so children and parents are processed in order
-    const sortedSidebars = [...sidebars].sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+    const sortedSidebars = [...sidebars].sort(
+      (a, b) => (a.order_by || 0) - (b.order_by || 0),
+    );
 
     const sections = {};
     const rootItems = [];
@@ -420,9 +422,11 @@ export default function Sidebar() {
   const sidebarData = processSidebarData();
 
   return (
-    <aside className="w-64 shrink-0 bg-white shadow-md h-screen flex flex-col">
+    <aside className="relative w-64 shrink-0 bg-white shadow-md h-screen flex flex-col">
+      <div className="pointer-events-none absolute top-0 right-0 w-[3px] h-full bg-gradient-to-b from-orange-200 via-cyan-200 to-blue-300 z-50"></div>
+
       {/* LOGO */}
-      <div className="h-15 px-4 flex justify-center items-center shadow-md">
+      <div className="h-15 px-4 flex justify-center items-center shadow-md bg-gradient-to-r from-orange-50 via-cyan-50 to-blue-50">
         <img
           src="/namo_gange.png"
           alt="Namo Gange"
@@ -434,7 +438,9 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto px-1.5 py-3">
         {sidebarData.map((section) => (
           <div key={section.section} className="mb-4">
-            <p className="text-xs text-gray-400 px-3 mb-1">{section.section}</p>
+            <p className="text-xs text-gray-500 font-medium px-3 mb-1">
+              {section.section}
+            </p>
 
             {section.items.map((item) => {
               const Icon = iconMap[item.icon] || MdDashboard;
@@ -447,7 +453,7 @@ export default function Sidebar() {
                   <div key={item.label}>
                     <div
                       onClick={() => setOpenMenu(isOpen ? "" : item.label)}
-                      className="flex items-center justify-between px-4 py-1.5 rounded cursor-pointer text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center justify-between px-4 py-1.5 rounded cursor-pointer text-sm text-gray-700 hover:bg-gradient-to-r from-orange-100 via-cyan-50 to-blue-100"
                     >
                       <div className="flex items-center gap-4">
                         <Icon />
@@ -469,10 +475,11 @@ export default function Sidebar() {
                             <div
                               key={child.path}
                               onClick={() => navigate(child.path)}
-                              className={`flex items-center gap-3 px-4 py-1 rounded cursor-pointer text-sm
-                                ${isActive(child.path)
-                                  ? "bg-blue-50 text-[#0C55A0] font-medium"
-                                  : "text-gray-700 hover:bg-gray-100"
+                              className={`flex items-center gap-3 px-4 py-1 rounded cursor-pointer text-[13px]
+                                ${
+                                  isActive(child.path)
+                                    ? "bg-gradient-to-r from-orange-100 via-cyan-50 to-blue-100 text-[#0C55A0] font-medium"
+                                    : "text-gray-700 hover:bg-gradient-to-r from-orange-100 via-cyan-50 to-blue-100"
                                 }`}
                             >
                               {/* <ChildIcon size={14} /> */}
@@ -492,9 +499,10 @@ export default function Sidebar() {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 px-4 py-1.5 rounded cursor-pointer text-sm
-                    ${isActive(item.path)
-                      ? "bg-blue-50 text-[#0C55A0] font-medium"
-                      : "text-gray-700 hover:bg-gray-100"
+                    ${
+                      isActive(item.path)
+                        ? "bg-gradient-to-r from-orange-100 via-cyan-50 to-blue-100 text-[#0C55A0] font-medium"
+                        : "text-gray-700 hover:bg-gradient-to-r from-orange-100 via-cyan-50 to-blue-100"
                     }`}
                 >
                   <Icon />

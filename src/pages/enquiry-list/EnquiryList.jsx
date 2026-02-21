@@ -35,32 +35,31 @@ const EnquiryList = () => {
   return (
     <div className="">
       {/* ================= HEADER ================= */}
-        <div
-              className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-            >
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-white/10"></div>
-      
-              {/* Content */}
-              <div className="relative flex justify-center items-center px-6 py-4 h-25">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col ">
-                    <h2 className="text-xl font-semibold text-center text-white ">
-                     Enquiry List Management
-                    </h2>
-                    <p className="text-sm text-blue-100">
-                      Manage and view all user enquiries in one place.
-                    </p>
-                  </div>
-                </div>
-               
-              </div>
+      <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
+        <div className="relative flex justify-center items-center px-6 py-4 h-25">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col ">
+              <h2 className="text-xl font-semibold text-center text-white ">
+                Enquiry List Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Manage and view all user enquiries in one place.
+              </p>
             </div>
+          </div>
+        </div>
+      </div>
 
       {/* ================= TABLE ================= */}
-       <div className="space-y-3 p-5">
-      <CommonTable data={enquiries} columns={columns} />
+      <div className="space-y-3 p-5">
+        <CommonTable data={enquiries} columns={columns} />
       </div>
     </div>
   );

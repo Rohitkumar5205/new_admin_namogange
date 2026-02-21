@@ -28,7 +28,7 @@ const AddNewsUpdates = () => {
   const dispatch = useDispatch();
   const { list } = useSelector((state) => state.published || {});
   const { recentUpdates, loading } = useSelector(
-    (state) => state.recentUpdate || {}
+    (state) => state.recentUpdate || {},
   );
   console.log("recentUpdates...", recentUpdates);
   const authUser = JSON.parse(localStorage.getItem("user"));
@@ -101,7 +101,7 @@ const AddNewsUpdates = () => {
       {/* ================= HEADER ================= */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -270,10 +270,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={loading || isFormDisabled}
-                className={`px-6 py-1 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${loading || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${loading || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {loading ? "Processing..." : isEdit ? "Update" : "Add"}
               </button>

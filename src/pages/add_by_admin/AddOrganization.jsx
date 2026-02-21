@@ -32,10 +32,12 @@ const AddOrganization = () => {
     dispatch(getAllOrganizations());
   }, [dispatch]);
 
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_ORGANIZATION);
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.ADD_ORGANIZATION,
+  );
 
   const filteredData = (organizations || []).filter((item) =>
-    (item.name || "").toLowerCase().includes(search.toLowerCase())
+    (item.name || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   /* ===== PAGINATION STATE ===== */
@@ -82,7 +84,7 @@ const AddOrganization = () => {
               updated_by: currentUserName,
               user_id: currentUserId,
             },
-          })
+          }),
         ).unwrap();
         showSuccess("Organization updated successfully");
       } else {
@@ -93,7 +95,7 @@ const AddOrganization = () => {
             created_by: currentUserName,
             // updated_by: currentUserId,
             user_id: currentUserId,
-          })
+          }),
         ).unwrap();
         showSuccess("Organization added successfully");
       }
@@ -140,7 +142,7 @@ const AddOrganization = () => {
 
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -149,7 +151,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Organization Management
               </h2>
               <p className="text-sm text-blue-100">
@@ -169,8 +171,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 
           <form
             onSubmit={handleSubmit}
-            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
-              }`}          >
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${
+              isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+          >
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -211,8 +215,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Cancel
               </button>
@@ -220,10 +225,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -241,13 +247,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <h3 className="text-base font-medium text-gray-800">
               Organization List
             </h3>
-          <select
-  value={itemsPerPage}
-  onChange={(e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  }}
-  className="
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="
     border border-gray-300
     ring-0 ring-gray-300
     rounded-md
@@ -259,23 +265,23 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
     focus:ring-0 focus:ring-blue-500
     focus:border-blue-500
   "
->
-  {[5, 10, 25, 50].map((n) => (
-    <option key={n} value={n}>
-      Show {n} Entries
-    </option>
-  ))}
-</select>
+            >
+              {[5, 10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  Show {n} Entries
+                </option>
+              ))}
+            </select>
 
-           <input
-  type="text"
-  placeholder="Search..."
-  value={search}
-  onChange={(e) => {
-    setSearch(e.target.value);
-    setCurrentPage(1);
-  }}
-  className="
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="
     border border-gray-300
     ring-0 ring-gray-300
     rounded-md
@@ -287,8 +293,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
     focus:ring-0 focus:ring-blue-500
     focus:border-blue-500
   "
-/>
-
+            />
           </div>
 
           <table className="w-full text-sm text-left text-gray-600">
@@ -297,7 +302,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Organization Title</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -320,10 +327,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                       >
                         {item.status}
                       </span>
@@ -398,14 +406,15 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button

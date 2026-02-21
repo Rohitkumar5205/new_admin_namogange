@@ -92,7 +92,7 @@ const AddBlog = () => {
     try {
       if (isEdit) {
         await dispatch(
-          updateBlog({ id: blogToEdit._id, formData: dataToSend })
+          updateBlog({ id: blogToEdit._id, formData: dataToSend }),
         ).unwrap();
         showSuccess("Blog updated successfully");
       } else {
@@ -113,12 +113,12 @@ const AddBlog = () => {
       {/* Header */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         <div className="absolute inset-0 bg-white/10"></div>
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex flex-col text-center">
-            <h2 className="text-xl font-semibold text-white text-center">
+            <h2 className="text-xl font-semibold text-gray-700 text-center">
               {isEdit ? "Update Blog" : "Add New Blog"}
             </h2>
             <p className="text-sm text-blue-100">
@@ -133,7 +133,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
       {/* Form */}
       <div className="space-y-3 p-5">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <form onSubmit={handleSubmit} className={`grid grid-cols-1 gap-6 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}>
+          <form
+            onSubmit={handleSubmit}
+            className={`grid grid-cols-1 gap-6 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+          >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -195,7 +198,6 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   disabled={isFormDisabled}
                 />
               </div>
-
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -245,7 +247,6 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               </div>
             </div>
 
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Content <span className="text-red-500">*</span>
@@ -260,8 +261,25 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </div>
 
             <div className="flex justify-end gap-3">
-              <button type="button" onClick={() => navigate("/blogs/blog-list")} disabled={isSubmitting} className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}>Cancel</button>
-              <button type="submit" disabled={isSubmitting || isFormDisabled} className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>{isSubmitting ? "Processing..." : isEdit ? "Update Blog" : "Add Blog"}</button>
+              <button
+                type="button"
+                onClick={() => navigate("/blogs/blog-list")}
+                disabled={isSubmitting}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1 text-sm rounded text-white ${isEdit ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isSubmitting
+                  ? "Processing..."
+                  : isEdit
+                    ? "Update Blog"
+                    : "Add Blog"}
+              </button>
             </div>
           </form>
         </div>

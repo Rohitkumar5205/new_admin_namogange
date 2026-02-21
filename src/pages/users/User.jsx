@@ -45,7 +45,9 @@ const User = () => {
 
   // const currentUserId = "Z66ec23d89309636c42738591"; // Placeholder
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_USER);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.ADD_USER,
+  );
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -58,7 +60,7 @@ const User = () => {
       (item.first_name || "").toLowerCase().includes(search.toLowerCase()) ||
       (item.last_name || "").toLowerCase().includes(search.toLowerCase()) ||
       (item.username || "").toLowerCase().includes(search.toLowerCase()) ||
-      (item.email || "").toLowerCase().includes(search.toLowerCase())
+      (item.email || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   const resetForm = () => {
@@ -161,7 +163,7 @@ const User = () => {
           updateUserThunk({
             id: formData._id,
             data: { ...userData, updated_by: currentUserId },
-          })
+          }),
         ).unwrap();
         showSuccess("User updated successfully");
       } else {
@@ -172,9 +174,8 @@ const User = () => {
             password: formData.password,
             created_by: currentUserId,
             updated_by: currentUserId,
-          })
-        )
-          .unwrap();
+          }),
+        ).unwrap();
         showSuccess("User added successfully");
       }
       dispatch(getAllUsersThunk());
@@ -191,17 +192,14 @@ const User = () => {
       showSuccess("User deleted successfully");
       dispatch(getAllUsersThunk());
     });
-
   };
 
   return (
     <div className="">
       {/* ================= HEADER ================= */}
-       <div
-
-className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-
+      <div
+        className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -210,402 +208,414 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 {" "}
                 User Management
               </h2>
               <p className="text-sm text-blue-100">
-                Add or update user details and roles. Manage user access and permissions effectively to ensure secure and efficient operations within the system.
+                Add or update user details and roles. Manage user access and
+                permissions effectively to ensure secure and efficient
+                operations within the system.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-<div className="space-y-3 p-5">
-      {/* ================= FORM (DESIGN SAME) ================= */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-base font-medium text-gray-800 mb-4">
-          {isEdit ? "Update User" : "Add New User"}
-        </h3>
+      <div className="space-y-3 p-5">
+        {/* ================= FORM (DESIGN SAME) ================= */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-base font-medium text-gray-800 mb-4">
+            {isEdit ? "Update User" : "Add New User"}
+          </h3>
 
-        <form
-          onSubmit={handleSubmit}
-          className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
-        >
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              First Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="first_name"
-              placeholder="First Name"
-              value={formData.first_name}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm "
-              disabled={isFormDisabled}
-            />
-          </div>
+          <form
+            onSubmit={handleSubmit}
+            className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 cursor-not-allowed" : ""}`}
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="first_name"
+                placeholder="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm "
+                disabled={isFormDisabled}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Last Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="last_name"
-              placeholder="Last Name"
-              value={formData.last_name}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mobile No <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="mobile"
-              placeholder="Mobile No"
-              value={formData.mobile}
-              onChange={handleChange}
-              maxLength={10}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="last_name"
+                placeholder="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mobile No <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="mobile"
+                placeholder="Mobile No"
+                value={formData.mobile}
+                onChange={handleChange}
+                maxLength={10}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email ID <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="email"
-              type="email"
-              placeholder="Email ID"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Username <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="username"
-              placeholder="Username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email ID"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Username <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required={!isEdit}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              name="confirm_password"
-              type="password"
-              placeholder="Confirm Password"
-              value={formData.confirm_password}
-              onChange={handleChange}
-              required={!isEdit}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required={!isEdit}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                name="confirm_password"
+                type="password"
+                placeholder="Confirm Password"
+                value={formData.confirm_password}
+                onChange={handleChange}
+                required={!isEdit}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Designation <span className="text-red-500">*</span>
-            </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Designation <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              >
+                <option value="">Select Designation</option>
+                <option value="Manager">Manager</option>
+                <option value="Executive">Executive</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {" "}
+                Department <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              >
+                <option value="">Select Department</option>
+                <option value="IT">IT</option>
+                <option value="Sales">Sales</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {" "}
+                Role <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              >
+                <option value="">Select Role</option>
+                {allRolesList?.map((role) => (
+                  <option key={role._id} value={role.role}>
+                    {role.role}
+                    {/* ({role.role_name}) */}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {" "}
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div className=" flex justify-end gap-6  mt-6 md:col-span-4">
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting || isFormDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isSubmitting
+                  ? "Processing..."
+                  : isEdit
+                    ? "Update User"
+                    : "Add User"}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* ================= TABLE ================= */}
+        <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
+          <div className="px-5 bg-gray-50  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
+            <h3 className="text-base font-medium text-gray-800">Users List</h3>
             <select
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
             >
-              <option value="">Select Designation</option>
-              <option value="Manager">Manager</option>
-              <option value="Executive">Executive</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {" "}
-              Department <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            >
-              <option value="">Select Department</option>
-              <option value="IT">IT</option>
-              <option value="Sales">Sales</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {" "}
-              Role <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            >
-              <option value="">Select Role</option>
-              {allRolesList?.map((role) => (
-                <option key={role._id} value={role.role}>
-                  {role.role}
-                  {/* ({role.role_name}) */}
+              {[5, 10, 25, 50].map((n) => (
+                <option key={n} value={n}>
+                  Show {n} Entries
                 </option>
               ))}
             </select>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
+            />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {" "}
-              Status <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-              disabled={isFormDisabled}
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-
-          <div className=" flex justify-end gap-6  mt-6 md:col-span-4">
-            <button
-              type="button"
-              onClick={resetForm}
-              disabled={isSubmitting || isFormDisabled}
-              className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              disabled={isSubmitting || isFormDisabled}
-              className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-green-600 hover:bg-green-700"
-                } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              {isSubmitting
-                ? "Processing..."
-                : isEdit
-                  ? "Update User"
-                  : "Add User"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-5 bg-gray-50  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
-          <h3 className="text-base font-medium text-gray-800">Users List</h3>
-          <select
-            value={itemsPerPage}
-            onChange={(e) => {
-              setItemsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          >
-            {[5, 10, 25, 50].map((n) => (
-              <option key={n} value={n}>
-                Show {n} Entries
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border border-gray-300 shadow-md rounded px-2 py-1 text-sm"
-          />
-        </div>
-        <table className="w-full text-sm text-left text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-4 py-3 font-medium">S.No</th>
-              <th className="px-4 py-3 font-medium">Name</th>
-              <th className="px-4 py-3 font-medium">Username</th>
-              <th className="px-4 py-3 font-medium">Role</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {loading && users?.length === 0 ? (
+          <table className="w-full text-sm text-left text-gray-600">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <td colSpan="6" className="text-center py-4">
-                  Loading...
-                </td>
+                <th className="px-4 py-3 font-medium">S.No</th>
+                <th className="px-4 py-3 font-medium">Name</th>
+                <th className="px-4 py-3 font-medium">Username</th>
+                <th className="px-4 py-3 font-medium">Role</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
-            ) : (
-              currentData.map((item, index) => (
-                <tr
-                  key={item._id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-3">{startIndex + index + 1}</td>
-                  <td className="px-4 py-3">
-                    {item.first_name} {item.last_name}
+            </thead>
+            <tbody>
+              {loading && users?.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    Loading...
                   </td>
-                  <td className="px-4 py-3">{item.username}</td>
-                  <td className="px-4 py-3">{item.role}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-3 py-1 text-xs rounded-full font-medium ${item.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                </tr>
+              ) : (
+                currentData.map((item, index) => (
+                  <tr
+                    key={item._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-3">{startIndex + index + 1}</td>
+                    <td className="px-4 py-3">
+                      {item.first_name} {item.last_name}
+                    </td>
+                    <td className="px-4 py-3">{item.username}</td>
+                    <td className="px-4 py-3">{item.role}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-3 py-1 text-xs rounded-full font-medium ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
                         }`}
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-                  {(canWrite || canDelete) && (
-                    <td className="px-4 py-3 flex gap-3">
-                      <button
-                        className="relative text-sm text-blue-600 transition
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    {(canWrite || canDelete) && (
+                      <td className="px-4 py-3 flex gap-3">
+                        <button
+                          className="relative text-sm text-blue-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-blue-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                        onClick={() => navigate(`/users/user/${item._id}`)}
-                      >
-                        View
-                      </button>
+                          onClick={() => navigate(`/users/user/${item._id}`)}
+                        >
+                          View
+                        </button>
 
-                      {canWrite && (
-                        <button
-                          className="relative text-sm text-green-600 transition
+                        {canWrite && (
+                          <button
+                            className="relative text-sm text-green-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => {
-                            setFormData({
-                              ...item,
-                              password: "",
-                              confirm_password: "",
-                            });
-                            setIsEdit(true);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                        >
-                          Edit
-                        </button>
-                      )}
+                            onClick={() => {
+                              setFormData({
+                                ...item,
+                                password: "",
+                                confirm_password: "",
+                              });
+                              setIsEdit(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                          >
+                            Edit
+                          </button>
+                        )}
 
-                      {canDelete && (
-                        <button
-                          className="relative text-sm text-red-600 transition
+                        {canDelete && (
+                          <button
+                            className="relative text-sm text-red-600 transition
 after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                          onClick={() => handleDelete(item._id)}
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        {/* ================= PAGINATION ================= */}
-        <div className="flex justify-between items-center p-4">
-          <span className="text-sm text-gray-500">
-            Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
-            of {filteredData.length}
-          </span>
-          <div className="flex space-x-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
-            >
-              Prev
-            </button>
-            {getPageNumbers().map((p, i) =>
-              p === "..." ? (
-                <span key={i} className="px-3 h-8 border">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : ""
+                            onClick={() => handleDelete(item._id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          {/* ================= PAGINATION ================= */}
+          <div className="flex justify-between items-center p-4">
+            <span className="text-sm text-gray-500">
+              Showing {startIndex + 1}–{Math.min(endIndex, filteredData.length)}{" "}
+              of {filteredData.length}
+            </span>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-l-lg"
+              >
+                Prev
+              </button>
+              {getPageNumbers().map((p, i) =>
+                p === "..." ? (
+                  <span key={i} className="px-3 h-8 border">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
                     }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
-            >
-              Next
-            </button>
+                  >
+                    {p}
+                  </button>
+                ),
+              )}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );
