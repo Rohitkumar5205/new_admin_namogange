@@ -25,17 +25,20 @@ export const createBanner = createAsyncThunk(
         createActivityLogThunk({
           user_id: formData.get("user_id"),
           message: "Home Banner created",
-          // link: "/objectives",
-          // link: `${api.defaults.baseURL}/objective`,
           link: `${import.meta.env.VITE_API_FRONT_URL}/banner`,
           section: "Home Banner",
-        })
+          data: {
+            action: "CREATE",
+            entity: "HomeBanner",
+            new_data: res.data.data, // 👈 full created banner
+          },
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -50,7 +53,7 @@ export const getAllBanners = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -65,7 +68,7 @@ export const getBannerById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -89,21 +92,59 @@ export const updateBanner = createAsyncThunk(
       dispatch(
         createActivityLogThunk({
           user_id: formData.get("user_id"),
-          message: "Home banner updated",
+          message: "Home Banner updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banner`,
           section: "Home Banner",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "HomeBanner",
+            new_data: res.data.data,
+          },
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
 // 5) DELETE BANNER
 // ==============================
+// export const deleteBanner = createAsyncThunk(
+//   "banner/delete",
+//   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+//     const token = localStorage.getItem("token");
+//     if (!token) {
+//       return rejectWithValue("No token provided");
+//     }
+//     try {
+//       await api.delete(`/banner/${id}`, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+
+//       dispatch(
+//         createActivityLogThunk({
+//           user_id,
+//           message: "Home Banner deleted",
+//           link: `${import.meta.env.VITE_API_FRONT_URL}/banner`,
+//           section: "Home Banner",
+//           data: {
+//             action: "DELETE",
+//             entity: "HomeBanner",
+//             deleted_data: res.data.data, // 👈 backend se return karna hoga
+//           },
+//         }),
+//       );
+
+//       return id;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data || err.message);
+//     }
+//   },
+// );
+
 export const deleteBanner = createAsyncThunk(
   "banner/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
@@ -111,17 +152,25 @@ export const deleteBanner = createAsyncThunk(
     if (!token) {
       return rejectWithValue("No token provided");
     }
+
     try {
-      await api.delete(`/banner/${id}`, {
+      // ✅ Save response in variable
+      const res = await api.delete(`/banner/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // ✅ Now activity log will work
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Home banner deleted",
+          message: "Home Banner deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banner`,
           section: "Home Banner",
+          data: {
+            action: "DELETE",
+            entity: "HomeBanner",
+            deleted_data: res.data.data || null,
+          },
         })
       );
 
@@ -194,7 +243,7 @@ const bannerSlice = createSlice({
       .addCase(updateBanner.fulfilled, (state, action) => {
         state.loading = false;
         state.banners = state.banners.map((b) =>
-          b._id === action.payload._id ? action.payload : b
+          b._id === action.payload._id ? action.payload : b,
         );
       })
       .addCase(updateBanner.rejected, (state, action) => {

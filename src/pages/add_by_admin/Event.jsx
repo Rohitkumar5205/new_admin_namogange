@@ -40,7 +40,9 @@ const Event = () => {
     dispatch(getAllEvents());
   }, [dispatch]);
 
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_EVENT);
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.ADD_EVENT,
+  );
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;
@@ -101,7 +103,7 @@ const Event = () => {
         dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateEvent({ id: form._id, data: dataToSend })
+          updateEvent({ id: form._id, data: dataToSend }),
         ).unwrap();
         showSuccess("Event updated successfully ✅");
       } else {
@@ -156,7 +158,7 @@ const Event = () => {
 
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -165,7 +167,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Event Management
               </h2>
               <p className="text-sm text-blue-100">
@@ -397,8 +399,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1.5 border text-sm rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Cancel
               </button>
@@ -406,8 +409,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit ? "bg-blue-600" : "bg-green-600"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit ? "bg-blue-600" : "bg-green-600"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -433,7 +437,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">End Date</th>
                 <th className="px-4 py-3 font-medium">Image</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -471,10 +477,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                       >
                         {item.status}
                       </span>
@@ -487,8 +494,12 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                             onClick={() => {
                               setForm({
                                 ...item,
-                                start_date: item.start_date ? item.start_date.split("T")[0] : "",
-                                end_date: item.end_date ? item.end_date.split("T")[0] : "",
+                                start_date: item.start_date
+                                  ? item.start_date.split("T")[0]
+                                  : "",
+                                end_date: item.end_date
+                                  ? item.end_date.split("T")[0]
+                                  : "",
                               });
                               setIsEdit(true);
                               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -540,14 +551,15 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button

@@ -335,12 +335,10 @@ const Dashboard = () => {
       {/* HEADER */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-        // className="relative overflow-hidden shadow-sm border border-gray-200 h-28 bg-gradient-to-r from-cyan-500 to-blue-600"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/0"></div>
-
 
         {/* Content */}
         <div className="relative flex justify-between items-center px-6 py-4 h-full">

@@ -33,7 +33,9 @@ const CoordinatorStatus = () => {
     dispatch(getAllCoordinatorStatus());
   }, [dispatch]);
 
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.ADD_COORDINATOR_STATUS);
+  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.ADD_COORDINATOR_STATUS,
+  );
 
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
@@ -75,7 +77,7 @@ const CoordinatorStatus = () => {
               updated_by: currentUserName,
               user_id: currentUserId,
             },
-          })
+          }),
         ).unwrap();
         showSuccess("Coordinator Status updated successfully");
       } else {
@@ -85,7 +87,7 @@ const CoordinatorStatus = () => {
             status: formData.status,
             created_by: currentUserName,
             user_id: currentUserId,
-          })
+          }),
         ).unwrap();
         showSuccess("Coordinator Status added successfully");
       }
@@ -107,7 +109,7 @@ const CoordinatorStatus = () => {
       () => {
         showSuccess("Coordinator Status deleted successfully");
         dispatch(getAllCoordinatorStatus());
-      }
+      },
     );
   };
   /* ===== PAGINATION LOGIC ===== */
@@ -136,7 +138,7 @@ const CoordinatorStatus = () => {
 
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -145,7 +147,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Coordinator Status Management
               </h2>
               <p className="text-sm text-blue-100">
@@ -209,8 +211,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Cancel
               </button>
@@ -218,10 +221,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1.5 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1.5 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -245,9 +249,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <thead className="bg-gray-50 border-b  border-gray-200">
               <tr>
                 <th className="px-4 py-3 font-medium">S.No</th>
-                <th className="px-4 py-3 font-medium">Coordinator Status Title</th>
+                <th className="px-4 py-3 font-medium">
+                  Coordinator Status Title
+                </th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -270,10 +278,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
-          ${item.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+          ${
+            item.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
                       >
                         {item.status}
                       </span>
@@ -348,14 +357,15 @@ hover:after:w-full"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button

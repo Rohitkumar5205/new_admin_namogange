@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllRecentUpdates,
-  deleteRecentUpdate,
-} from "../../redux/slices/recentUpdate/recentUpdateSlice";
+import { getAllSeo, deleteSeo } from "../../redux/slices/seo/seoSlice";
 import { showSuccess, showError } from "../../utils/toastService";
-import adminBanner from "../../assets/banners/bg.jpg";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
+import Swal from "sweetalert2";
 
-const NewsUpdatesList = () => {
+const SEOList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { recentUpdates, loading } = useSelector(
-    (state) => state.recentUpdate || {},
-  );
+  const { seoList, loading, error } = useSelector((state) => state.seo || {});
   const authUser = JSON.parse(localStorage.getItem("user"));
+  const currentUserId = authUser?._id || authUser?.id;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -26,17 +22,30 @@ const NewsUpdatesList = () => {
     canRead: canAdd,
     canWrite,
     canDelete,
-  } = useRoleRights(PageNames.NEWS_UPDATES_LIST);
+  } = useRoleRights(PageNames.SEO || "SEO");
 
   useEffect(() => {
-    dispatch(getAllRecentUpdates());
+    dispatch(getAllSeo());
   }, [dispatch]);
 
+  // useEffect(() => {
+  //   if (error) {
+  //     const msg = error?.message || error?.data?.message || error;
+  //     if (msg === "Invalid token") {
+  //       localStorage.removeItem("user");
+  //       localStorage.removeItem("token");
+  //       navigate("/");
+  //     } else {
+  //       showError(msg);
+  //     }
+  //   }
+  // }, [error, navigate]);
+
   /* ===== FILTER DATA ===== */
-  const filteredData = (recentUpdates || []).filter(
+  const filteredData = (seoList || []).filter(
     (item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.published_by.toLowerCase().includes(search.toLowerCase()),
+      item.page_name?.toLowerCase().includes(search.toLowerCase()) ||
+      item.metaTitle?.toLowerCase().includes(search.toLowerCase()),
   );
 
   /* ===== PAGINATION LOGIC ===== */
@@ -58,6 +67,17 @@ const NewsUpdatesList = () => {
     }
     return pages;
   };
+
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteSeo({ id, user_id: currentUserId })).unwrap();
+      showSuccess("SEO record deleted successfully.");
+      dispatch(getAllSeo());
+    } catch (error) {
+      showError(error?.message || "Failed to delete SEO record.");
+    }
+  };
+
   return (
     <div className="">
       {/* ================= HEADER ================= */}
@@ -74,35 +94,32 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
           <div className="flex items-center gap-4">
             <div className="flex flex-col ">
               <h2 className="text-xl font-semibold text-white">
-                Lists News Updates Management
+                SEO Management
               </h2>
               <p className="text-sm text-blue-100">
-                Add or update Trust Bodies content including title, image, link
-                and status.{" "}
+                Add or update SEO meta tags for website pages.
               </p>
             </div>
           </div>
           <div>
-            {canAdd && (
-              <button
-                onClick={() => navigate("/news/add-news-updates")}
-                className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
-              >
-                {" "}
-                Add News Updates
-              </button>
-            )}
+            {/* {canAdd && ( */}
+            <button
+              onClick={() => navigate("/seo/add-seo")}
+              className="bg-blue-500 hover:bg-blue-600 text-sm text-white font-medium py-1 px-4 rounded"
+            >
+              {" "}
+              Add SEO
+            </button>
+            {/* )} */}
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-3 p-5">
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-5 bg-gray-200  py-2 border-b border-gray-200 flex flex-wrap gap-4 justify-between">
-            <h3 className="text-base font-medium text-gray-800">
-              News Updates List
-            </h3>
+            <h3 className="text-base font-medium text-gray-800">SEO List</h3>
             <select
               value={itemsPerPage}
               onChange={(e) => {
@@ -156,10 +173,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             <thead className="bg-gray-50 border-b  border-gray-200">
               <tr>
                 <th className="px-4 py-3 font-medium">S.No</th>
-                <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Published By</th>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium">Image</th>{" "}
+                <th className="px-4 py-3 font-medium">Page Name</th>
+                <th className="px-4 py-3 font-medium">Meta Title</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 {(canWrite || canDelete) && (
                   <th className="px-4 py-3 font-medium">Action</th>
@@ -168,7 +183,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </thead>
 
             <tbody>
-              {loading && (!recentUpdates || recentUpdates.length === 0) ? (
+              {loading && (!seoList || seoList.length === 0) ? (
                 <tr>
                   <td colSpan="7" className="text-center py-4">
                     Loading...
@@ -181,17 +196,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     <td className="px-4 py-3">{startIndex + index + 1}.</td>
-                    <td className="px-4 py-3 font-medium">{item.title}</td>
-                    <td className="px-4 py-3">{item.published_by}</td>
-                    <td className="px-4 py-3">{item.date}</td>
-                    <td className="px-4 py-3">
-                      <img
-                        src={item.image}
-                        className="h-10 w-20 object-cover rounded border"
-                        alt="img"
-                      />
-                    </td>
-
+                    <td className="px-4 py-3 font-medium">{item.page_name}</td>
+                    <td className="px-4 py-3">{item.metaTitle}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
@@ -215,7 +221,7 @@ after:h-[1.5px] after:w-0 after:bg-green-600
 after:transition-all after:duration-300
 hover:after:w-full"
                               onClick={() => {
-                                navigate("/news/add-news-updates", {
+                                navigate("/seo/add-seo", {
                                   state: item,
                                 });
                               }}
@@ -231,18 +237,7 @@ after:absolute after:left-0 after:-bottom-0.5
 after:h-[1.5px] after:w-0 after:bg-red-600
 after:transition-all after:duration-300
 hover:after:w-full"
-                              onClick={() => {
-                                dispatch(
-                                  deleteRecentUpdate({
-                                    id: item._id,
-                                    user_id: authUser?.id,
-                                  }),
-                                ).then(() => {
-                                  showSuccess(
-                                    "News Update deleted successfully ",
-                                  );
-                                });
-                              }}
+                              onClick={() => handleDelete(item._id)}
                             >
                               Delete
                             </button>
@@ -309,4 +304,4 @@ hover:after:w-full"
   );
 };
 
-export default NewsUpdatesList;
+export default SEOList;

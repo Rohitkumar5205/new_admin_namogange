@@ -15,7 +15,7 @@ import { useReactToPrint } from "react-to-print";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { getAllAgsPayments } from "../../redux/slices/ags/agsPaymentSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllEvents } from "../../redux/slices/add_by_admin/eventSlice";
+import { getAllAGSEvents } from "../../redux/slices/add_by_admin/agsEventSlice";
 import { getAllClientStatuses } from "../../redux/slices/ags/clientStatusSlice";
 import { fetchAgsDelegates } from "../../redux/slices/ags/agsDelegateSlice";
 
@@ -25,8 +25,10 @@ const Receipt = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { payments } = useSelector((state) => state.payments);
-  const { events } = useSelector((state) => state.event);
-  console.log("Events from Redux Store in Receipt:", events);
+  // const { events } = useSelector((state) => state.event);
+  // console.log("Events from Redux Store in Receipt:", events);
+  const { agsEvents } = useSelector((state) => state.agsEvent);
+  console.log("agsEvents from Redux Store in Receipt:", agsEvents);
   const { clientStatuses } = useSelector((state) => state.clientStatus);
   const { delegates } = useSelector((state) => state.agsDelegate);
   // console.log("Payments from Redux:", payments);
@@ -53,14 +55,14 @@ const Receipt = () => {
     (status) => status.selected_event,
   );
 
-  const matchedEvent = events?.find(
+  const matchedEvent = agsEvents?.find(
     (event) => event.name === statusWithEvent?.selected_event,
   );
   console.log("Matched Event Data:", matchedEvent);
 
   useEffect(() => {
     dispatch(getAllAgsPayments());
-    dispatch(getAllEvents());
+    dispatch(getAllAGSEvents());
     dispatch(getAllClientStatuses());
     dispatch(fetchAgsDelegates());
   }, [dispatch]);
@@ -105,7 +107,7 @@ const Receipt = () => {
         {/* header  */}
         <div
           className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-white/10"></div>
@@ -114,7 +116,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <div className="relative flex justify-center items-center px-6 py-4 h-25">
             <div className="flex items-center justify-between w-full">
               <div className=" ">
-                <h2 className="text-xl font-semibold text-white text-center">
+                <h2 className="text-xl font-semibold text-gray-700 text-center">
                   Receipt Management
                 </h2>
               </div>

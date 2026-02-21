@@ -119,29 +119,28 @@ const MemberOverview = () => {
       <div className="w-full h-auto ">
         {/* Header */}
 
+        <div
+          className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-white/10"></div>
 
-   <div
-              className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
-            >
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-white/10"></div>
-      
-              {/* Content */}
-              <div className="relative flex justify-center items-center px-6 py-4 h-25">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col ">
-                    <h2 className="text-xl font-semibold text-center text-white ">
-                        Member Overview & Profile Management
-                    </h2>
-                    <p className="text-sm text-blue-100">
-                        View and manage detailed member profiles, activities, and interactions in one place.    
-                    </p>
-                  </div>
-                </div>
-               
+          {/* Content */}
+          <div className="relative flex justify-center items-center px-6 py-4 h-25">
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col ">
+                <h2 className="text-xl font-semibold text-center text-white ">
+                  Member Overview & Profile Management
+                </h2>
+                <p className="text-sm text-blue-100">
+                  View and manage detailed member profiles, activities, and
+                  interactions in one place.
+                </p>
               </div>
             </div>
+          </div>
+        </div>
         {/* Main Content */}
         <div className="flex flex-col space-y-3 p-5">
           {/* Client Details Section */}
@@ -203,14 +202,13 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Member ID</th>
-                    <td className="px-2 py-2 ">
-                      {selectedRows?._id}
-                    </td>
+                    <td className="px-2 py-2 ">{selectedRows?._id}</td>
 
                     <th className="px-2 text-left py-2">Member Name</th>
                     <td className="px-2 py-2">
                       {" "}
-                      {selectedRows?.title} {selectedRows?.applicantName} {selectedRows?.surname}
+                      {selectedRows?.title} {selectedRows?.applicantName}{" "}
+                      {selectedRows?.surname}
                     </td>
 
                     <th className="px-2 text-left py-2">Gender </th>
@@ -221,28 +219,24 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-2 py-2">{selectedRows?.occupation}</td>
 
                     <th className="px-2 text-left py-2">Designation</th>
-                    <td className="px-2 py-2">
-                      {selectedRows?.designation}
-                    </td>
+                    <td className="px-2 py-2">{selectedRows?.designation}</td>
 
                     <th className="px-2 text-left py-2">Org Type</th>
-                    <td className="px-2 py-2">{selectedRows?.organizationType}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.organizationType}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Email Address</th>
                     <td className="px-2 py-2">{selectedRows?.email}</td>
 
                     <th className="px-2 text-left py-2">Mobile No.</th>
-                    <td className="px-2 py-2">
-                      {selectedRows?.mobile}
-                    </td>
+                    <td className="px-2 py-2">{selectedRows?.mobile}</td>
 
                     <th className="px-2 text-left py-2">
                       Alternate Mobile No.{" "}
                     </th>
-                    <td className="px-2 py-2">
-                      {selectedRows?.alternateNo}
-                    </td>
+                    <td className="px-2 py-2">{selectedRows?.alternateNo}</td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Address</th>
@@ -262,9 +256,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-2 py-2">{selectedRows?.pinCode}</td>
 
                     <th className="px-2 text-left py-2">Qualification</th>
-                    <td className="px-2 py-2">
-                      {selectedRows?.qualification}
-                    </td>
+                    <td className="px-2 py-2">{selectedRows?.qualification}</td>
                   </tr>
                 </tbody>
 
@@ -281,20 +273,26 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Reference 1</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.reference1?.name} ({selectedRows?.reference1?.mobile})
+                      {selectedRows?.reference1?.name} (
+                      {selectedRows?.reference1?.mobile})
                     </td>
 
                     <th className="px-2 py-2">Reference 2</th>
                     <td className="px-2 py-2">
-                      {selectedRows?.reference2?.name} ({selectedRows?.reference2?.mobile})
+                      {selectedRows?.reference2?.name} (
+                      {selectedRows?.reference2?.mobile})
                     </td>
 
                     <th className="px-2 py-2">Volunteering For</th>
-                    <td className="px-2 py-2">{selectedRows?.volunteeringFor}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.volunteeringFor}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Initiatives</th>
-                    <td className="px-2 py-2" colSpan={5}>{selectedRows?.initiatives?.join(", ")}</td>
+                    <td className="px-2 py-2" colSpan={5}>
+                      {selectedRows?.initiatives?.join(", ")}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -395,7 +393,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             <div className="flex sm:flex col md:flex-row md:justify-between ">
               <h1 className="text-xl font-semibold text-gray-500">
                 {" "}
-                {selectedRows?.title} {selectedRows?.applicantName} Conversation History
+                {selectedRows?.title} {selectedRows?.applicantName} Conversation
+                History
               </h1>
               <div className="flex gap-1">
                 <button className="p-1.5 border border-gray-300 rounded bg-white cursor-pointer hover:bg-gray-50 text-blue-500">
@@ -628,7 +627,6 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
             </>
           )}
         </div>
-
       </div>
     </>
   );

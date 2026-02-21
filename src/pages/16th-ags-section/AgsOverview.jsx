@@ -17,7 +17,7 @@ import {
 } from "../../redux/slices/ags/clientStatusSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { updateAgsDelegate } from "../../redux/slices/ags/agsDelegateSlice";
-import { getAllEvents } from "../../redux/slices/add_by_admin/eventSlice";
+import { getAllAGSEvents } from "../../redux/slices/add_by_admin/agsEventSlice";
 
 const AgsOverview = () => {
   const { id } = useParams();
@@ -28,8 +28,9 @@ const AgsOverview = () => {
   const { user } = useSelector((state) => state.auth);
   const { clientStatuses } = useSelector((state) => state.clientStatus);
   // console.log("Client Statuses from Redux Store:", clientStatuses);
-  const { events } = useSelector((state) => state.event);
-  console.log("Events from Redux Store:", events);
+  // const { events } = useSelector((state) => state.event);
+  const { agsEvents } = useSelector((state) => state.agsEvent);
+  console.log("agsEvents from Redux Store:", agsEvents);
 
   // Filter client statuses for the current delegate
   const matchedClientStatuses = clientStatuses?.filter(
@@ -75,7 +76,7 @@ const AgsOverview = () => {
 
   useEffect(() => {
     dispatch(getAllClientStatuses());
-    dispatch(getAllEvents());
+    dispatch(getAllAGSEvents());
   }, [dispatch]);
 
   useEffect(() => {
@@ -239,7 +240,7 @@ const AgsOverview = () => {
 
         <div
           className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-white/10"></div>
@@ -248,7 +249,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           <div className="relative flex justify-center items-center px-6 py-4 h-25">
             <div className="flex items-center gap-4">
               <div className="flex flex-col text-center">
-                <h2 className="text-xl font-semibold text-white text-center">
+                <h2 className="text-xl font-semibold text-gray-700 text-center">
                   Individual Data
                 </h2>
                 <p className="text-sm text-blue-100">
@@ -504,7 +505,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                         required
                       >
                         <option value="">Select Here</option>
-                        {events?.map((value, index) => (
+                        {agsEvents?.map((value, index) => (
                           <option key={index} value={value.name}>
                             {value?.name}
                           </option>

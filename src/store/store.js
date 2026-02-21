@@ -46,6 +46,7 @@ import agsEventReducer from "../redux/slices/add_by_admin/agsEventSlice";
 import collegeReducer from "../redux/slices/college/collegeSlice";
 import clientStatusReducer from "../redux/slices/ags/clientStatusSlice";
 import paymentsReducer from "../redux/slices/ags/agsPaymentSlice";
+import seoReducer from "../redux/slices/seo/seoSlice";
 
 const store = configureStore({
   reducer: {
@@ -95,7 +96,8 @@ const store = configureStore({
     agsEvent: agsEventReducer,
     college: collegeReducer,
     clientStatus: clientStatusReducer,
-    payments: paymentsReducer ,
+    payments: paymentsReducer,
+    seo: seoReducer,
   },
 });
 

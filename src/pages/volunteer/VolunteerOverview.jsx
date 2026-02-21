@@ -113,7 +113,7 @@ const VolunteerOverview = () => {
 
         <div
           className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-white/10"></div>
@@ -137,14 +137,14 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         {/* Main Content */}
         <div className="flex flex-col p-5 space-y-3">
           {/* Client Details Section */}
-          <div
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full"
-          >
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center">
                 {selectedRows?.profilePic || selectedRows?.profile_image ? (
                   <img
-                    src={selectedRows?.profilePic || selectedRows?.profile_image}
+                    src={
+                      selectedRows?.profilePic || selectedRows?.profile_image
+                    }
                     alt="profile"
                     className="w-20 h-20 rounded-full mr-4 object-cover"
                   />
@@ -202,7 +202,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-2 py-2">
                       {" "}
                       {selectedRows?.title}{" "}
-                      {selectedRows?.applicantName || selectedRows?.applicant_name}{" "}{selectedRows?.surname}
+                      {selectedRows?.applicantName ||
+                        selectedRows?.applicant_name}{" "}
+                      {selectedRows?.surname}
                     </td>
 
                     <th className="px-2 text-left py-2">Gender </th>
@@ -216,7 +218,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <td className="px-2 py-2">{selectedRows?.designation}</td>
 
                     <th className="px-2 text-left py-2">Org Type</th>
-                    <td className="px-2 py-2">{selectedRows?.organisationType || selectedRows?.organisation_type}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.organisationType ||
+                        selectedRows?.organisation_type}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Email Address</th>
@@ -228,7 +233,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     <th className="px-2 text-left py-2">
                       Alternate Mobile No.{" "}
                     </th>
-                    <td className="px-2 py-2">{selectedRows?.alternateMobile || selectedRows?.alternate_mobile}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.alternateMobile ||
+                        selectedRows?.alternate_mobile}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Address</th>
@@ -252,21 +260,34 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Father's Name</th>
-                    <td className="px-2 py-2">{selectedRows?.fatherName || selectedRows?.father_name}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.fatherName || selectedRows?.father_name}
+                    </td>
 
                     <th className="px-2 text-left py-2">Date of Birth</th>
-                    <td className="px-2 py-2">{selectedRows?.dob ? new Date(selectedRows.dob).toLocaleDateString() : 'N/A'}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.dob
+                        ? new Date(selectedRows.dob).toLocaleDateString()
+                        : "N/A"}
+                    </td>
 
                     <th className="px-2 text-left py-2">Aadhaar</th>
                     <td className="px-2 py-2">{selectedRows?.aadhaar}</td>
                   </tr>
                   <tr className="text-left text-sm ">
                     <th className="px-2 text-left py-2">Emergency Relation</th>
-                    <td className="px-2 py-2">{selectedRows?.emergencyRelation || selectedRows?.emergency_relation}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.emergencyRelation ||
+                        selectedRows?.emergency_relation}
+                    </td>
 
                     <th className="px-2 text-left py-2">Emergency Contact</th>
-                    <td className="px-2 py-2">{selectedRows?.emergencyContact || selectedRows?.emergency_contact}</td>
-                    <th className="px-2 text-left py-2"></th><td className="px-2 py-2"></td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.emergencyContact ||
+                        selectedRows?.emergency_contact}
+                    </td>
+                    <th className="px-2 text-left py-2"></th>
+                    <td className="px-2 py-2"></td>
                   </tr>
                 </tbody>
 
@@ -283,18 +304,29 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Reference 1</th>
                     <td className="px-2 py-2">
-                      {(selectedRows?.reference1?.name || selectedRows?.ref1_name)}{" "}
-                      ({selectedRows?.reference1?.mobile || selectedRows?.ref1_mobile})
+                      {selectedRows?.reference1?.name ||
+                        selectedRows?.ref1_name}{" "}
+                      (
+                      {selectedRows?.reference1?.mobile ||
+                        selectedRows?.ref1_mobile}
+                      )
                     </td>
 
                     <th className="px-2 py-2">Reference 2</th>
                     <td className="px-2 py-2">
-                      {(selectedRows?.reference2?.name || selectedRows?.ref2_name)}{" "}
-                      ({selectedRows?.reference2?.mobile || selectedRows?.ref2_mobile})
+                      {selectedRows?.reference2?.name ||
+                        selectedRows?.ref2_name}{" "}
+                      (
+                      {selectedRows?.reference2?.mobile ||
+                        selectedRows?.ref2_mobile}
+                      )
                     </td>
 
                     <th className="px-2 py-2">Volunteering For</th>
-                    <td className="px-2 py-2">{selectedRows?.volunteeringFor || selectedRows?.volunteering_for}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.volunteeringFor ||
+                        selectedRows?.volunteering_for}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Initiatives</th>
@@ -304,13 +336,22 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Networking For</th>
-                    <td className="px-2 py-2">{selectedRows?.networkingFor || selectedRows?.networking_for}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.networkingFor ||
+                        selectedRows?.networking_for}
+                    </td>
 
                     <th className="px-2 py-2">Area Of Interest</th>
-                    <td className="px-2 py-2">{selectedRows?.areaOfInterest || selectedRows?.area_of_interest}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.areaOfInterest ||
+                        selectedRows?.area_of_interest}
+                    </td>
 
                     <th className="px-2 py-2">Monetary Support</th>
-                    <td className="px-2 py-2">{selectedRows?.monetarySupport || selectedRows?.monetary_support}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.monetarySupport ||
+                        selectedRows?.monetary_support}
+                    </td>
                   </tr>
                 </tbody>
 
@@ -326,19 +367,33 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Area Of Region</th>
-                    <td className="px-2 py-2">{selectedRows?.areaOfRegion || selectedRows?.area_of_region}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.areaOfRegion ||
+                        selectedRows?.area_of_region}
+                    </td>
                     <th className="px-2 py-2">Report To</th>
-                    <td className="px-2 py-2">{selectedRows?.reportTo || selectedRows?.report_to}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.reportTo || selectedRows?.report_to}
+                    </td>
                     <th className="px-2 py-2">Volunteer Designation</th>
-                    <td className="px-2 py-2">{selectedRows?.volunteerDesignation || selectedRows?.volunteer_designation}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.volunteerDesignation ||
+                        selectedRows?.volunteer_designation}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Bank Name</th>
-                    <td className="px-2 py-2">{selectedRows?.bankName || selectedRows?.bank_name}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.bankName || selectedRows?.bank_name}
+                    </td>
                     <th className="px-2 py-2">Account No</th>
-                    <td className="px-2 py-2">{selectedRows?.accountNo || selectedRows?.account_no}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.accountNo || selectedRows?.account_no}
+                    </td>
                     <th className="px-2 py-2">IFSC Code</th>
-                    <td className="px-2 py-2">{selectedRows?.ifscCode || selectedRows?.ifsc_code}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.ifscCode || selectedRows?.ifsc_code}
+                    </td>
                   </tr>
                 </tbody>
 
@@ -354,26 +409,50 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Company Name</th>
-                    <td className="px-2 py-2">{selectedRows?.companyName || selectedRows?.company_name}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.companyName || selectedRows?.company_name}
+                    </td>
                     <th className="px-2 py-2">Business Address</th>
-                    <td className="px-2 py-2">{selectedRows?.businessAddress || selectedRows?.business_address}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessAddress ||
+                        selectedRows?.business_address}
+                    </td>
                     <th className="px-2 py-2">Business Country</th>
-                    <td className="px-2 py-2">{selectedRows?.businessCountry || selectedRows?.business_country}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessCountry ||
+                        selectedRows?.business_country}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Business State</th>
-                    <td className="px-2 py-2">{selectedRows?.businessState || selectedRows?.business_state}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessState ||
+                        selectedRows?.business_state}
+                    </td>
                     <th className="px-2 py-2">Business City</th>
-                    <td className="px-2 py-2">{selectedRows?.businessCity || selectedRows?.business_city}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessCity ||
+                        selectedRows?.business_city}
+                    </td>
                     <th className="px-2 py-2">Business Pincode</th>
-                    <td className="px-2 py-2">{selectedRows?.businessPincode || selectedRows?.business_pincode}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessPincode ||
+                        selectedRows?.business_pincode}
+                    </td>
                   </tr>
                   <tr className="text-left text-sm">
                     <th className="px-2 py-2">Business Designation</th>
-                    <td className="px-2 py-2">{selectedRows?.businessDesignation || selectedRows?.business_designation}</td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessDesignation ||
+                        selectedRows?.business_designation}
+                    </td>
                     <th className="px-2 py-2">Business Contact No</th>
-                    <td className="px-2 py-2">{selectedRows?.businessContactNo || selectedRows?.business_contact_no}</td>
-                    <th className="px-2 py-2"></th><td className="px-2 py-2"></td>
+                    <td className="px-2 py-2">
+                      {selectedRows?.businessContactNo ||
+                        selectedRows?.business_contact_no}
+                    </td>
+                    <th className="px-2 py-2"></th>
+                    <td className="px-2 py-2"></td>
                   </tr>
                 </tbody>
               </table>
@@ -551,8 +630,8 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <td className="px-2 py-2 text-sm text-left">
                     <div className="flex flex-wrap items-center gap-1 text-xs">
                       <span className="text-[#3598dc] font-semibold">
-                        Sent Details For 15th Edition Arogya Sangoshthi | Updated
-                        By: Nishtha Sharma On 10 Jun 25 at 17:02
+                        Sent Details For 15th Edition Arogya Sangoshthi |
+                        Updated By: Nishtha Sharma On 10 Jun 25 at 17:02
                       </span>
 
                       <a
@@ -712,4 +791,3 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
 };
 
 export default VolunteerOverview;
-            

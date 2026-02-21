@@ -41,7 +41,9 @@ const PhotosGallery = () => {
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const { canWrite, canDelete, isFormDisabled } = useRoleRights(PageNames.PHOTOS_GALLERY);
+  const { canWrite, canDelete, isFormDisabled } = useRoleRights(
+    PageNames.PHOTOS_GALLERY,
+  );
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {
@@ -58,7 +60,6 @@ const PhotosGallery = () => {
     const { name, value, files } = e.target;
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,7 +82,7 @@ const PhotosGallery = () => {
     try {
       if (isEdit) {
         await dispatch(
-          updateGallery({ id: formData._id, formData: dataToSend })
+          updateGallery({ id: formData._id, formData: dataToSend }),
         ).unwrap();
         showSuccess("Gallery updated successfully");
       } else {
@@ -144,7 +145,7 @@ const PhotosGallery = () => {
       </div> */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
-bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
+bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
         {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
@@ -153,12 +154,12 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
           <div className="flex items-center gap-4">
             <div className="flex flex-col text-center">
-              <h2 className="text-xl font-semibold text-white text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
                 Photos Gallery Management
               </h2>
               <p className="text-sm text-blue-100">
-                Add or update photos gallery content including title, image, link and
-                status.
+                Add or update photos gallery content including title, image,
+                link and status.
               </p>
             </div>
           </div>
@@ -303,8 +304,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 type="button"
                 onClick={resetForm}
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting || isFormDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
               >
                 Cancel
               </button>
@@ -312,10 +316,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
-                className={`px-6 py-1 text-sm rounded text-white ${isEdit
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-green-600 hover:bg-green-700"
-                  } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-6 py-1 text-sm rounded text-white ${
+                  isEdit
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } ${isSubmitting || isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting
                   ? "Processing..."
@@ -346,7 +351,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 <th className="px-4 py-3 font-medium">Location</th>
                 <th className="px-4 py-3 font-medium">Image</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                {(canWrite || canDelete) && <th className="px-4 py-3 font-medium">Action</th>}
+                {(canWrite || canDelete) && (
+                  <th className="px-4 py-3 font-medium">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -359,7 +366,10 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                 </tr>
               ) : (
                 currentData.map((item, index) => (
-                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
+                  <tr
+                    key={item._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
                     <td className="px-4 py-3">
@@ -379,10 +389,11 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 text-xs rounded-full ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                          }`}
+                        className={`px-3 py-1 text-xs rounded-full ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {item.status}
                       </span>
@@ -397,7 +408,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                 setFormData({
                                   _id: item._id,
                                   title: item.title,
-                                  date: item.date ? item.date.split("T")[0] : "",
+                                  date: item.date
+                                    ? item.date.split("T")[0]
+                                    : "",
                                   category: item.category,
                                   orderBy: item.orderBy,
                                   location: item.location,
@@ -418,7 +431,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                               onClick={() => {
                                 if (
                                   window.confirm(
-                                    "Are you sure you want to delete this gallery?"
+                                    "Are you sure you want to delete this gallery?",
                                   )
                                 ) {
                                   const currentUserId = authUser?.id || null;
@@ -426,7 +439,7 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                                     deleteGallery({
                                       id: item._id,
                                       user_id: currentUserId,
-                                    })
+                                    }),
                                   ).then(() => {
                                     showSuccess("Gallery deleted successfully");
                                   });
@@ -448,8 +461,9 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
           {/* ================= PAGINATION ================= */}
           <div className="flex justify-between items-center p-4">
             <span className="text-sm text-gray-500">
-              Showing {startIndex + 1}–{Math.min(endIndex, gallery?.length || 0)}{" "}
-              of {gallery?.length || 0}
+              Showing {startIndex + 1}–
+              {Math.min(endIndex, gallery?.length || 0)} of{" "}
+              {gallery?.length || 0}
             </span>
 
             <div className="flex space-x-1">
@@ -470,18 +484,21 @@ bg-gradient-to-r from-orange-500 via-cyan-500 to-blue-700"
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${currentPage === p
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : ""
-                      }`}
+                    className={`px-3 h-8 border border-gray-300 hover:bg-gray-50 ${
+                      currentPage === p
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : ""
+                    }`}
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
 
               <button
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 h-8 text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-r-lg"
               >
