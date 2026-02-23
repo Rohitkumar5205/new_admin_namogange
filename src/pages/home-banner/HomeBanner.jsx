@@ -406,9 +406,10 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Banner Title</th>
                 <th className="px-4 py-3 font-medium">Redirect Link</th>
-                <th className="px-4 py-3 whitespace-nowrap">
+                <th className="px-4 py-3 font-medium whitespace-nowrap">
                   Banner Image
                 </th>{" "}
+                <th className="px-4 py-3 font-medium">Image Alt</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 {(canWrite || canDelete) && (
                   <th className="px-4 py-3 font-medium">Action</th>
@@ -437,10 +438,11 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">
                       <img
                         src={item?.image || "/placeholder.png"}
-                        alt="Banner"
-                        className="h-10 w-20 object-cover rounded border border-gray-300"
+                        alt={item?.alt_text || "Banner"}
+                        className="h-10 w-14 object-fit rounded border border-gray-300"
                       />
                     </td>
+                    <td className="px-4 py-3">{item?.alt_text}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium

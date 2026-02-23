@@ -90,6 +90,8 @@ import AGSEvent from "./pages/add_by_admin/AGSEvent";
 import AddSEO from "./pages/seo/AddSEO";
 import SEOList from "./pages/seo/SEOList";
 import Notification from "./pages/notification/Notification";
+import Hero from "./pages/hero/Hero";
+import About from "./pages/about_us/About";
 
 function App() {
   return (
@@ -100,9 +102,11 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/home-banner" element={<HomeBanner />} />
+            <Route path="/hero" element={<Hero />} />
             <Route path="/media/photos-gallery" element={<PhotosGallery />} />
             <Route path="/media/videos-gallery" element={<VideosGallery />} />
             <Route path="/notification" element={<Notification />} />
+            <Route path="/about" element={<About />} />
             <Route
               path="/add_by_admin/add-occupation"
               element={<AddOccupation />}

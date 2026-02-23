@@ -22,6 +22,8 @@ const AddTrustBodies = () => {
     designation: "",
     slug: "",
     image: "",
+    imagePreview: "",
+    image_alt: "",
     status: "Active",
     description: "",
   });
@@ -39,7 +41,9 @@ const AddTrustBodies = () => {
         name: location.state.name || "",
         designation: location.state.designation || "",
         slug: location.state.slug || "",
-        image: null || "",
+        image: null,
+        imagePreview: location.state.image || "",
+        image_alt: location.state.image_alt || "",
         status: location.state.status || "Active",
         description: location.state.description || "",
       });
@@ -47,7 +51,15 @@ const AddTrustBodies = () => {
   }, [location.state]);
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files?.[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: files ? files[0] : value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -66,6 +78,7 @@ const AddTrustBodies = () => {
     data.append("designation", formData.designation);
     data.append("status", formData.status);
     data.append("description", formData.description || "");
+    data.append("image_alt", formData.image_alt || "");
     if (formData.image instanceof File) {
       data.append("image", formData.image);
     }
@@ -143,7 +156,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* NAME */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name <span className="text-red-500">*</span>
+                Name (H1) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -195,11 +208,37 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (Size: 389x187) <span className="text-red-500">*</span>
               </label>
               <input
                 type="file"
                 name="image"
+                onChange={handleChange}
+                disabled={isFormDisabled}
+                required={!isEdit}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              {/* {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )} */}
+            </div>
+
+            {/* Image Alt Text */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                placeholder="Enter image alt"
                 onChange={handleChange}
                 disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"

@@ -1,136 +1,111 @@
 import React, { useState, useEffect } from "react";
 import { Editor } from "primereact/editor";
 import { useDispatch, useSelector } from "react-redux";
-import adminBanner from "../../assets/banners/bg.jpg";
 import {
-  createAchievement,
-  getAllAchievements,
-  updateAchievement,
-  deleteAchievement,
-} from "../../redux/slices/achievements/achievementSlice";
+  fetchAbouts,
+  createAboutThunk,
+  updateAboutThunk,
+  deleteAboutThunk,
+} from "../../redux/slices/about_us/aboutSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import useRoleRights from "../../hooks/useRoleRights";
-import { PageNames } from "../../utils/constants";
 
-const Achievements = () => {
+const About = () => {
   const dispatch = useDispatch();
+  // Assuming your slice is named 'about' and the data array is 'abouts' or 'data'
+  // Adjust 'state.about' and 'abouts' based on your actual slice structure
+  const { data: abouts, loading } = useSelector((state) => state.about);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [isEdit, setIsEdit] = useState(false);
+  const authUser = JSON.parse(localStorage.getItem("user"));
+
+  const [form, setForm] = useState({
     _id: null,
     title: "",
-    link: "",
-    slug: "",
+    desc: "",
     image: null,
     imagePreview: "",
     image_alt: "",
-    meta_tag: "",
-    meta_desc: "",
-    desc: "",
-    created_by: "",
-    updated_by: "",
+    link: "",
     status: "Active",
   });
 
-  const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
-  const { achievements, loading } = useSelector((state) => state.achievements);
-
-  /* ===== FETCH DATA ===== */
-  useEffect(() => {
-    dispatch(getAllAchievements());
-  }, [dispatch]);
-  const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
-    PageNames.ACHIEVEMENTS,
-  );
-
-  /* ===== PAGINATION STATE ===== */
+  // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
-  /* ===== HANDLERS ===== */
+  // Role Rights - Using "About" as the page name, adjust if you have a constant for it
+  const { canRead, canWrite, canDelete, isFormDisabled } =
+    useRoleRights("About Section");
+
+  useEffect(() => {
+    dispatch(fetchAbouts());
+  }, [dispatch]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
-      setFormData((prev) => ({
+      setForm((prev) => ({
         ...prev,
         image: files[0],
         imagePreview: URL.createObjectURL(files[0]),
       }));
-    } else if (name === "title") {
-      const slug = value
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/[\s_-]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      setFormData((prev) => ({ ...prev, title: value, slug: slug }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const resetForm = () => {
-    setFormData({
+    setForm({
       _id: null,
       title: "",
-      link: "",
-      slug: "",
+      desc: "",
       image: null,
       imagePreview: "",
       image_alt: "",
-      meta_tag: "",
-      meta_desc: "",
-      desc: "",
-      created_by: "",
-      updated_by: "",
+      link: "",
       status: "Active",
     });
     setIsEdit(false);
   };
 
-  const handleCancel = () => {
-    resetForm();
-  };
-
   const handleDelete = (id) => {
-
-      const currentUserId = authUser?.id || null;
-      dispatch(deleteAchievement({ id: id, user_id: currentUserId })).then(
+    const currentUserId = authUser?.id || null;
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      dispatch(deleteAboutThunk({ id: id, user_id: currentUserId })).then(
         () => {
-          showSuccess("Achievement deleted successfully");
-          dispatch(getAllAchievements());
+          showSuccess("About entry deleted successfully");
+          dispatch(fetchAbouts());
         },
       );
-    
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.title?.trim()) {
+    if (!form.title?.trim()) {
       showError("Title is required.");
       return;
     }
-
-    if (!isEdit && !formData.image) {
+    if (!form.desc || form.desc === "<p><br></p>") {
+      showError("Description is required.");
+      return;
+    }
+    if (!isEdit && !form.image) {
       showError("Image is required.");
       return;
     }
 
     setIsSubmitting(true);
-
     const dataToSend = new FormData();
-    dataToSend.append("title", formData.title);
-    dataToSend.append("slug", formData.slug);
-    dataToSend.append("link", formData.link);
-    dataToSend.append("status", formData.status);
-    dataToSend.append("meta_tag", formData.meta_tag);
-    dataToSend.append("meta_desc", formData.meta_desc);
-    dataToSend.append("desc", formData.desc);
-    dataToSend.append("image_alt", formData.image_alt);
+    dataToSend.append("title", form.title);
+    dataToSend.append("desc", form.desc);
+    dataToSend.append("image_alt", form.image_alt);
+    dataToSend.append("link", form.link);
+    dataToSend.append("status", form.status);
 
-    if (formData.image instanceof File) {
-      dataToSend.append("image", formData.image);
+    if (form.image instanceof File) {
+      dataToSend.append("image", form.image);
     }
 
     const currentUserId = authUser?.id || null;
@@ -141,17 +116,17 @@ const Achievements = () => {
         dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
         await dispatch(
-          updateAchievement({ id: formData._id, formData: dataToSend }),
+          updateAboutThunk({ id: form._id, formData: dataToSend }),
         ).unwrap();
-        showSuccess("Achievement updated successfully");
+        showSuccess("About entry updated successfully");
       } else {
         dataToSend.append("created_by", currentUserName);
+        dataToSend.append("updated_by", currentUserName);
         dataToSend.append("user_id", currentUserId);
-        await dispatch(createAchievement(dataToSend)).unwrap();
-        showSuccess("Achievement added successfully");
+        await dispatch(createAboutThunk(dataToSend)).unwrap();
+        showSuccess("About entry added successfully");
       }
-
-      await dispatch(getAllAchievements()).unwrap();
+      await dispatch(fetchAbouts()).unwrap();
       resetForm();
       setCurrentPage(1);
     } catch (err) {
@@ -162,90 +137,88 @@ const Achievements = () => {
     }
   };
 
+  const stripHtmlTags = (html) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  };
+
   /* ===== PAGINATION LOGIC ===== */
-  const totalPages = Math.ceil((achievements?.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((abouts?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = achievements?.slice(startIndex, endIndex);
+  const currentData = abouts?.slice(startIndex, endIndex) || [];
 
   const getPageNumbers = () => {
     const pages = [];
-    // const maxVisible = 3;
+    const maxVisible = 3;
 
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
-      pages.push(1);
-      if (currentPage > 2) pages.push("...");
-      if (currentPage > 1 && currentPage < totalPages) pages.push(currentPage);
-      if (currentPage < totalPages - 1) pages.push("...");
+      for (let i = 1; i <= maxVisible; i++) pages.push(i);
+      pages.push("...");
       pages.push(totalPages);
     }
     return pages;
   };
 
   return (
-    <div className="">
+    <div>
       {/* ================= HEADER ================= */}
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       >
+        {/* Overlay */}
         <div className="absolute inset-0 bg-white/10"></div>
+
+        {/* Content */}
         <div className="relative flex justify-center items-center px-6 py-4 h-25">
-          <div className="flex flex-col text-center">
-            <h2 className="text-xl font-semibold text-gray-700 text-center">
-              Achievements Management
-            </h2>
-            <p className="text-sm text-blue-100">
-              Add or update Achievements content.
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col text-center">
+              <h2 className="text-xl font-semibold text-gray-700 text-center">
+                About Us Management
+              </h2>
+              <p className="text-sm text-blue-100">
+                Add or update About Us content including title, description, and
+                images.
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
       <div className="space-y-3 p-5">
         {/* ================= FORM ================= */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-base font-medium text-gray-800 mb-4">
-            {isEdit ? "Update Achievement" : "Add New Achievement"}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <h3 className="text-base font-medium text-gray-800 mb-2">
+            {isEdit ? "Update About Entry" : "Add New About Entry"}
           </h3>
 
           <form
             onSubmit={handleSubmit}
-            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
+            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${
+              isFormDisabled ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Achievements Title (H1) <span className="text-red-500">*</span>
+                Title (H1) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 name="title"
-                value={formData.title}
+                placeholder="Enter title"
+                value={form.title}
                 onChange={handleChange}
-                placeholder="Enter achievement title"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
                 required
               />
             </div>
-            {/* SLUG */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Slug <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="slug"
-                value={formData.slug}
-                onChange={handleChange}
-                placeholder="Enter slug"
-                disabled={isFormDisabled}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
+
             {/* LINK */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -254,32 +227,33 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <input
                 type="text"
                 name="link"
-                value={formData.link}
+                placeholder="Enter link (optional)"
+                value={form.link}
                 onChange={handleChange}
-                placeholder="Enter link"
-                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
               />
             </div>
 
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image (Size: 650x300) <span className="text-red-500">*</span>
+                Image (size:652x340) <span className="text-red-500">*</span>
               </label>
-              <input
-                key={formData._id || "new"}
-                type="file"
-                name="image"
-                onChange={handleChange}
-                disabled={isFormDisabled}
-                required={!isEdit}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              />
-              {/* {formData.imagePreview && (
+              <div className="w-full">
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleChange}
+                  disabled={isFormDisabled}
+                  className="w-full text-sm text-gray-600 border border-gray-300 rounded cursor-pointer bg-gray-50 file:mr-4 file:py-1 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                />
+              </div>
+              {/* {form.imagePreview && (
                 <div className="mt-2">
                   <img
-                    src={formData.imagePreview}
+                    src={form.imagePreview}
                     alt="Preview"
                     className="h-20 w-auto object-cover rounded border border-gray-300"
                   />
@@ -287,7 +261,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               )} */}
             </div>
 
-            {/* Image Alt Text */}
+            {/* IMAGE ALT */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Image Alt Text
@@ -295,43 +269,11 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <input
                 type="text"
                 name="image_alt"
-                value={formData.image_alt}
-                onChange={handleChange}
                 placeholder="Enter image alt text"
-                disabled={isFormDisabled}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* META KEYWORD */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Keyword
-              </label>
-              <input
-                type="text"
-                name="meta_tag"
-                value={formData.meta_tag}
+                value={form.image_alt}
                 onChange={handleChange}
-                placeholder="Enter meta keywords"
-                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* META DESCRIPTION */}
-            <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Description
-              </label>
-              <textarea
-                name="meta_desc"
-                value={formData.meta_desc}
-                onChange={handleChange}
-                placeholder="Enter meta description"
-                rows={1}
                 disabled={isFormDisabled}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
             {/* STATUS */}
@@ -341,45 +283,40 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               </label>
               <select
                 name="status"
-                value={formData.status}
+                value={form.status}
                 onChange={handleChange}
-                disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none"
+                disabled={isFormDisabled}
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
             </div>
-
             {/* DESCRIPTION */}
-            <div className="md:col-span-4">
+            <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
+                Description <span className="text-red-500">*</span>
               </label>
               <Editor
-                value={formData.desc}
-                onTextChange={(e) =>
-                  setFormData((prev) => ({ ...prev, desc: e.htmlValue }))
-                }
-                style={{ height: "160px" }}
+                key={form._id || "new-about"}
+                value={form.desc}
+                name="desc"
                 readOnly={isFormDisabled}
+                onTextChange={(e) => {
+                  setForm((prev) => ({ ...prev, desc: e.htmlValue }));
+                }}
+                style={{
+                  height: "150px",
+                  borderRadius: "4px",
+                  borderBottom: "1px solid #e5e7eb",
+                  overflow: "hidden",
+                }}
                 className="w-full text-sm outline-none"
               />
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-4 flex justify-end gap-3 mt-2">
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1 text-sm text-white border border-gray-300 rounded bg-blue-500 hover:bg-blue-600 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                Cancel
-              </button>
-
+            <div className="md:col-span-3 flex justify-end gap-5 mt-6">
               <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
@@ -392,8 +329,19 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                    ? "Update Achievement"
-                    : "Add Achievement"}
+                    ? "Update"
+                    : "Add"}{" "}
+              </button>
+
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Cancel
               </button>
             </div>
           </form>
@@ -402,9 +350,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-5 py-2 border-b bg-gray-200 border-gray-200">
-            <h3 className="text-base font-medium text-gray-800">
-              Achievements List
-            </h3>
+            <h3 className="text-base font-medium text-gray-800">About List</h3>
           </div>
 
           <table className="w-full text-sm text-left text-gray-600">
@@ -412,48 +358,46 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <tr>
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Title</th>
-                {/* <th className="px-4 py-3 font-medium">Link</th> */}
                 <th className="px-4 py-3 font-medium">Image</th>
+                <th className="px-4 py-3 font-medium">Description</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 {(canWrite || canDelete) && (
                   <th className="px-4 py-3 font-medium">Action</th>
                 )}
               </tr>
             </thead>
-
             <tbody>
-              {loading && achievements?.length === 0 ? (
+              {loading && (!abouts || abouts.length === 0) ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4">
                     Loading...
                   </td>
                 </tr>
               ) : (
-                currentData?.map((item, index) => (
+                currentData.map((item, index) => (
                   <tr
                     key={item._id}
                     className="border-b border-gray-200 hover:bg-gray-50"
                   >
                     <td className="px-4 py-3">{startIndex + index + 1}.</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
-                    {/* <td className="px-4 py-3 text-blue-600 underline">
-                                            {item.link}
-                                        </td> */}
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
-                        alt="Achievement"
-                        className="h-10 w-20 object-cover rounded border border-gray-300"
+                        alt={item.image_alt || "About"}
+                        className="h-10 w-14 object-cover rounded border border-gray-300"
                       />
                     </td>
                     <td className="px-4 py-3">
+                      {stripHtmlTags(item.desc)?.slice(0, 50) + "..."}
+                    </td>
+                    <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 text-xs rounded-full font-medium
-                          ${
-                            item.status === "Active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
+                        className={`px-3 py-1 text-xs rounded-full font-medium ${
+                          item.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {item.status}
                       </span>
@@ -463,22 +407,17 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                         <div className="flex items-center gap-4">
                           {canWrite && (
                             <button
-                              className="text-green-600 hover:underline"
+                              className="text-sm text-green-600 hover:underline"
                               onClick={() => {
-                                setFormData({
+                                setForm({
                                   _id: item._id,
-                                  title: item.title || "",
-                                  link: item.link || "",
-                                  slug: item.slug || "",
+                                  title: item.title,
+                                  desc: item.desc,
                                   image: null,
-                                  imagePreview: item.image || "",
+                                  imagePreview: item.image,
                                   image_alt: item.image_alt || "",
-                                  meta_tag: item.meta_tag || "",
-                                  meta_desc: item.meta_desc || "",
-                                  desc: item.desc || "",
-                                  created_by: item.created_by,
-                                  updated_by: item.updated_by,
-                                  status: item.status || "Active",
+                                  link: item.link || "",
+                                  status: item.status,
                                 });
                                 setIsEdit(true);
                                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -489,7 +428,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                           )}
                           {canDelete && (
                             <button
-                              className="text-red-600 hover:underline"
+                              className="text-sm text-red-600 hover:underline"
                               onClick={() => handleDelete(item._id)}
                             >
                               Delete
@@ -507,9 +446,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
           {/* ================= PAGINATION ================= */}
           <div className="flex justify-between items-center p-4">
             <span className="text-sm text-gray-500">
-              Showing {startIndex + 1}–
-              {Math.min(endIndex, achievements?.length || 0)} of{" "}
-              {achievements?.length || 0}
+              Showing {startIndex + 1}–{Math.min(endIndex, abouts?.length || 0)}{" "}
+              of {abouts?.length || 0}
             </span>
 
             <div className="flex space-x-1">
@@ -558,4 +496,4 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
   );
 };
 
-export default Achievements;
+export default About;

@@ -2,12 +2,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axiosInstance";
 import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
-/* GET ALL */
-export const fetchTestimonials = createAsyncThunk(
-  "testimonials/fetchAll",
+/* ================= GET ALL ================= */
+export const fetchAbouts = createAsyncThunk(
+  "about/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/testimonials");
+      const res = await api.get("/about-us");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
@@ -15,69 +15,31 @@ export const fetchTestimonials = createAsyncThunk(
   },
 );
 
-/* CREATE */
-export const createTestimonialThunk = createAsyncThunk(
-  "testimonials/create",
+/* ================= CREATE ================= */
+export const createAboutThunk = createAsyncThunk(
+  "about/create",
   async (formData, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
+    if (!token) return rejectWithValue("No token provided");
+
     try {
-      const res = await api.post("/testimonials/create", formData, {
+      const res = await api.post("/about-us/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // 🔹 activity log
+      // Activity Log
       dispatch(
         createActivityLogThunk({
           user_id: formData.get("user_id"),
-          message: "Testimonial created",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/testimonial`,
-          section: "Testimonial",
+          message: "About section created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/about-us`,
+          section: "About",
           data: {
             action: "CREATE",
-            entity: "Testimonial",
-            entity_id: res.data.data._id,
-          },
-        }),
-      );
-
-      return res.data.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message);
-    }
-  },
-);
-
-/* UPDATE */
-export const updateTestimonialThunk = createAsyncThunk(
-  "testimonials/update",
-  async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
-    try {
-      const res = await api.put(`/testimonials/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      dispatch(
-        createActivityLogThunk({
-          user_id: formData.get("user_id"),
-          message: "Testimonial updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/testimonial`,
-          section: "Testimonial",
-          data: {
-            action: "UPDATE",
-            entity: "Testimonial",
+            entity: "About",
             new_data: res.data.data,
           },
         }),
@@ -90,29 +52,66 @@ export const updateTestimonialThunk = createAsyncThunk(
   },
 );
 
-/* DELETE */
-export const deleteTestimonialThunk = createAsyncThunk(
-  "testimonials/delete",
+/* ================= UPDATE ================= */
+export const updateAboutThunk = createAsyncThunk(
+  "about/update",
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = localStorage.getItem("token");
+    if (!token) return rejectWithValue("No token provided");
+
+    try {
+      const res = await api.put(`/about-us/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      dispatch(
+        createActivityLogThunk({
+          user_id: formData.get("user_id"),
+          message: "About section updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/about-us`,
+          section: "About",
+          data: {
+            action: "UPDATE",
+            entity: "About",
+            new_data: res.data.data,
+          },
+        }),
+      );
+
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message);
+    }
+  },
+);
+
+/* ================= DELETE ================= */
+export const deleteAboutThunk = createAsyncThunk(
+  "about/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
+    if (!token) return rejectWithValue("No token provided");
+
     try {
-      await api.delete(`/testimonials/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await api.delete(`/about-us/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Testimonial deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/testimonial`,
-          section: "Testimonial",
+          message: "About section deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/about-us`,
+          section: "About",
           data: {
             action: "DELETE",
-            entity: "Testimonial",
-            entity_id: id,
+            entity: "About",
+            deleted_data: id,
           },
         }),
       );
@@ -124,8 +123,9 @@ export const deleteTestimonialThunk = createAsyncThunk(
   },
 );
 
-const testimonialSlice = createSlice({
-  name: "testimonials",
+/* ================= SLICE ================= */
+const aboutSlice = createSlice({
+  name: "about",
   initialState: {
     data: [],
     loading: false,
@@ -135,56 +135,57 @@ const testimonialSlice = createSlice({
   extraReducers: (builder) => {
     builder
       /* FETCH */
-      .addCase(fetchTestimonials.pending, (state) => {
+      .addCase(fetchAbouts.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchTestimonials.fulfilled, (state, action) => {
+      .addCase(fetchAbouts.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
       })
-      .addCase(fetchTestimonials.rejected, (state, action) => {
+      .addCase(fetchAbouts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* CREATE */
-      .addCase(createTestimonialThunk.pending, (state) => {
+      .addCase(createAboutThunk.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createTestimonialThunk.fulfilled, (state, action) => {
+      .addCase(createAboutThunk.fulfilled, (state, action) => {
         state.data.unshift(action.payload);
       })
-      .addCase(createTestimonialThunk.rejected, (state, action) => {
+      .addCase(createAboutThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       /* UPDATE */
-      .addCase(updateTestimonialThunk.pending, (state) => {
+      .addCase(updateAboutThunk.pending, (state) => {
         state.loading = true;
       })
-      .addCase(updateTestimonialThunk.fulfilled, (state, action) => {
+      .addCase(updateAboutThunk.fulfilled, (state, action) => {
         const index = state.data.findIndex(
           (item) => item._id === action.payload._id,
         );
         if (index !== -1) state.data[index] = action.payload;
       })
-      .addCase(updateTestimonialThunk.rejected, (state, action) => {
+      .addCase(updateAboutThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
       /* DELETE */
-      .addCase(deleteTestimonialThunk.pending, (state) => {
+      .addCase(deleteAboutThunk.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteTestimonialThunk.fulfilled, (state, action) => {
+      .addCase(deleteAboutThunk.fulfilled, (state, action) => {
         state.data = state.data.filter((item) => item._id !== action.payload);
       })
-      .addCase(deleteTestimonialThunk.rejected, (state, action) => {
+      .addCase(deleteAboutThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default testimonialSlice.reducer;
+export default aboutSlice.reducer;

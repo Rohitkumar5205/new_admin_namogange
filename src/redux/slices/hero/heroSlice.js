@@ -1,39 +1,40 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance";
-import { createActivityLogThunk } from "./activityLog/activityLogSlice";
+import api from "../../api/axiosInstance";
+import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 
 // ==============================
-// 1) CREATE INITIATIVE
+// 1️⃣ CREATE HERO
 // ==============================
-export const createInitiative = createAsyncThunk(
-  "initiative/create",
+export const createHero = createAsyncThunk(
+  "hero/create",
   async (formData, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
+    if (!token) return rejectWithValue("No token provided");
+
     try {
-      const res = await api.post("/initiatives/create", formData, {
+      const res = await api.post("/heroes/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-      // 🔹 activity log
+
+      // 🔥 Activity Log
       dispatch(
         createActivityLogThunk({
           user_id: formData.get("user_id"),
-          message: "Initiative created",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
-          section: "Initiative",
+          message: "Hero created",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/heroes`,
+          section: "Hero",
           data: {
             action: "CREATE",
-            entity: "Initiative",
+            entity: "Hero",
             new_data: res.data.data,
           },
         }),
       );
-      return res?.data?.data;
+
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -41,14 +42,14 @@ export const createInitiative = createAsyncThunk(
 );
 
 // ==============================
-// 2) GET ALL INITIATIVES
+// 2️⃣ GET ALL HEROES
 // ==============================
-export const getAllInitiatives = createAsyncThunk(
-  "initiative/getAll",
+export const getAllHeroes = createAsyncThunk(
+  "hero/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/initiatives");
-      return res?.data?.data;
+      const res = await api.get("/heroes");
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -56,14 +57,14 @@ export const getAllInitiatives = createAsyncThunk(
 );
 
 // ==============================
-// 3) GET SINGLE INITIATIVE
+// 3️⃣ GET HERO BY ID
 // ==============================
-export const getInitiativeById = createAsyncThunk(
-  "initiative/getById",
+export const getHeroById = createAsyncThunk(
+  "hero/getById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/initiatives/${id}`);
-      return res?.data?.data;
+      const res = await api.get(`/heroes/${id}`);
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -71,39 +72,37 @@ export const getInitiativeById = createAsyncThunk(
 );
 
 // ==============================
-// 4) UPDATE INITIATIVE
+// 4️⃣ UPDATE HERO
 // ==============================
-export const updateInitiative = createAsyncThunk(
-  "initiative/update",
+export const updateHero = createAsyncThunk(
+  "hero/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
+    if (!token) return rejectWithValue("No token provided");
+
     try {
-      const res = await api.put(`/initiatives/${id}`, formData, {
+      const res = await api.put(`/heroes/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // 🔹 activity log
       dispatch(
         createActivityLogThunk({
           user_id: formData.get("user_id"),
-          message: "Initiative updated",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
-          section: "Initiative",
+          message: "Hero updated",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/heroes`,
+          section: "Hero",
           data: {
             action: "UPDATE",
-            entity: "Initiative",
+            entity: "Hero",
             new_data: res.data.data,
           },
         }),
       );
 
-      return res?.data?.data;
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -111,34 +110,33 @@ export const updateInitiative = createAsyncThunk(
 );
 
 // ==============================
-// 5) DELETE INITIATIVE
+// 5️⃣ DELETE HERO
 // ==============================
-export const deleteInitiative = createAsyncThunk(
-  "initiative/delete",
+export const deleteHero = createAsyncThunk(
+  "hero/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      return rejectWithValue("No token provided");
-    }
+    if (!token) return rejectWithValue("No token provided");
+
     try {
-      await api.delete(`/initiatives/${id}`, {
+      const res = await api.delete(`/heroes/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // 🔹 activity log
       dispatch(
         createActivityLogThunk({
           user_id,
-          message: "Initiative deleted",
-          link: `${import.meta.env.VITE_API_FRONT_URL}/initiative`,
-          section: "Initiative",
+          message: "Hero deleted",
+          link: `${import.meta.env.VITE_API_FRONT_URL}/heroes`,
+          section: "Hero",
           data: {
             action: "DELETE",
-            entity: "Initiative",
-            new_data: id,
+            entity: "Hero",
+            deleted_data: res.data.data,
           },
         }),
       );
+
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -149,88 +147,84 @@ export const deleteInitiative = createAsyncThunk(
 // ==============================
 // SLICE
 // ==============================
-const initiativeSlice = createSlice({
-  name: "initiative",
+const heroSlice = createSlice({
+  name: "hero",
   initialState: {
-    initiatives: [],
-    singleInitiative: null,
+    heroes: [],
+    singleHero: null,
     loading: false,
     error: null,
   },
-
   reducers: {},
-
   extraReducers: (builder) => {
     builder
       // CREATE
-      .addCase(createInitiative.pending, (state) => {
+      .addCase(createHero.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createInitiative.fulfilled, (state, action) => {
+      .addCase(createHero.fulfilled, (state, action) => {
         state.loading = false;
-        state.initiatives.unshift(action.payload);
+        state.heroes.unshift(action.payload);
       })
-      .addCase(createInitiative.rejected, (state, action) => {
+      .addCase(createHero.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       // GET ALL
-      .addCase(getAllInitiatives.pending, (state) => {
+      .addCase(getAllHeroes.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllInitiatives.fulfilled, (state, action) => {
+      .addCase(getAllHeroes.fulfilled, (state, action) => {
         state.loading = false;
-        state.initiatives = action.payload;
+        state.heroes = action.payload;
       })
-      .addCase(getAllInitiatives.rejected, (state, action) => {
+      .addCase(getAllHeroes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       // GET BY ID
-      .addCase(getInitiativeById.pending, (state) => {
+      .addCase(getHeroById.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getInitiativeById.fulfilled, (state, action) => {
+      .addCase(getHeroById.fulfilled, (state, action) => {
         state.loading = false;
-        state.singleInitiative = action.payload;
+        state.singleHero = action.payload;
       })
-      .addCase(getInitiativeById.rejected, (state, action) => {
+      .addCase(getHeroById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       // UPDATE
-      .addCase(updateInitiative.pending, (state) => {
+      .addCase(updateHero.pending, (state) => {
         state.loading = true;
       })
-      .addCase(updateInitiative.fulfilled, (state, action) => {
+      .addCase(updateHero.fulfilled, (state, action) => {
         state.loading = false;
-        state.initiatives = state.initiatives.map((i) =>
-          i._id === action.payload._id ? action.payload : i,
+        state.heroes = state.heroes.map((h) =>
+          h._id === action.payload._id ? action.payload : h,
         );
       })
-      .addCase(updateInitiative.rejected, (state, action) => {
+      .addCase(updateHero.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
       // DELETE
-      .addCase(deleteInitiative.pending, (state) => {
+      .addCase(deleteHero.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteInitiative.fulfilled, (state, action) => {
+      .addCase(deleteHero.fulfilled, (state, action) => {
         state.loading = false;
-        state.initiatives = state.initiatives.filter(
-          (i) => i._id !== action.payload,
-        );
+        state.heroes = state.heroes.filter((h) => h._id !== action.payload);
       })
-      .addCase(deleteInitiative.rejected, (state, action) => {
+      .addCase(deleteHero.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export default initiativeSlice.reducer;
+export default heroSlice.reducer;

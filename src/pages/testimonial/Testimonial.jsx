@@ -19,6 +19,8 @@ const Testimonial = () => {
     _id: null,
     name: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     desc: "",
     created_by: "",
     updated_by: "",
@@ -44,13 +46,23 @@ const Testimonial = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files && files[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
   const resetForm = () => {
     setFormData({
       _id: null,
       name: "",
       image: null,
+      imagePreview: "",
+      image_alt: "",
       desc: "",
       created_by: "",
       updated_by: "",
@@ -98,6 +110,7 @@ const Testimonial = () => {
     dataToSend.append("name", formData.name);
     dataToSend.append("status", formData.status);
     dataToSend.append("desc", formData.desc);
+    dataToSend.append("image_alt", formData.image_alt);
 
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
@@ -189,7 +202,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
 
           <form
             onSubmit={handleSubmit}
-            className={`grid grid-cols-1 md:grid-cols-3 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
+            className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
           >
             {/* NAME */}
             <div>
@@ -211,13 +224,40 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (Size: 219x224) <span className="text-red-500">*</span>
               </label>
               <input
                 key={formData._id || "new"}
                 type="file"
                 name="image"
                 onChange={handleChange}
+                disabled={isFormDisabled}
+                required={!isEdit}
+                accept="image/*"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              {/* {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )} */}
+            </div>
+
+            {/* IMAGE ALT */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                onChange={handleChange}
+                placeholder="Enter image alt"
                 disabled={isFormDisabled}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -241,7 +281,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* DESCRIPTION */}
-            <div className="md:col-span-3">
+            <div className="md:col-span-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description
               </label>
@@ -265,7 +305,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-3 flex justify-end gap-3">
+            <div className="md:col-span-4 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={handleCancel}
@@ -363,7 +403,9 @@ hover:after:w-full"
                                 setFormData({
                                   _id: item._id,
                                   name: item.name,
-                                  image: item.image,
+                                  image: null,
+                                  imagePreview: item.image,
+                                  image_alt: item.image_alt || "",
                                   desc: item.desc,
                                   created_by: item.created_by,
                                   updated_by: item.updated_by,

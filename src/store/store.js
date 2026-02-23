@@ -47,6 +47,8 @@ import collegeReducer from "../redux/slices/college/collegeSlice";
 import clientStatusReducer from "../redux/slices/ags/clientStatusSlice";
 import paymentsReducer from "../redux/slices/ags/agsPaymentSlice";
 import seoReducer from "../redux/slices/seo/seoSlice";
+import heroReducer from "../redux/slices/hero/heroSlice";
+import aboutReducer from "../redux/slices/about_us/aboutSlice";
 
 const store = configureStore({
   reducer: {
@@ -98,6 +100,9 @@ const store = configureStore({
     clientStatus: clientStatusReducer,
     payments: paymentsReducer,
     seo: seoReducer,
+    hero: heroReducer,
+    about: aboutReducer,
+    
   },
 });
 

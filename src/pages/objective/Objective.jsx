@@ -24,6 +24,8 @@ const Objective = () => {
     meta_keywords: "",
     meta_desc: "",
     desc: "",
+    image_alt: "",
+    logo_alt: "",
     created_by: "",
     updated_by: "",
     status: "Active",
@@ -75,6 +77,8 @@ const Objective = () => {
       meta_keywords: "",
       meta_desc: "",
       desc: "",
+      image_alt: "",
+      logo_alt: "",
       created_by: "",
       updated_by: "",
       status: "Active",
@@ -115,8 +119,8 @@ const Objective = () => {
       return;
     }
 
-    if (!isEdit && !formData.image) {
-      showError("Image is required.");
+    if (!isEdit && (!formData.image || !formData.logo)) {
+      showError("Image and Logo are required.");
       return;
     }
 
@@ -128,14 +132,18 @@ const Objective = () => {
     dataToSend.append("status", formData.status);
     dataToSend.append("meta_keywords", formData.meta_keywords);
     dataToSend.append("meta_desc", formData.meta_desc);
-    dataToSend.append("desc", formData.desc);
+    dataToSend.append("desc", formData?.desc);
 
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
     }
+    dataToSend;
     if (formData.logo instanceof File) {
       dataToSend.append("logo", formData.logo);
     }
+
+    dataToSend.append("image_alt", formData.image_alt);
+    dataToSend.append("logo_alt", formData.logo_alt);
 
     // const currentUserId = "66ec23d89309636c42738591";
     const currentUserId = authUser?.id || null;
@@ -229,7 +237,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Objective Title <span className="text-red-500">*</span>
+                Objective Title (H1) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -262,7 +270,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (size:1440x250)
               </label>
               <input
                 key={formData._id || "new"}
@@ -271,12 +279,30 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
+                required
               />
             </div>
+            {/* IMAGE ALT TEXT  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                onChange={handleChange}
+                placeholder="Enter image alt text"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+                required
+              />
+            </div>
+
             {/* LOGO */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Logo
+                Logo (size: 90x90)
               </label>
               <input
                 key={formData._id || "new"}
@@ -285,6 +311,22 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
+              />
+            </div>
+            {/* LOGO ALT TEXT  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Logo Alt
+              </label>
+              <input
+                type="text"
+                name="logo_alt"
+                value={formData.logo_alt}
+                onChange={handleChange}
+                placeholder="Enter logo alt text"
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+                required
               />
             </div>
 
@@ -327,6 +369,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               </label>
 
               <Editor
+                key={formData._id || "new-objective"}
                 value={formData.desc}
                 readOnly={isFormDisabled}
                 onTextChange={(e) => {
@@ -476,6 +519,8 @@ hover:after:w-full"
                                   meta_keywords: item.meta_keywords,
                                   meta_desc: item.meta_desc,
                                   desc: item.desc,
+                                  image_alt: item.image_alt,
+                                  logo_alt: item.logo_alt,
                                   created_by: item.created_by,
                                   updated_by: item.updated_by,
                                   status: item.status,
