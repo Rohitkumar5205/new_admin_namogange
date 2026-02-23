@@ -12,7 +12,7 @@ export const fetchObjectives = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 /* CREATE */
@@ -38,14 +38,19 @@ export const createObjectiveThunk = createAsyncThunk(
           message: "Objective created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/objective`,
           section: "Objective",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Objective",
+            new_data: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 /* UPDATE */
@@ -70,14 +75,19 @@ export const updateObjectiveThunk = createAsyncThunk(
           message: "Objective updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/objective`,
           section: "Objective",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Objective",
+            new_data: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 /* DELETE */
@@ -99,14 +109,19 @@ export const deleteObjectiveThunk = createAsyncThunk(
           message: "Objective deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/objective`,
           section: "Objective",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Objective",
+            deleted_data: id,
+          },
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message);
     }
-  }
+  },
 );
 
 const objectiveSlice = createSlice({
@@ -150,7 +165,7 @@ const objectiveSlice = createSlice({
       })
       .addCase(updateObjectiveThunk.fulfilled, (state, action) => {
         const index = state.data.findIndex(
-          (item) => item._id === action.payload._id
+          (item) => item._id === action.payload._id,
         );
         if (index !== -1) state.data[index] = action.payload;
       })

@@ -25,6 +25,11 @@ export const createTrustBody = createAsyncThunk(
           message: "Trust Body created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/trust-bodies`,
           section: "Trust Body",
+          data: {
+            action: "CREATE",
+            entity: "Trust Body",
+            new_data: res.data.data,
+          },
         })
       );
 
@@ -72,6 +77,11 @@ export const updateTrustBody = createAsyncThunk(
           message: "Trust Body updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/trust-bodies`,
           section: "Trust Body",
+          data: {
+            action: "UPDATE",
+            entity: "Trust Body",
+            new_data: res.data.data,
+          },
         })
       );
 
@@ -102,6 +112,11 @@ export const deleteTrustBody = createAsyncThunk(
           message: "Trust Body deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/trust-bodies`,
           section: "Trust Body",
+          data: {
+            action: "DELETE",
+            entity: "Trust Body",
+            deleted_data: id,
+          },
         })
       );
 
