@@ -41,7 +41,7 @@ export const createTestimonialThunk = createAsyncThunk(
           data: {
             action: "CREATE",
             entity: "Testimonial",
-            entity_id: res.data.data._id,
+            entity_id: res.data.data,
           },
         }),
       );

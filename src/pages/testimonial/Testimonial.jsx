@@ -236,7 +236,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 accept="image/*"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
-              {/* {formData.imagePreview && (
+              {formData.imagePreview && (
                 <div className="mt-2">
                   <img
                     src={formData.imagePreview}
@@ -244,7 +244,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     className="h-20 w-auto object-cover rounded border border-gray-300"
                   />
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* IMAGE ALT */}
@@ -373,7 +373,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
-                        alt="Testimonial"
+                        alt={item.image_alt || "Testimonial"}
                         className="h-10 w-10 object-cover rounded-full border border-gray-300"
                       />
                     </td>

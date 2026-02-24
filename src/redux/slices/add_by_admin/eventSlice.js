@@ -26,14 +26,19 @@ export const createEvent = createAsyncThunk(
           message: "Event created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
           section: "Event",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Event",
+            entity_id: res.data.data,
+          },
+        }),
       );
 
       return res.data.data; // ✅ VERY IMPORTANT
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +53,7 @@ export const getAllEvents = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +68,7 @@ export const getEventById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -89,14 +94,19 @@ export const updateEvent = createAsyncThunk(
           message: "Event updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
           section: "Event",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Event",
+            entity_id: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -121,14 +131,19 @@ export const deleteEvent = createAsyncThunk(
           message: "Event deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/events`,
           section: "Event",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Event",
+            entity_id: id,
+          },
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -188,7 +203,7 @@ const eventSlice = createSlice({
       .addCase(updateEvent.fulfilled, (state, action) => {
         state.loading = false;
         state.events = state.events.map((e) =>
-          e._id === action.payload._id ? action.payload : e
+          e._id === action.payload._id ? action.payload : e,
         );
       })
 

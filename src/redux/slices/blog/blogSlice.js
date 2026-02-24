@@ -23,13 +23,18 @@ export const createBlog = createAsyncThunk(
           message: "Blog created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
           section: "Blog",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Blog",
+            new_data: res.data.data,
+          },
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= GET ALL BLOGS ================= */
@@ -42,7 +47,7 @@ export const getAllBlogs = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= GET BLOG BY ID ================= */
@@ -55,7 +60,7 @@ export const getBlogById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= UPDATE BLOG ================= */
@@ -79,13 +84,18 @@ export const updateBlog = createAsyncThunk(
           message: "Blog updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
           section: "Blog",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Blog",
+            new_data: res.data.data,
+          },
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= DELETE BLOG ================= */
@@ -106,13 +116,18 @@ export const deleteBlog = createAsyncThunk(
           message: "Blog deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/blogs/blog-list`,
           section: "Blog",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Blog",
+            new_data: id,
+          },
+        }),
       );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= SLICE ================= */
@@ -182,7 +197,7 @@ const blogSlice = createSlice({
       .addCase(updateBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.blogs = state.blogs.map((b) =>
-          b._id === action.payload._id ? action.payload : b
+          b._id === action.payload._id ? action.payload : b,
         );
       })
       .addCase(updateBlog.rejected, (state, action) => {

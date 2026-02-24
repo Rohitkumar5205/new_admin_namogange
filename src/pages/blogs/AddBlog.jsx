@@ -25,6 +25,8 @@ const AddBlog = () => {
     category: "",
     author: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     content: "",
     status: "Active",
     meta_keyword: "",
@@ -45,7 +47,9 @@ const AddBlog = () => {
         title: blogToEdit.title || "",
         category: blogToEdit.category || "",
         author: blogToEdit.author || "",
-        image: blogToEdit.image || null,
+        image: null,
+        imagePreview: blogToEdit.image || "",
+        image_alt: blogToEdit.image_alt || "",
         content: blogToEdit.description || "",
         status: blogToEdit.status || "Active",
         meta_keyword: blogToEdit.meta_keyword || "",
@@ -56,7 +60,15 @@ const AddBlog = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files && files[0]) {
+      setFormData((prev) => ({
+        ...prev,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleEditorChange = (e) => {
@@ -73,6 +85,11 @@ const AddBlog = () => {
       return;
     }
 
+    if (!isEdit && !formData.image) {
+      showError("Please select an image.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     const dataToSend = new FormData();
@@ -84,6 +101,7 @@ const AddBlog = () => {
     dataToSend.append("user_id", authUser?.id);
     dataToSend.append("meta_keyword", formData.meta_keyword);
     dataToSend.append("meta_description", formData.meta_description);
+    dataToSend.append("image_alt", formData.image_alt);
 
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
@@ -181,6 +199,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   name="author"
                   value={formData.author}
                   onChange={handleChange}
+                  placeholder="Enter author"
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   required
                   disabled={isFormDisabled}
@@ -188,19 +207,45 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               </div>
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image
+                  Image (Size: 438*232) <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="file"
                   name="image"
                   onChange={handleChange}
+                  required={!isEdit}
+                  accept="image/*"
+                  className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                  disabled={isFormDisabled}
+                />
+                {/* {formData.imagePreview && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.imagePreview}
+                      alt="Preview"
+                      className="h-20 w-auto object-cover rounded border border-gray-300"
+                    />
+                  </div>
+                )} */}
+              </div>
+              
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image Alt
+                </label>
+                <input
+                  type="text"
+                  name="image_alt"
+                  value={formData.image_alt}
+                  placeholder="Enter image alt"
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   disabled={isFormDisabled}
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Status
@@ -231,7 +276,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   disabled={isFormDisabled}
                 />
               </div>
-              <div className="col-span-2">
+              <div className="col-span-1 ">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Meta Description
                 </label>

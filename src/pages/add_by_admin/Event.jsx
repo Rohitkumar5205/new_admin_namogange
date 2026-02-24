@@ -25,6 +25,8 @@ const Event = () => {
     HSN_code: "",
     link: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     description: "",
     status: "Active",
   });
@@ -65,6 +67,8 @@ const Event = () => {
       HSN_code: "",
       link: "",
       image: null,
+      imagePreview: "",
+      image_alt: "",
       description: "",
       status: "Active",
     });
@@ -93,6 +97,7 @@ const Event = () => {
     dataToSend.append("link", form.link);
     dataToSend.append("description", form.description);
     dataToSend.append("status", form.status);
+    dataToSend.append("image_alt", form.image_alt);
     if (form.image instanceof File) {
       dataToSend.append("image", form.image);
     }
@@ -343,12 +348,28 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (size: 641x641)
               </label>
               <input
                 key={form._id || "new"}
                 type="file"
                 name="image"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                key={form.image_alt}
+                type="text"
+                name="image_alt"
+                value={form.image_alt}
+                placeholder="Image Alt"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
