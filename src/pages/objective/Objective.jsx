@@ -20,7 +20,9 @@ const Objective = () => {
     title: "",
     slug: "",
     image: null,
+    imagePreview: "",
     logo: null,
+    logoPreview: "",
     meta_keywords: "",
     meta_desc: "",
     desc: "",
@@ -63,6 +65,12 @@ const Objective = () => {
         .replace(/[\s_-]+/g, "-")
         .replace(/^-+|-+$/g, "");
       setFormData((prev) => ({ ...prev, title: value, slug: slug }));
+    } else if (files) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+        [`${name}Preview`]: URL.createObjectURL(files[0]),
+      }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
     }
@@ -73,7 +81,9 @@ const Objective = () => {
       title: "",
       slug: "",
       image: null,
+      imagePreview: "",
       logo: null,
+      logoPreview: "",
       meta_keywords: "",
       meta_desc: "",
       desc: "",
@@ -137,7 +147,6 @@ const Objective = () => {
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
     }
-    dataToSend;
     if (formData.logo instanceof File) {
       dataToSend.append("logo", formData.logo);
     }
@@ -279,8 +288,16 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
-                required
               />
+              {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
             </div>
             {/* IMAGE ALT TEXT  */}
             <div>
@@ -312,6 +329,15 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {formData.logoPreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.logoPreview}
+                    alt="Logo Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
             </div>
             {/* LOGO ALT TEXT  */}
             <div>
@@ -476,14 +502,14 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">
                       <img
                         src={item.logo || "/placeholder.png"}
-                        alt="Objective Logo"
+                        alt={item.logo_alt || "Objective Logo"}
                         className="h-10 w-20 object-cover rounded border border-gray-300"
                       />
                     </td>
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
-                        alt="Objective"
+                        alt={item.image_alt || "Objective"}
                         className="h-10 w-20 object-cover rounded border border-gray-300"
                       />
                     </td>
@@ -515,12 +541,14 @@ hover:after:w-full"
                                   title: item.title,
                                   slug: item.slug,
                                   image: item.image,
+                                  imagePreview: item.image,
                                   logo: item.logo,
+                                  logoPreview: item.logo,
                                   meta_keywords: item.meta_keywords,
                                   meta_desc: item.meta_desc,
                                   desc: item.desc,
-                                  image_alt: item.image_alt,
-                                  logo_alt: item.logo_alt,
+                                  image_alt: item.image_alt || "",
+                                  logo_alt: item.logo_alt || "",
                                   created_by: item.created_by,
                                   updated_by: item.updated_by,
                                   status: item.status,
