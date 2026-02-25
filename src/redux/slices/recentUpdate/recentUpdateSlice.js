@@ -25,14 +25,19 @@ export const createRecentUpdate = createAsyncThunk(
           message: "Recent Update created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/recent-updates`,
           section: "Recent Update",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Recent Update",
+            entity_id: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -47,7 +52,7 @@ export const getAllRecentUpdates = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -73,14 +78,19 @@ export const updateRecentUpdate = createAsyncThunk(
           message: "Recent Update updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/recent-updates`,
           section: "Recent Update",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Recent Update",
+            new_data: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -106,14 +116,19 @@ export const deleteRecentUpdate = createAsyncThunk(
           message: "Recent Update deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/recent-updates`,
           section: "Recent Update",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Recent Update",
+            entity_id: id,
+          },
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -163,13 +178,15 @@ const recentUpdateSlice = createSlice({
       .addCase(updateRecentUpdate.fulfilled, (state, action) => {
         state.loading = false;
         state.recentUpdates = state.recentUpdates.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 
       /* DELETE */
       .addCase(deleteRecentUpdate.fulfilled, (state, action) => {
-        state.recentUpdates = state.recentUpdates.filter((item) => item._id !== action.payload);
+        state.recentUpdates = state.recentUpdates.filter(
+          (item) => item._id !== action.payload,
+        );
       });
   },
 });

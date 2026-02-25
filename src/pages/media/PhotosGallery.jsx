@@ -8,17 +8,8 @@ import {
 } from "../../redux/slices/mediaImageSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { getAllCategoryImages } from "../../redux/slices/add_by_admin/categoryImageSlice";
-import adminBanner from "../../assets/banners/bg.jpg";
 import useRoleRights from "../../hooks/useRoleRights";
 import { PageNames } from "../../utils/constants";
-
-const CATEGORY_OPTIONS = [
-  "Ann Sewa",
-  "NGO Farms",
-  "Moksha Sewa",
-  "Education",
-  "Health Care",
-];
 
 const PhotosGallery = () => {
   const dispatch = useDispatch();
@@ -36,6 +27,8 @@ const PhotosGallery = () => {
     orderBy: "",
     location: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     status: "Active",
   });
 
@@ -58,7 +51,15 @@ const PhotosGallery = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files && files[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: files ? files[0] : value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -72,6 +73,7 @@ const PhotosGallery = () => {
     dataToSend.append("orderBy", formData.orderBy);
     dataToSend.append("location", formData.location);
     dataToSend.append("status", formData.status);
+    dataToSend.append("image_alt", formData.image_alt);
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
     }
@@ -106,6 +108,8 @@ const PhotosGallery = () => {
       orderBy: "",
       location: "",
       image: null,
+      imagePreview: "",
+      image_alt: "",
       status: "Active",
     });
     setIsEdit(false);
@@ -134,15 +138,7 @@ const PhotosGallery = () => {
   return (
     <div className="">
       {/* ================= HEADER ================= */}
-      {/* <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Photos Gallery Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update photos gallery content including title, image, link and
-          status.
-        </p>
-      </div> */}
+
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
@@ -218,6 +214,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
+                required
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
               >
@@ -270,11 +267,42 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (size: 294x294) <span className="text-red-500">*</span>
               </label>
               <input
+                key={formData._id || "new"}
                 type="file"
                 name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
+                disabled={isFormDisabled}
+                required={!isEdit}
+              />
+              {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Image Alt  */}
+            <div>
+              <label
+                htmlFor="alt"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                placeholder="Enter image alt"
+                value={formData.image_alt}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
                 disabled={isFormDisabled}
@@ -299,7 +327,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-2 flex justify-end gap-3 mt-6">
+            <div className="md:col-span-1 flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 onClick={resetForm}
@@ -384,7 +412,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                       <img
                         src={item.image || "/placeholder.png"}
                         className="h-10 w-20 object-cover rounded border"
-                        alt="img"
+                        alt={item.image_alt || item.title}
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -414,7 +442,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                                   category: item.category,
                                   orderBy: item.orderBy,
                                   location: item.location,
-                                  image: item.image,
+                                  image: null,
+                                  imagePreview: item.image,
+                                  image_alt: item.image_alt || "",
                                   status: item.status,
                                 });
                                 setIsEdit(true);

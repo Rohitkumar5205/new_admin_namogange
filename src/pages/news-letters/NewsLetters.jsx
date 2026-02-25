@@ -20,7 +20,9 @@ const NewsLetters = () => {
     month_year: "",
     order_by: "",
     image: null,
+    imagePreview: "",
     pdf: null,
+    image_alt: "",
     status: "Active",
   });
 
@@ -47,7 +49,15 @@ const NewsLetters = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files && files[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: files ? files[0] : value });
+    }
   };
 
   const resetForm = () => {
@@ -57,7 +67,9 @@ const NewsLetters = () => {
       month_year: "",
       order_by: "",
       image: null,
+      imagePreview: "",
       pdf: null,
+      image_alt: "",
       status: "Active",
     });
     setIsEdit(false);
@@ -75,6 +87,7 @@ const NewsLetters = () => {
     data.append("monthYear", formData.month_year);
     data.append("order_by", formData.order_by);
     data.append("status", formData.status);
+    data.append("image_alt", formData.image_alt);
     if (formData.image instanceof File) {
       data.append("image", formData.image);
     }
@@ -90,10 +103,10 @@ const NewsLetters = () => {
     try {
       if (isEdit) {
         await dispatch(updateNewsLetter({ id: formData._id, data })).unwrap();
-        showSuccess("News Letters updated successfully ✅");
+        showSuccess("News Letters updated successfully ");
       } else {
         await dispatch(createNewsLetter(data)).unwrap();
-        showSuccess("News Letters added successfully ✅");
+        showSuccess("News Letters added successfully ");
       }
       dispatch(getAllNewsLetters());
       resetForm();
@@ -239,13 +252,40 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (size: 432x280) <span className="text-red-500">*</span>
               </label>
               <input
+                key={formData._id || "new"}
                 type="file"
                 name="image"
                 accept="image/*"
                 onChange={handleChange}
+                required={!isEdit}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+              />
+              {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Image Alt Text  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                onChange={handleChange}
+                placeholder="Enter image alt text"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -284,7 +324,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-2 flex justify-end gap-3 mt-6">
+            <div className="md:col-span-1 flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 onClick={resetForm}
@@ -310,8 +350,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 {loading || isSubmitting
                   ? "Processing..."
                   : isEdit
-                    ? "Update News Letters"
-                    : "Add News Letters"}{" "}
+                    ? "Update "
+                    : "Add "}{" "}
               </button>
             </div>
           </form>
@@ -361,7 +401,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
-                        alt="img"
+                        alt={item.image_alt || item.title}
                         className="w-20 h-10 object-cover rounded border"
                       />
                     </td>
@@ -406,8 +446,10 @@ hover:after:w-full"
                                   title: item.title,
                                   month_year: item.monthYear,
                                   order_by: item.order_by,
-                                  image: item.image,
+                                  image: null,
+                                  imagePreview: item.image,
                                   pdf: item.pdf,
+                                  image_alt: item.image_alt || "",
                                   status: item.status,
                                 });
                                 setIsEdit(true);

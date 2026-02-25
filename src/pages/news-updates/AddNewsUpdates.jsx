@@ -21,6 +21,8 @@ const AddNewsUpdates = () => {
     published_by: "",
     date: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     status: "Active",
     description: "",
   });
@@ -50,7 +52,9 @@ const AddNewsUpdates = () => {
         title: item.title || "",
         published_by: item.published_by || "",
         date: item.date ? new Date(item.date).toISOString().split("T")[0] : "",
-        image: null, // Keep null unless changed
+        image: null,
+        imagePreview: item.image || "",
+        image_alt: item.image_alt || "",
         status: location.state.status || "Active",
         description: location.state.description || "",
       });
@@ -59,7 +63,15 @@ const AddNewsUpdates = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({ ...formData, [name]: files ? files[0] : value });
+    if (name === "image" && files && files[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: files ? files[0] : value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -72,6 +84,7 @@ const AddNewsUpdates = () => {
     data.append("published_by", formData.published_by);
     data.append("date", formData.date);
     data.append("status", formData.status);
+    data.append("image_alt", formData.image_alt);
     data.append("description", formData.description || "");
     if (formData.image instanceof File) {
       data.append("image", formData.image);
@@ -197,12 +210,39 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image
+                Image (size: 432x180) <span className="text-red-500">*</span>
               </label>
               <input
+                key={formData._id || "new"}
                 type="file"
                 name="image"
                 onChange={handleChange}
+                accept="image/*"
+                required={!isEdit}
+                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+              />
+              {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
+            </div>
+            {/* Image Alt  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                onChange={handleChange}
+                placeholder="Enter image alt"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -257,6 +297,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     published_by: "",
                     date: "",
                     image: null,
+                    imagePreview: "",
+                    image_alt: "",
                     status: "Active",
                     description: "",
                   });

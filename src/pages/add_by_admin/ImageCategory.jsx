@@ -28,6 +28,8 @@ const ImageCategory = () => {
     category: "",
     order_by: "",
     image: null,
+    imagePreview: "",
+    image_alt: "",
     status: "Active",
   });
   const [isEdit, setIsEdit] = useState(false);
@@ -67,10 +69,15 @@ const ImageCategory = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    if (name === "image" && files && files[0]) {
+      setFormData({
+        ...formData,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const resetForm = () => {
@@ -80,6 +87,8 @@ const ImageCategory = () => {
       category: "",
       order_by: "",
       image: null,
+      imagePreview: "",
+      image_alt: "",
       status: "Active",
     });
     setIsEdit(false);
@@ -94,6 +103,7 @@ const ImageCategory = () => {
     dataToSend.append("category", formData.category);
     dataToSend.append("order_by", formData.order_by);
     dataToSend.append("status", formData.status);
+    dataToSend.append("image_alt", formData.image_alt);
     if (formData.image instanceof File) {
       dataToSend.append("image", formData.image);
     }
@@ -129,27 +139,17 @@ const ImageCategory = () => {
 
   const handleDelete = (id) => {
     const currentUserId = authUser?.id || null;
-    if (
-      window.confirm("Are you sure you want to delete this image category?")
-    ) {
-      dispatch(deleteCategoryImage({ id, user_id: currentUserId })).then(() => {
-        showSuccess("Image Category deleted successfully");
-        dispatch(getAllCategoryImages());
-      });
-    }
+
+    dispatch(deleteCategoryImage({ id, user_id: currentUserId })).then(() => {
+      showSuccess("Image Category deleted successfully");
+      dispatch(getAllCategoryImages());
+    });
   };
 
   return (
     <div className="">
       {/* ================= HEADER ================= */}
-      {/* <div className="bg-white rounded-md shadow-sm px-5 py-2 border border-gray-200">
-        <h2 className="text-lg font-medium text-gray-800">
-          Add Image Category Management
-        </h2>
-        <p className="text-sm text-gray-600 mt-1 max-w-3xl">
-          Add or update Image Category content.
-        </p>
-      </div> */}
+
       <div
         className="relative overflow-hidden shadow-sm border border-gray-200 h-25 
 bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
@@ -247,12 +247,42 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* IMAGE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image File
+                Image File (size: 318x224){" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
+                key={formData._id || "new"}
                 type="file"
                 name="image"
                 onChange={handleChange}
+                className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                disabled={isFormDisabled}
+                accept="image/*"
+                required={!isEdit}
+              />
+              {formData.imagePreview && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Image Alt  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image Alt <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="image_alt"
+                value={formData.image_alt}
+                onChange={handleChange}
+                placeholder="Enter image alt"
+                required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -276,7 +306,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* BUTTONS */}
-            <div className="md:col-span-1 flex justify-end gap-3 mt-6">
+            <div className="md:col-span-3 flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 onClick={resetForm}
@@ -349,7 +379,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">
                       <img
                         src={item.image || "/placeholder.png"}
-                        alt={item.title}
+                        alt={item.image_alt || item.title}
                         className="h-10 w-10 object-cover rounded-full border"
                       />
                     </td>
@@ -375,7 +405,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                                 title: item.title,
                                 category: item.category,
                                 order_by: item.order_by,
-                                image: item.image,
+                                image: null,
+                                imagePreview: item.image,
+                                image_alt: item.image_alt || "",
                                 status: item.status,
                               });
                               setIsEdit(true);
