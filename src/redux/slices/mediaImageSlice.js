@@ -26,13 +26,18 @@ export const createGallery = createAsyncThunk(
           message: "Gallery Image created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
           section: "Gallery Image",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Recent Update",
+            entity_id: res.data.data,
+          },
+        }),
       );
       return res.data.gallery;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -47,7 +52,7 @@ export const getAllGallery = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -62,7 +67,7 @@ export const getGalleryById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -89,13 +94,18 @@ export const updateGallery = createAsyncThunk(
           message: "Gallery Image updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
           section: "Gallery Image",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Recent Update",
+            entity_id: res.data.data,
+          },
+        }),
       );
       return res.data.gallery;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -119,13 +129,18 @@ export const deleteGallery = createAsyncThunk(
           message: "Gallery Image deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryImage`,
           section: "Gallery Image",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Recent Update",
+            entity_id: id,
+          },
+        }),
       );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================
@@ -190,7 +205,7 @@ const gallerySlice = createSlice({
       .addCase(updateGallery.fulfilled, (state, action) => {
         state.loading = false;
         state.gallery = state.gallery.map((g) =>
-          g._id === action.payload._id ? action.payload : g
+          g._id === action.payload._id ? action.payload : g,
         );
       })
       .addCase(updateGallery.rejected, (state, action) => {

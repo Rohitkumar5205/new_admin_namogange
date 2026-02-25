@@ -24,14 +24,19 @@ export const createNewsLetter = createAsyncThunk(
           message: "Newsletter created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/newsletters`,
           section: "Newsletter",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Newsletter",
+            entity_id: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -46,7 +51,7 @@ export const getAllNewsLetters = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -61,7 +66,7 @@ export const getNewsLetterById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -86,14 +91,19 @@ export const updateNewsLetter = createAsyncThunk(
           message: "Newsletter updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/newsletters`,
           section: "Newsletter",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Newsletter",
+            entity_id: res.data.data,
+          },
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -118,14 +128,19 @@ export const deleteNewsLetter = createAsyncThunk(
           message: "Newsletter deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/newsletters`,
           section: "Newsletter",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Newsletter",
+            entity_id: id,
+          },
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -181,14 +196,14 @@ const newsLetterSlice = createSlice({
       .addCase(updateNewsLetter.fulfilled, (state, action) => {
         state.loading = false;
         state.newsletters = state.newsletters.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 
       /* DELETE */
       .addCase(deleteNewsLetter.fulfilled, (state, action) => {
         state.newsletters = state.newsletters.filter(
-          (item) => item._id !== action.payload
+          (item) => item._id !== action.payload,
         );
       });
   },

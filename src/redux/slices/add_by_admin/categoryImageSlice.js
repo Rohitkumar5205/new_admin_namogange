@@ -17,13 +17,18 @@ export const createCategoryImage = createAsyncThunk(
           message: "Category Image created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
           section: "CategoryImage",
-        })
+          data: {
+            action: "CREATE",
+            entity: "Recent Update",
+            entity_id: res.data.categoryImage,
+          },
+        }),
       );
-      return res.data.categoryImage;
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const getAllCategoryImages = createAsyncThunk(
@@ -36,7 +41,7 @@ export const getAllCategoryImages = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const getCategoryImageById = createAsyncThunk(
@@ -49,7 +54,7 @@ export const getCategoryImageById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const updateCategoryImage = createAsyncThunk(
@@ -67,13 +72,18 @@ export const updateCategoryImage = createAsyncThunk(
           message: "Category Image updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
           section: "CategoryImage",
-        })
+          data: {
+            action: "UPDATE",
+            entity: "Recent Update",
+            entity_id: res.data.data,
+          },
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const deleteCategoryImage = createAsyncThunk(
@@ -89,13 +99,18 @@ export const deleteCategoryImage = createAsyncThunk(
           message: "Category Image deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/category-image`,
           section: "CategoryImage",
-        })
+          data: {
+            action: "DELETE",
+            entity: "Recent Update",
+            entity_id: id,
+          },
+        }),
       );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 const categoryImageSlice = createSlice({
@@ -157,7 +172,7 @@ const categoryImageSlice = createSlice({
       .addCase(updateCategoryImage.fulfilled, (state, action) => {
         state.loading = false;
         state.categoryImages = state.categoryImages.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
       .addCase(updateCategoryImage.rejected, (state, action) => {
@@ -172,7 +187,7 @@ const categoryImageSlice = createSlice({
       .addCase(deleteCategoryImage.fulfilled, (state, action) => {
         state.loading = false;
         state.categoryImages = state.categoryImages.filter(
-          (item) => item._id !== action.payload
+          (item) => item._id !== action.payload,
         );
       })
       .addCase(deleteCategoryImage.rejected, (state, action) => {
