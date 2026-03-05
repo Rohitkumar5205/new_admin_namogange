@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Editor } from "primereact/editor";
+import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTestimonials,
@@ -94,7 +94,11 @@ const Testimonial = () => {
       return;
     }
 
-    if (!formData.desc || formData.desc === "<p><br></p>") {
+    if (
+      !formData.desc ||
+      formData.desc === "<p><br></p>" ||
+      formData.desc === "<p></p>"
+    ) {
       showError("Description is required.");
       return;
     }
@@ -286,21 +290,12 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Description
               </label>
 
-              <Editor
+              <TiptapEditor
                 value={formData.desc}
-                onTextChange={(e) => {
-                  if (e.source === "user") {
-                    setFormData((prev) => ({ ...prev, desc: e.htmlValue }));
-                  }
-                }}
-                style={{
-                  height: "180px",
-                  borderRadius: "4px", // rounded
-                  borderBottom: "1px solid #e5e7eb", // border-gray-200
-                  overflow: "hidden", // corners properly clip ho
-                }}
-                readOnly={isFormDisabled}
-                className={`w-full text-sm outline-none ${isFormDisabled ? "opacity-60 pointer-events-none" : ""}`}
+                onChange={(html) =>
+                  setFormData((prev) => ({ ...prev, desc: html }))
+                }
+                isReadOnly={isFormDisabled}
               />
             </div>
 

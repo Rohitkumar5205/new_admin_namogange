@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Editor } from "primereact/editor";
+import TiptapEditor from "../../components/TiptapEditor";
 import { createBlog, updateBlog } from "../../redux/slices/blog/blogSlice";
 import { showSuccess, showError } from "../../utils/toastService";
 import { getAllCategories } from "../../redux/slices/add_by_admin/categorySlice";
@@ -68,12 +68,6 @@ const AddBlog = () => {
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleEditorChange = (e) => {
-    if (e.source === "user") {
-      setFormData((prev) => ({ ...prev, content: e.htmlValue }));
     }
   };
 
@@ -228,7 +222,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   </div>
                 )} */}
               </div>
-              
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -296,12 +289,12 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Content <span className="text-red-500">*</span>
               </label>
-              <Editor
+              <TiptapEditor
                 value={formData.content}
-                onTextChange={handleEditorChange}
-                style={{ height: "160px" }}
-                className="w-full text-sm outline-none"
-                readOnly={isFormDisabled}
+                onChange={(html) =>
+                  setFormData((prev) => ({ ...prev, content: html }))
+                }
+                isReadOnly={isFormDisabled}
               />
             </div>
 

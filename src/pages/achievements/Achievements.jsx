@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Editor } from "primereact/editor";
+import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import adminBanner from "../../assets/banners/bg.jpg";
 import {
@@ -93,15 +93,11 @@ const Achievements = () => {
   };
 
   const handleDelete = (id) => {
-
-      const currentUserId = authUser?.id || null;
-      dispatch(deleteAchievement({ id: id, user_id: currentUserId })).then(
-        () => {
-          showSuccess("Achievement deleted successfully");
-          dispatch(getAllAchievements());
-        },
-      );
-    
+    const currentUserId = authUser?.id || null;
+    dispatch(deleteAchievement({ id: id, user_id: currentUserId })).then(() => {
+      showSuccess("Achievement deleted successfully");
+      dispatch(getAllAchievements());
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -356,14 +352,12 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description
               </label>
-              <Editor
+              <TiptapEditor
                 value={formData.desc}
-                onTextChange={(e) =>
-                  setFormData((prev) => ({ ...prev, desc: e.htmlValue }))
+                onChange={(html) =>
+                  setFormData((prev) => ({ ...prev, desc: html }))
                 }
-                style={{ height: "160px" }}
-                readOnly={isFormDisabled}
-                className="w-full text-sm outline-none"
+                isReadOnly={isFormDisabled}
               />
             </div>
 

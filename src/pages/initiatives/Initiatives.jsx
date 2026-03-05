@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Editor } from "primereact/editor";
+import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createInitiative,
@@ -377,21 +377,12 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Description
               </label>
 
-              <Editor
+              <TiptapEditor
                 value={formData.desc}
-                onTextChange={(e) => {
-                  if (e.source === "user") {
-                    setFormData((prev) => ({ ...prev, desc: e.htmlValue }));
-                  }
-                }}
-                style={{
-                  height: "120px",
-                  borderRadius: "4px", // rounded
-                  borderBottom: "1px solid #e5e7eb", // border-gray-200
-                  overflow: "hidden", // corners properly clip ho
-                }}
-                className="w-full text-sm outline-none"
-                readOnly={isFormDisabled}
+                onChange={(html) =>
+                  setFormData((prev) => ({ ...prev, desc: html }))
+                }
+                isReadOnly={isFormDisabled}
               />
             </div>
             {/* STATUS */}
