@@ -320,6 +320,16 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* ACTION BUTTONS */}
             <div className="md:col-span-3 flex justify-end gap-5 mt-6">
               <button
+                type="button"
+                onClick={resetForm}
+                disabled={isSubmitting || isFormDisabled}
+                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Cancel
+              </button>
+              <button
                 type="submit"
                 disabled={isSubmitting || isFormDisabled}
                 className={`px-6 py-1 text-sm rounded text-white ${
@@ -333,17 +343,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   : isEdit
                     ? "Update"
                     : "Add"}{" "}
-              </button>
-
-              <button
-                type="button"
-                onClick={resetForm}
-                disabled={isSubmitting || isFormDisabled}
-                className={`px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                Cancel
               </button>
             </div>
           </form>

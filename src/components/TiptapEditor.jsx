@@ -275,19 +275,19 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
             <path d="M18.4 10.6C16.55 9 14.15 8 11.5 8 6.85 8 2.92 11.03 1.5 15.5l2.37.78C4.95 13.31 7.96 11 11.5 11c1.96 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z" />
           </svg>
         </button>
-      </div>    
+      </div>
 
       {/* Editor Area */}
       <div className="p-4 h-[210px] overflow-y-auto prose max-w-none">
         <style>{`
             .ProseMirror { min-height: 210px; outline: none; }
             .ProseMirror h1 { font-size: 2.5em; margin: 0.5em 0; font-weight: bold; }
-            .ProseMirror h2 { font-size: 2em; margin: 0.5em 0; font-weight: bold; }
-            .ProseMirror h3 { font-size: 1.75em; margin: 0.5em 0; font-weight: bold; }
-            .ProseMirror h4 { font-size: 1.5em; margin: 0.5em 0; font-weight: bold; }
-            .ProseMirror h5 { font-size: 1.25em; margin: 0.5em 0; font-weight: bold; }
+            .ProseMirror h2 { font-size: 2em; margin: 0.5em 0; font-weight: medium; }
+            .ProseMirror h3 { font-size: 1.75em; margin: 0.5em 0; font-weight: medium; }
+            .ProseMirror h4 { font-size: 1.5em; margin: 0.5em 0; font-weight: medium; }
+            .ProseMirror h5 { font-size: 1.25em; margin: 0.5em 0; font-weight: medium; }
             .ProseMirror h6 { font-size: 1em; margin: 0.5em 0; font-weight: bold; }
-            .ProseMirror p { font-size: 1em; margin: 0.5em 0; }
+            .ProseMirror p { font-size: 15px; margin: 0.5em 0; }
             .ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
             .ProseMirror blockquote { border-left: 4px solid #e5e7eb; padding-left: 1em; margin: 1em 0; }
             .ProseMirror a { color: #2563eb; text-decoration: underline; cursor: pointer; }
