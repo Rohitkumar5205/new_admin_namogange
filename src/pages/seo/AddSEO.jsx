@@ -18,18 +18,20 @@ const AddSEO = () => {
     page_name: "",
     page_path: "",
     h1tag: "",
-    page_banner: "",
+    page_banner: null,
+    page_banner_preview: "",
     metaTitle: "",
     metaKeywords: "",
     metaDescription: "",
-    open_h1: "",
-    open_graph: "",
+    banner_alt: "",
+    open_graph: null,
+    open_graph_preview: "",
     openGraphTags: "",
     schemaMarkup: "",
     status: "Active",
   });
 
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(localStorage.getItem("user") || "{}");
   const currentUserId = authUser?._id || authUser?.id || null;
   const currentUserName = authUser?.username || "";
 
@@ -40,12 +42,14 @@ const AddSEO = () => {
         page_name: state.page_name || "",
         page_path: state.page_path || "",
         h1tag: state.h1tag || "",
-        page_banner: state.page_banner || "",
+        page_banner: null,
+        page_banner_preview: state.page_banner || "",
         metaTitle: state.metaTitle || "",
         metaKeywords: state.metaKeywords || "",
         metaDescription: state.metaDescription || "",
-        open_h1: state.open_h1 || "",
-        open_graph: state.open_graph || "",
+        banner_alt: state.banner_alt || "",
+        open_graph: null,
+        open_graph_preview: state.open_graph || "",
         openGraphTags: state.openGraphTags || "",
         schemaMarkup: state.schemaMarkup || "",
         status: state.status || "Active",
@@ -62,7 +66,11 @@ const AddSEO = () => {
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     if (files && files[0]) {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+        [`${name}_preview`]: URL.createObjectURL(files[0]),
+      }));
     }
   };
 
@@ -100,18 +108,18 @@ const AddSEO = () => {
         showError("H1 Tag is required.");
         return false;
       }
-      if (!formData.page_banner) {
+      if (!isEdit && !formData.page_banner) {
         showError("Page banner is required.");
         return false;
       }
     }
 
-    if (!formData.open_h1.trim()) {
-      showError("Open Graph H1 is required.");
+    if (!formData.banner_alt.trim()) {
+      showError("Banner Img Alt is required.");
       return false;
     }
 
-    if (!formData.open_graph) {
+    if (!isEdit && !formData.open_graph) {
       showError("Open Graph image is required.");
       return false;
     }
@@ -132,30 +140,25 @@ const AddSEO = () => {
     return true;
   };
 
-  // FILE: src/pages/seo/AddSEO.jsx
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // ✅ FIX 1: FormData use karo files ke liye
     const submitData = new FormData();
 
-    // ✅ Append all text fields
     submitData.append("page_name", formData.page_name);
     submitData.append("page_path", formData.page_path);
     submitData.append("h1tag", formData.h1tag || "");
     submitData.append("metaTitle", formData.metaTitle);
     submitData.append("metaKeywords", formData.metaKeywords);
     submitData.append("metaDescription", formData.metaDescription);
-    submitData.append("open_h1", formData.open_h1);
+    submitData.append("banner_alt", formData.banner_alt);
     submitData.append("openGraphTags", formData.openGraphTags);
     submitData.append("schemaMarkup", formData.schemaMarkup);
     submitData.append("status", formData.status);
     submitData.append("user_id", currentUserId);
     submitData.append("user_name", currentUserName);
 
-    // ✅ Append files if they exist
     if (formData.page_banner && formData.page_banner instanceof File) {
       submitData.append("page_banner", formData.page_banner);
     }
@@ -234,6 +237,7 @@ const AddSEO = () => {
                   }}
                   className={inputClass}
                   required
+                  disabled={isEdit}
                 >
                   <option value="">Select Page</option>
                   {PAGES_LIST.map((p) => (
@@ -270,14 +274,17 @@ const AddSEO = () => {
                       name="page_banner"
                       onChange={handleFileChange}
                       className={inputClass}
-                      required={!showHomeFields}
+                      required={!isEdit && !showHomeFields}
                     />
-                    {formData.page_banner &&
-                      typeof formData.page_banner === "string" && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Current: {formData.page_banner}
-                        </p>
-                      )}
+                    {formData.page_banner_preview && (
+                      <div className="mt-2">
+                        <img
+                          src={formData.page_banner_preview}
+                          alt="Banner Preview"
+                          className="h-16 w-auto rounded border"
+                        />
+                      </div>
+                    )}
                   </div>
                 </>
               )}
@@ -285,6 +292,20 @@ const AddSEO = () => {
 
             {/* Row 2: Meta Fields */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Banner Img Alt <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="banner_alt"
+                  value={formData.banner_alt}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="Enter Banner Img Alt"
+                  required
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Meta Title <span className="text-red-500">*</span>
@@ -321,21 +342,6 @@ const AddSEO = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Open Graph H1 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="open_h1"
-                  value={formData.open_h1}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Enter Open Graph H1"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Status <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -362,14 +368,17 @@ const AddSEO = () => {
                   name="open_graph"
                   onChange={handleFileChange}
                   className={inputClass}
-                  required
+                  required={!isEdit}
                 />
-                {formData.open_graph &&
-                  typeof formData.open_graph === "string" && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Current: {formData.open_graph}
-                    </p>
-                  )}
+                {formData.open_graph_preview && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.open_graph_preview}
+                      alt="Open Graph Preview"
+                      className="h-16 w-auto rounded border"
+                    />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -392,7 +401,7 @@ const AddSEO = () => {
             </div>
 
             {/* Row 4: Open Graph Tags Editor */}
-            <div className="col-span-3">
+            <div>
               <label className="block text-sm font-bold text-gray-700 p-3 bg-gray-50 border-b">
                 Open Graph Tags <span className="text-red-500">*</span>
               </label>
@@ -405,7 +414,7 @@ const AddSEO = () => {
             </div>
 
             {/* Row 5: Schema Markup Editor */}
-            <div className="col-span-3">
+            <div>
               <label className="block text-sm font-bold text-gray-700 p-3 bg-gray-50 border-b">
                 Schema Markup <span className="text-red-500">*</span>
               </label>
@@ -430,7 +439,9 @@ const AddSEO = () => {
                 type="submit"
                 disabled={loading}
                 className={`px-6 py-1 rounded text-white text-sm flex items-center gap-2 transition ${
-                  loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 {loading && (

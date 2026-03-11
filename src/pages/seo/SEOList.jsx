@@ -175,6 +175,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Page Name</th>
                 <th className="px-4 py-3 font-medium">Meta Title</th>
+                <th className="px-4 py-3 font-medium">Banner </th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 {(canWrite || canDelete) && (
                   <th className="px-4 py-3 font-medium">Action</th>
@@ -198,6 +199,13 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     <td className="px-4 py-3">{startIndex + index + 1}.</td>
                     <td className="px-4 py-3 font-medium">{item.page_name}</td>
                     <td className="px-4 py-3">{item.metaTitle}</td>
+                    <td className="px-4 py-3">
+                      <img
+                        src={item?.page_banner || "/placeholder.png"}
+                        alt={item?.image_alt || "Objective"}
+                        className="h-10 w-20 object-cover rounded border border-gray-300"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-3 py-1 text-xs rounded-full font-medium
