@@ -19,7 +19,7 @@ export const fetchAbouts = createAsyncThunk(
 export const createAboutThunk = createAsyncThunk(
   "about/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -56,7 +56,7 @@ export const createAboutThunk = createAsyncThunk(
 export const updateAboutThunk = createAsyncThunk(
   "about/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -92,7 +92,7 @@ export const updateAboutThunk = createAsyncThunk(
 export const deleteAboutThunk = createAsyncThunk(
   "about/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {

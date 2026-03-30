@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createSource = createAsyncThunk(
   "source/create",
   async (data, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createSource = createAsyncThunk(
           message: "Source created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
           section: "Source",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllSources = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getSourceById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getSourceById = createAsyncThunk(
 export const updateSource = createAsyncThunk(
   "source/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateSource = createAsyncThunk(
           message: "Source updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
           section: "Source",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateSource = createAsyncThunk(
 export const deleteSource = createAsyncThunk(
   "source/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -119,14 +119,14 @@ export const deleteSource = createAsyncThunk(
           message: "Source deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/sources`,
           section: "Source",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -178,16 +178,14 @@ const sourceSlice = createSlice({
       .addCase(updateSource.fulfilled, (state, action) => {
         state.loading = false;
         state.sources = state.sources.map((s) =>
-          s._id === action.payload._id ? action.payload : s
+          s._id === action.payload._id ? action.payload : s,
         );
       })
 
       /* DELETE */
       .addCase(deleteSource.fulfilled, (state, action) => {
         state.loading = false;
-        state.sources = state.sources.filter(
-          (s) => s._id !== action.payload
-        );
+        state.sources = state.sources.filter((s) => s._id !== action.payload);
       });
   },
 });

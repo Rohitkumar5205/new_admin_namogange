@@ -25,7 +25,7 @@ const Profession = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     dispatch(getAllProfessions());

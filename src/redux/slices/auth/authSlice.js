@@ -18,14 +18,14 @@ export const loginWithPasswordThunk = createAsyncThunk(
           message: "Login successful, OTP sent",
           link: `${import.meta.env.VITE_API_FRONT_URL}/login`,
           section: "Authentication",
-        })
+        }),
       );
 
       return res.data; // { success, message, user_id, username }
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Login failed");
     }
-  }
+  },
 );
 
 // ==============================
@@ -39,10 +39,10 @@ export const resendOtpThunk = createAsyncThunk(
       return res.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Resend OTP failed"
+        err.response?.data?.message || "Resend OTP failed",
       );
     }
-  }
+  },
 );
 
 // ==============================
@@ -55,8 +55,8 @@ export const verifyOtpThunk = createAsyncThunk(
       const res = await api.post("/auth/verify-otp", data);
 
       // 🔹 save token
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
       // 🔹 activity log
       dispatch(
@@ -65,16 +65,16 @@ export const verifyOtpThunk = createAsyncThunk(
           message: "OTP verified & user logged in",
           link: `${import.meta.env.VITE_API_FRONT_URL}/dashboard`,
           section: "Authentication",
-        })
+        }),
       );
 
       return res.data; // { token, user }
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "OTP verification failed"
+        err.response?.data?.message || "OTP verification failed",
       );
     }
-  }
+  },
 );
 
 // ==============================
@@ -83,18 +83,18 @@ export const verifyOtpThunk = createAsyncThunk(
 export const logoutThunk = createAsyncThunk(
   "auth/logout",
   async (_, { dispatch }) => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
     dispatch(
       createActivityLogThunk({
         message: "User logged out",
         section: "Authentication",
-      })
+      }),
     );
 
     return true;
-  }
+  },
 );
 
 // ==============================
@@ -110,9 +110,9 @@ const authSlice = createSlice({
     userIdForOtp: null,
     usernameForOtp: null,
 
-    token: localStorage.getItem("token") || null,
-    user: JSON.parse(localStorage.getItem("user")) || null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    token: sessionStorage.getItem("token") || null,
+    user: JSON.parse(sessionStorage.getItem("user")) || null,
+    isAuthenticated: !!sessionStorage.getItem("token"),
   },
 
   reducers: {

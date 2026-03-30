@@ -14,7 +14,7 @@ const TrustBodiesList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { list, loading } = useSelector((state) => state.trustBody || {});
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const { canWrite, canDelete } = useRoleRights(PageNames.TRUST_BODIES_LIST);
   const { canRead: canAdd } = useRoleRights(PageNames.ADD_TRUST_BODIES);

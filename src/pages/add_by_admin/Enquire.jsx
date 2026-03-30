@@ -14,7 +14,7 @@ import { PageNames } from "../../utils/constants";
 const Enquire = () => {
   const dispatch = useDispatch();
   const { enquiries, loading } = useSelector((state) => state.enquiry);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     _id: null,

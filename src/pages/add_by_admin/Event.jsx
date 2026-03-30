@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import { showSuccess, showError } from "../../utils/toastService";
@@ -32,10 +32,11 @@ const Event = () => {
 
   const [isEdit, setIsEdit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { events, loading } = useSelector((state) => state.event);
   console.log("EVENTS..", events);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     dispatch(getAllEvents());
@@ -52,7 +53,25 @@ const Event = () => {
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm({ ...form, [name]: files ? files[0] : value });
+    if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Input UI clear karne ke liye
+        setForm({ ...form, image: null, imagePreview: "" });
+        return;
+      }
+
+      setForm({
+        ...form,
+        image: file,
+        imagePreview: URL.createObjectURL(file),
+      });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
   const resetForm = () => {
     setForm({
@@ -72,6 +91,9 @@ const Event = () => {
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleCancel = () => {
@@ -218,6 +240,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 value={form.start_date}
                 onChange={handleChange}
                 required
+                min={new Date().toISOString().split("T")[0]}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -233,6 +256,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 value={form.end_date}
                 onChange={handleChange}
                 required
+                min={form.start_date || new Date().toISOString().split("T")[0]}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
@@ -350,13 +374,24 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (size: 641x641)
               </label>
               <input
-                key={form._id || "new"}
+                ref={fileInputRef}
                 type="file"
                 name="image"
+                accept="image/*"
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
+              {/* Image Preview Section */}
+              {form.imagePreview && (
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                  <img
+                    src={form.imagePreview}
+                    alt="Preview"
+                    className="h-24 w-auto object-cover rounded"
+                  />
+                </div>
+              )}
             </div>
 
             <div>
@@ -364,7 +399,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image Alt
               </label>
               <input
-                key={form.image_alt}
                 type="text"
                 name="image_alt"
                 value={form.image_alt}
@@ -512,6 +546,8 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                                 end_date: item.end_date
                                   ? item.end_date.split("T")[0]
                                   : "",
+                                image: null,
+                                imagePreview: item.image,
                               });
                               setIsEdit(true);
                               window.scrollTo({ top: 0, behavior: "smooth" });

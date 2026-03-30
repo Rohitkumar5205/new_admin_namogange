@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createStatusOption = createAsyncThunk(
   "statusOption/create",
   async (data, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createStatusOption = createAsyncThunk(
           message: "Status option created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
           section: "Status Option",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllStatusOptions = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getStatusOptionById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getStatusOptionById = createAsyncThunk(
 export const updateStatusOption = createAsyncThunk(
   "statusOption/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateStatusOption = createAsyncThunk(
           message: "Status option updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
           section: "Status Option",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateStatusOption = createAsyncThunk(
 export const deleteStatusOption = createAsyncThunk(
   "statusOption/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,14 +121,14 @@ export const deleteStatusOption = createAsyncThunk(
           message: "Status option deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/status-option`,
           section: "Status Option",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -179,14 +179,14 @@ const statusOptionSlice = createSlice({
       /* UPDATE */
       .addCase(updateStatusOption.fulfilled, (state, action) => {
         state.statusOptions = state.statusOptions.map((s) =>
-          s._id === action.payload._id ? action.payload : s
+          s._id === action.payload._id ? action.payload : s,
         );
       })
 
       /* DELETE */
       .addCase(deleteStatusOption.fulfilled, (state, action) => {
         state.statusOptions = state.statusOptions.filter(
-          (s) => s._id !== action.payload
+          (s) => s._id !== action.payload,
         );
       });
   },

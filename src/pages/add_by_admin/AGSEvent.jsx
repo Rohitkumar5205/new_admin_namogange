@@ -33,7 +33,7 @@ const AGSEvent = () => {
 
   const { agsEvents, loading } = useSelector((state) => state.agsEvent);
   // console.log("AGS EVENTS..", agsEvents);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     dispatch(getAllAGSEvents());

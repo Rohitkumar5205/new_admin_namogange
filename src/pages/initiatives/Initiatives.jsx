@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,8 +23,6 @@ const Initiatives = () => {
     image: null,
     imagePreview: "",
     image_alt: "",
-    meta_keywords: "",
-    meta_desc: "",
     desc: "",
     created_by: "",
     updated_by: "",
@@ -33,7 +31,8 @@ const Initiatives = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const fileInputRef = useRef(null);
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   // redux logic
   const { initiatives, loading } = useSelector((state) => state.initiative);
@@ -75,6 +74,15 @@ const Initiatives = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input
+        setFormData((prev) => ({ ...prev, image: null, imagePreview: "" }));
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
         image: files[0],
@@ -100,10 +108,9 @@ const Initiatives = () => {
       link: "",
       slug: "",
       image: null,
-      imagePreview: "",
+      imagePreview: "", // Clear image preview
       image_alt: "",
-      meta_keywords: "",
-      meta_desc: "",
+
       desc: "",
       created_by: "",
       updated_by: "",
@@ -111,6 +118,9 @@ const Initiatives = () => {
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleCancel = () => {
@@ -146,8 +156,7 @@ const Initiatives = () => {
     dataToSend.append("link", formData.link);
     dataToSend.append("image_alt", formData.image_alt);
     dataToSend.append("status", formData.status);
-    dataToSend.append("meta_keywords", formData.meta_keywords);
-    dataToSend.append("meta_desc", formData.meta_desc);
+
     dataToSend.append("desc", formData.desc);
     dataToSend.append("objective_catagory", formData.objectiveCategory);
     console.log("formData", formData);
@@ -299,7 +308,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (Size: 120x120) <span className="text-red-500">*</span>
               </label>
               <input
-                key={formData._id || "new"}
+                ref={fileInputRef}
                 type="file"
                 name="image"
                 onChange={handleChange}
@@ -308,6 +317,16 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 accept="image/*"
                 required={!isEdit}
               />
+              {/* Image Preview Section */}
+              {formData.imagePreview && (
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    className="h-24 w-auto object-cover rounded"
+                  />
+                </div>
+              )}
             </div>
             {/* IMAGE Alt Text*/}
             <div>
@@ -315,7 +334,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image Alt
               </label>
               <input
-                key={formData._id || "new"}
                 type="text"
                 name="image_alt"
                 value={formData.image_alt}
@@ -344,37 +362,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   </option>
                 ))}
               </select>
-            </div>
-
-            {/* META KEYWORD */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Keyword
-              </label>
-              <input
-                type="text"
-                name="meta_keywords"
-                value={formData.meta_keywords}
-                onChange={handleChange}
-                placeholder="Enter meta keywords"
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                disabled={isFormDisabled}
-              />
-            </div>
-            {/* META DESCRIPTION */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Description
-              </label>
-              <textarea
-                name="meta_desc"
-                value={formData.meta_desc}
-                onChange={handleChange}
-                placeholder="Enter meta description"
-                rows={1}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                disabled={isFormDisabled}
-              />
             </div>
 
             {/* Desc  */}
@@ -530,8 +517,7 @@ hover:after:w-full"
                                   image: null,
                                   imagePreview: item.image,
                                   image_alt: item.image_alt,
-                                  meta_keywords: item.meta_keywords,
-                                  meta_desc: item.meta_desc,
+
                                   desc: item.desc,
                                   objectiveCategory: item.objective_catagory,
                                   status: item.status,

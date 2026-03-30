@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createCoordinatorStatus = createAsyncThunk(
   "coordinatorStatus/create",
   async (payload, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createCoordinatorStatus = createAsyncThunk(
           message: "Coordinator Status created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/coordinator-status`,
           section: "Coordinator Status",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllCoordinatorStatus = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -57,7 +57,7 @@ export const getAllCoordinatorStatus = createAsyncThunk(
 // export const updateCoordinatorStatus = createAsyncThunk(
 //   "coordinatorStatus/update",
 //   async ({ id, payload }, { dispatch, rejectWithValue }) => {
-//     const token = localStorage.getItem("token");
+//     const token = sessionStorage.getItem("token");
 //     if (!token) return rejectWithValue("No token provided");
 
 //     try {
@@ -86,7 +86,7 @@ export const getAllCoordinatorStatus = createAsyncThunk(
 export const updateCoordinatorStatus = createAsyncThunk(
   "coordinatorStatus/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -103,14 +103,14 @@ export const updateCoordinatorStatus = createAsyncThunk(
           message: "Coordinator Status updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/coordinator-status`,
           section: "Coordinator Status",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -119,7 +119,7 @@ export const updateCoordinatorStatus = createAsyncThunk(
 export const deleteCoordinatorStatus = createAsyncThunk(
   "coordinatorStatus/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -135,14 +135,14 @@ export const deleteCoordinatorStatus = createAsyncThunk(
           message: "Coordinator Status deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/coordinator-status`,
           section: "Coordinator Status",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -187,7 +187,7 @@ const coordinatorStatusSlice = createSlice({
       /* UPDATE */
       .addCase(updateCoordinatorStatus.fulfilled, (state, action) => {
         state.list = state.list.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 

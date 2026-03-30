@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createCategoryImage,
@@ -19,7 +19,8 @@ const ImageCategory = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const categoryOptions = useSelector((state) => state.category.categories);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const fileInputRef = useRef(null);
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
@@ -38,6 +39,15 @@ const ImageCategory = () => {
     dispatch(getAllCategoryImages());
     dispatch(getAllCategories());
   }, [dispatch]);
+
+  // Effect to revoke object URL when imagePreview changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (formData.imagePreview && formData.imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(formData.imagePreview);
+      }
+    };
+  }, [formData.imagePreview]);
 
   const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
     PageNames.IMAGE_CATEGORY,
@@ -70,10 +80,20 @@ const ImageCategory = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files && files[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input UI
+        setFormData({ ...formData, image: null, imagePreview: "" });
+        return;
+      }
+
       setFormData({
         ...formData,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]),
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -92,6 +112,9 @@ const ImageCategory = () => {
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -251,7 +274,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 <span className="text-red-500">*</span>
               </label>
               <input
-                key={formData._id || "new"}
+                ref={fileInputRef}
                 type="file"
                 name="image"
                 onChange={handleChange}
@@ -261,11 +284,11 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 required={!isEdit}
               />
               {formData.imagePreview && (
-                <div className="mt-2">
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                   <img
                     src={formData.imagePreview}
                     alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                    className="h-24 w-auto object-cover rounded"
                   />
                 </div>
               )}

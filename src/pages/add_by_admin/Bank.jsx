@@ -14,7 +14,7 @@ import { PageNames } from "../../utils/constants";
 const Bank = () => {
   const dispatch = useDispatch();
   const { banks, loading } = useSelector((state) => state.bank);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const [formData, setFormData] = useState({
     _id: null,
     bank_name: "",

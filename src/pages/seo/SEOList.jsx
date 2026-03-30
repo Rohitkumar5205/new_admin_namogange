@@ -11,7 +11,7 @@ const SEOList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { seoList, loading, error } = useSelector((state) => state.seo || {});
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const currentUserId = authUser?._id || authUser?.id;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,8 +32,8 @@ const SEOList = () => {
   //   if (error) {
   //     const msg = error?.message || error?.data?.message || error;
   //     if (msg === "Invalid token") {
-  //       localStorage.removeItem("user");
-  //       localStorage.removeItem("token");
+  //       sessionStorage.removeItem("user");
+  //       sessionStorage.removeItem("token");
   //       navigate("/");
   //     } else {
   //       showError(msg);

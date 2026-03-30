@@ -6,7 +6,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createBlog = createAsyncThunk(
   "blog/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -67,7 +67,7 @@ export const getBlogById = createAsyncThunk(
 export const updateBlog = createAsyncThunk(
   "blog/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -102,7 +102,7 @@ export const updateBlog = createAsyncThunk(
 export const deleteBlog = createAsyncThunk(
   "blog/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

@@ -192,7 +192,7 @@ const AGSEditData = () => {
     const systemFields = ["_id", "__v", "createdAt", "updatedAt"];
     systemFields.forEach((field) => delete data[field]);
 
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     if (userId) {
       data.user_id = userId;

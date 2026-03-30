@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createCallTarget = createAsyncThunk(
   "callTarget/create",
   async (payload, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createCallTarget = createAsyncThunk(
           message: "Call target created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/call-target`,
           section: "Call Target",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllCallTargets = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getCallTargetById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getCallTargetById = createAsyncThunk(
 export const updateCallTarget = createAsyncThunk(
   "callTarget/update",
   async ({ id, payload }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateCallTarget = createAsyncThunk(
           message: "Call target updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/call-target`,
           section: "Call Target",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateCallTarget = createAsyncThunk(
 export const deleteCallTarget = createAsyncThunk(
   "callTarget/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,14 +121,14 @@ export const deleteCallTarget = createAsyncThunk(
           message: "Call target deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/call-target`,
           section: "Call Target",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -180,16 +180,14 @@ const callTargetSlice = createSlice({
       .addCase(updateCallTarget.fulfilled, (state, action) => {
         state.loading = false;
         state.list = state.list.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 
       /* DELETE */
       .addCase(deleteCallTarget.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = state.list.filter(
-          (item) => item._id !== action.payload
-        );
+        state.list = state.list.filter((item) => item._id !== action.payload);
       });
   },
 });

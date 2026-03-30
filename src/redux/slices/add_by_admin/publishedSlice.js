@@ -9,7 +9,7 @@ export const createPublished = createAsyncThunk(
   "published/create",
   async (payload, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) return rejectWithValue("No token provided");
 
       const res = await api.post("/published", payload, {
@@ -22,14 +22,14 @@ export const createPublished = createAsyncThunk(
           message: "Published created",
           section: "Published",
           link: `${import.meta.env.VITE_API_FRONT_URL}/published`,
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -44,7 +44,7 @@ export const getAllPublished = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -54,7 +54,7 @@ export const updatePublished = createAsyncThunk(
   "published/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) return rejectWithValue("No token provided");
 
       const res = await api.put(`/published/${id}`, data, {
@@ -67,14 +67,14 @@ export const updatePublished = createAsyncThunk(
           message: "Published updated",
           section: "Published",
           link: `${import.meta.env.VITE_API_FRONT_URL}/published`,
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -84,7 +84,7 @@ export const deletePublished = createAsyncThunk(
   "published/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) return rejectWithValue("No token provided");
 
       await api.delete(`/published/${id}`, {
@@ -97,14 +97,14 @@ export const deletePublished = createAsyncThunk(
           message: "Published deleted",
           section: "Published",
           link: `${import.meta.env.VITE_API_FRONT_URL}/published`,
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -149,15 +149,13 @@ const publishedSlice = createSlice({
       /* UPDATE */
       .addCase(updatePublished.fulfilled, (state, action) => {
         state.list = state.list.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 
       /* DELETE */
       .addCase(deletePublished.fulfilled, (state, action) => {
-        state.list = state.list.filter(
-          (item) => item._id !== action.payload
-        );
+        state.list = state.list.filter((item) => item._id !== action.payload);
       });
   },
 });

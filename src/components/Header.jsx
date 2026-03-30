@@ -66,8 +66,8 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
     navigate("/");
   };
 
@@ -148,7 +148,7 @@ export default function Header() {
 
   const greeting = getGreeting();
 
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const userId = authUser?._id || authUser?.id;
   const userName = authUser?.username || authUser?.name || "Admin";
   const userEmail = authUser?.email || "admin@namo-gange.com";
@@ -216,98 +216,96 @@ export default function Header() {
             </div>
           </IconWithTooltip>
           {notificationsOpen && (
-              <div className="absolute right-0 mt-3 w-80 z-50 p-2.5 rounded-lg bg-gradient-to-r from-orange-50 via-cyan-50 to-blue-50 shadow-2xl border border-gray-200">
-                <div className="mb-2 px-3 py-2 rounded-md bg-[#FAF7F2] border border-[#E6D7BD]">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-[14px] font-semibold text-gray-900">
-                      Notifications
-                    </h3>
+            <div className="absolute right-0 mt-3 w-80 z-50 p-2.5 rounded-lg bg-gradient-to-r from-orange-50 via-cyan-50 to-blue-50 shadow-2xl border border-gray-200">
+              <div className="mb-2 px-3 py-2 rounded-md bg-[#FAF7F2] border border-[#E6D7BD]">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[14px] font-semibold text-gray-900">
+                    Notifications
+                  </h3>
 
-                    {unreadNotifications > 0 && (
-                      <span className="text-[10px] text-white font-semibold bg-[#8B6A3E] px-2 py-[3px] rounded-full">
-                        {unreadNotifications} new
-                      </span>
-                    )}
-                  </div>
+                  {unreadNotifications > 0 && (
+                    <span className="text-[10px] text-white font-semibold bg-[#8B6A3E] px-2 py-[3px] rounded-full">
+                      {unreadNotifications} new
+                    </span>
+                  )}
                 </div>
+              </div>
 
-                <div className="max-h-[300px] overflow-y-auto space-y-1.5 pr-1">
-                  {notifications.length > 0 ? (
-                    notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-3 py-2 rounded-md border flex items-start gap-2.5 cursor-pointer transition-all duration-200
+              <div className="max-h-[300px] overflow-y-auto space-y-1.5 pr-1">
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`px-3 py-2 rounded-md border flex items-start gap-2.5 cursor-pointer transition-all duration-200
             ${
               !notification.read
                 ? "bg-[#FFF7ED] border-[#D4B68A] hover:bg-[#FDEED8]"
                 : "bg-white border-gray-200 hover:bg-gray-50"
             }`}
-                      >
-                        <div className="flex-shrink-0 mt-[5px]">
-                          <div
-                            className={`w-2 h-2 rounded-full ${
-                              !notification.read
-                                ? "bg-[#8B6A3E]"
-                                : "bg-gray-300"
-                            }`}
-                          />
-                        </div>
-
-                        {/* TEXT */}
-                        <div className="flex-1 leading-tight">
-                          <p
-                            className={`text-[12.5px] ${
-                              !notification.read
-                                ? "text-gray-900 font-semibold"
-                                : "text-gray-700"
-                            }`}
-                          >
-                            {notification.message}
-                          </p>
-
-                          <p
-                            className={`text-[10.5px] mt-[2px] ${
-                              !notification.read
-                                ? "text-[#8B6A3E]"
-                                : "text-gray-500"
-                            }`}
-                          >
-                            {notification.time}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    /* EMPTY STATE */
-                    <div className="px-3 py-6 text-center rounded-xl bg-[#FAFAFA] border border-gray-200">
-                      <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gray-100 flex items-center justify-center">
-                        <MdNotifications size={18} className="text-gray-400" />
-                      </div>
-
-                      <p className="text-sm font-medium text-gray-600">
-                        No notifications
-                      </p>
-
-                      <p className="text-xs text-gray-400 mt-1">
-                        You're all caught up!
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* FOOTER */}
-                {notifications.length > 0 && (
-                  <div className="mt-2 px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E6D7BD] text-center">
-                    <button
-                      onClick={markAllAsRead}
-                      className="text-[12px] text-[#8B6A3E] font-semibold hover:text-[#6B4F2E] transition-colors"
                     >
-                      Mark all as read
-                    </button>
+                      <div className="flex-shrink-0 mt-[5px]">
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            !notification.read ? "bg-[#8B6A3E]" : "bg-gray-300"
+                          }`}
+                        />
+                      </div>
+
+                      {/* TEXT */}
+                      <div className="flex-1 leading-tight">
+                        <p
+                          className={`text-[12.5px] ${
+                            !notification.read
+                              ? "text-gray-900 font-semibold"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {notification.message}
+                        </p>
+
+                        <p
+                          className={`text-[10.5px] mt-[2px] ${
+                            !notification.read
+                              ? "text-[#8B6A3E]"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {notification.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  /* EMPTY STATE */
+                  <div className="px-3 py-6 text-center rounded-xl bg-[#FAFAFA] border border-gray-200">
+                    <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gray-100 flex items-center justify-center">
+                      <MdNotifications size={18} className="text-gray-400" />
+                    </div>
+
+                    <p className="text-sm font-medium text-gray-600">
+                      No notifications
+                    </p>
+
+                    <p className="text-xs text-gray-400 mt-1">
+                      You're all caught up!
+                    </p>
                   </div>
                 )}
               </div>
-            )}
+
+              {/* FOOTER */}
+              {notifications.length > 0 && (
+                <div className="mt-2 px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#E6D7BD] text-center">
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-[12px] text-[#8B6A3E] font-semibold hover:text-[#6B4F2E] transition-colors"
+                  >
+                    Mark all as read
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* PROFILE */}

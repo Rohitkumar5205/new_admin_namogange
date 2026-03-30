@@ -154,7 +154,7 @@ const AGSAddData = () => {
     }
     const data = { ...formData };
 
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     if (userId) {
       data.user_id = userId;

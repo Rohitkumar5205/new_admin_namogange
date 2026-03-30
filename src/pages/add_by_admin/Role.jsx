@@ -16,7 +16,7 @@ const Role = () => {
   const dispatch = useDispatch();
   // Using || {} to prevent crash if slice hasn't been added to store yet
   const { roles, loading } = useSelector((state) => state.role || {});
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     _id: null,

@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createHero = createAsyncThunk(
   "hero/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -77,7 +77,7 @@ export const getHeroById = createAsyncThunk(
 export const updateHero = createAsyncThunk(
   "hero/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -115,7 +115,7 @@ export const updateHero = createAsyncThunk(
 export const deleteHero = createAsyncThunk(
   "hero/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {

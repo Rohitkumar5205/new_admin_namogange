@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 export const createGallery = createAsyncThunk(
   "gallery/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -76,7 +76,7 @@ export const getGalleryById = createAsyncThunk(
 export const updateGallery = createAsyncThunk(
   "gallery/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -114,7 +114,7 @@ export const updateGallery = createAsyncThunk(
 export const deleteGallery = createAsyncThunk(
   "gallery/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

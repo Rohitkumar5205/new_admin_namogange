@@ -19,7 +19,7 @@ const VideosGallery = () => {
   );
   const { list: categoryVideos } = useSelector((state) => state.categoryVideo);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({

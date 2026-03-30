@@ -69,7 +69,7 @@ const SECTIONS = [
 const AddSidebar = () => {
   const dispatch = useDispatch();
   const { sidebars, loading } = useSelector((state) => state.sidebar || {});
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     _id: null,

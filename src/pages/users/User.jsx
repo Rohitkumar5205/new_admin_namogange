@@ -39,7 +39,7 @@ const User = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [search, setSearch] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   console.log("authUser:", authUser);
   const currentUserId = authUser?._id || authUser?.id || null;
 

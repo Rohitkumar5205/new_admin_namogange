@@ -8,17 +8,13 @@ export const createAgsPayment = createAsyncThunk(
   "agsPayment/create",
   async (formData, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
-      const res = await api.post(
-        "/ags-payment/create",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.post("/ags-payment/create", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       dispatch(
         createActivityLogThunk({
@@ -26,21 +22,21 @@ export const createAgsPayment = createAsyncThunk(
           message: `AGS Payment Created (${res.data.data.registration_no})`,
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-payment`,
           section: "AGS Payment",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 export const previewRegistrationNo = createAsyncThunk(
   "agsPayment/previewRegistration",
   async (Seminar_day, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       const res = await api.get(
         `/ags-payment/preview-registration?Seminar_day=${encodeURIComponent(Seminar_day)}`,
@@ -48,14 +44,14 @@ export const previewRegistrationNo = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       return res.data.registration_no;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= GET ALL ================= */
@@ -69,7 +65,7 @@ export const getAllAgsPayments = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= GET BY ID ================= */
@@ -83,7 +79,7 @@ export const getAgsPaymentById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= UPDATE ================= */
@@ -92,17 +88,13 @@ export const updateAgsPayment = createAsyncThunk(
   "agsPayment/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
-      const res = await api.put(
-        `/ags-payment/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.put(`/ags-payment/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       dispatch(
         createActivityLogThunk({
@@ -110,14 +102,14 @@ export const updateAgsPayment = createAsyncThunk(
           message: `AGS Payment Updated (${res.data.data.registration_no})`,
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-payment`,
           section: "AGS Payment",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= DELETE ================= */
@@ -126,7 +118,7 @@ export const deleteAgsPayment = createAsyncThunk(
   "agsPayment/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       await api.delete(`/ags-payment/${id}`, {
         headers: {
@@ -140,14 +132,14 @@ export const deleteAgsPayment = createAsyncThunk(
           message: "AGS Payment Deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-payment`,
           section: "AGS Payment",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ================= SLICE ================= */
@@ -206,16 +198,16 @@ const agsPaymentSlice = createSlice({
       })
       .addCase(updateAgsPayment.fulfilled, (state, action) => {
         const index = state.payments.findIndex(
-          (item) => item._id === action.payload._id
+          (item) => item._id === action.payload._id,
         );
         if (index !== -1) {
           state.payments[index] = action.payload;
         }
       })
-        .addCase(updateAgsPayment.rejected, (state, action) => {
-          state.loading = false;
-          state.error = action.payload;
-        })
+      .addCase(updateAgsPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       // DELETE
       .addCase(deleteAgsPayment.pending, (state) => {
@@ -223,7 +215,7 @@ const agsPaymentSlice = createSlice({
       })
       .addCase(deleteAgsPayment.fulfilled, (state, action) => {
         state.payments = state.payments.filter(
-          (item) => item._id !== action.payload
+          (item) => item._id !== action.payload,
         );
       })
       .addCase(deleteAgsPayment.rejected, (state, action) => {
@@ -235,10 +227,10 @@ const agsPaymentSlice = createSlice({
         state.previewRegistration = null;
       })
       .addCase(previewRegistrationNo.fulfilled, (state, action) => {
-  state.previewRegistration = action.payload;
-})
+        state.previewRegistration = action.payload;
+      })
       .addCase(previewRegistrationNo.rejected, (state, action) => {
-        state.error = action.payload      
+        state.error = action.payload;
       });
   },
 });

@@ -77,7 +77,7 @@ const AddSEOCode = () => {
       if (result.isConfirmed) {
         try {
           setLoading(true);
-          const authUser = JSON.parse(localStorage.getItem("user"));
+          const authUser = JSON.parse(sessionStorage.getItem("user"));
           await dispatch(
             deleteSeoCode({ id, user_id: authUser?._id }),
           ).unwrap();
@@ -129,15 +129,6 @@ const AddSEOCode = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.seo_code ||
-      !formData.seo_code.trim() ||
-      formData.seo_code === "<p></p>"
-    ) {
-      showError("SEO Code is required");
-      return;
-    }
-
     const submitData = new FormData();
     submitData.append("seo_code", formData.seo_code);
     submitData.append("status", formData.status);
@@ -147,7 +138,7 @@ const AddSEOCode = () => {
       isEdit ? "Updated SEO Code" : "Added SEO Code",
     );
 
-    const authUser = JSON.parse(localStorage.getItem("user"));
+    const authUser = JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     if (userId) {
       submitData.append("user_id", userId);
@@ -158,23 +149,14 @@ const AddSEOCode = () => {
         "google_search_console",
         formData.google_search_console,
       );
-    } else if (!isEdit) {
-      showError("Google Search Console file is required");
-      return;
     }
 
     if (formData.report) {
       submitData.append("report", formData.report);
-    } else if (!isEdit) {
-      showError("Report file is required");
-      return;
     }
 
     if (formData.sitemap) {
       submitData.append("sitemap", formData.sitemap);
-    } else if (!isEdit) {
-      showError("Sitemap file is required");
-      return;
     }
 
     setLoading(true);
@@ -227,7 +209,6 @@ const AddSEOCode = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 pb-1">
                   Google Search Console (.html)
-                  {!isEdit && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div className="relative">
                   <input
@@ -243,7 +224,6 @@ const AddSEOCode = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 pb-1">
                   Robots (.txt)
-                  {!isEdit && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <input
                   type="file"
@@ -257,7 +237,6 @@ const AddSEOCode = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 pb-1">
                   Sitemap (.xml)
-                  {!isEdit && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <input
                   type="file"
@@ -270,7 +249,7 @@ const AddSEOCode = () => {
 
               <div className="col-span-3">
                 <label className="block text-sm font-medium text-gray-700 py-2 px-3 bg-gray-50 border-b">
-                  Add SEO Code <span className="text-red-500">*</span>
+                  Add SEO Code
                 </label>
                 <TiptapEditor
                   value={formData.seo_code}

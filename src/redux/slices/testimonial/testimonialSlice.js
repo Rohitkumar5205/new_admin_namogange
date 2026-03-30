@@ -19,7 +19,7 @@ export const fetchTestimonials = createAsyncThunk(
 export const createTestimonialThunk = createAsyncThunk(
   "testimonials/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -57,7 +57,7 @@ export const createTestimonialThunk = createAsyncThunk(
 export const updateTestimonialThunk = createAsyncThunk(
   "testimonials/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -94,7 +94,7 @@ export const updateTestimonialThunk = createAsyncThunk(
 export const deleteTestimonialThunk = createAsyncThunk(
   "testimonials/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

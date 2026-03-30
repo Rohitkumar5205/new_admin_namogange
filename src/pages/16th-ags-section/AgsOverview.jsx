@@ -120,7 +120,7 @@ const AgsOverview = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
 
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     const userName = authUser?.username || authUser?.name || "Admin";
 
@@ -190,7 +190,7 @@ const AgsOverview = () => {
   };
 
   const handleDeleteStatus = (statusId) => {
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     dispatch(
       deleteClientStatus({ id: statusId, user_id: userId, client_id: id }),

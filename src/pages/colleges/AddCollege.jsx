@@ -168,7 +168,7 @@ const AddCollege = () => {
       return;
     }
 
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     const payload = { ...formData, user_id: userId };
 

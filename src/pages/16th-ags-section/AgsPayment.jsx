@@ -152,7 +152,7 @@ const AgsPayment = () => {
 
   const handleDelete = (paymentId) => {
     if (window.confirm("Are you sure you want to delete this payment?")) {
-      const authUser = user || JSON.parse(localStorage.getItem("user"));
+      const authUser = user || JSON.parse(sessionStorage.getItem("user"));
       const userId = authUser?._id || authUser?.id;
       dispatch(deleteAgsPayment({ id: paymentId, user_id: userId }))
         .unwrap()
@@ -163,7 +163,7 @@ const AgsPayment = () => {
 
   const handleCancelPayment = (paymentId) => {
     if (window.confirm("Are you sure you want to cancel this payment?")) {
-      const authUser = user || JSON.parse(localStorage.getItem("user"));
+      const authUser = user || JSON.parse(sessionStorage.getItem("user"));
       const userId = authUser?._id || authUser?.id;
       dispatch(
         updateAgsPayment({
@@ -217,7 +217,7 @@ const AgsPayment = () => {
       return;
     }
 
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     const userName = authUser?.name || authUser?.username || "Unknown User";
 

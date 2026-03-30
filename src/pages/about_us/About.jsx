@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,12 +13,11 @@ import { PageNames } from "../../utils/constants";
 
 const About = () => {
   const dispatch = useDispatch();
-  // Assuming your slice is named 'about' and the data array is 'abouts' or 'data'
-  // Adjust 'state.about' and 'abouts' based on your actual slice structure
   const { data: abouts, loading } = useSelector((state) => state.about);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const fileInputRef = useRef(null);
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [form, setForm] = useState({
     _id: null,
@@ -47,10 +46,19 @@ const About = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
       setForm((prev) => ({
         ...prev,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]),
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
@@ -69,18 +77,19 @@ const About = () => {
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Clear the file input field
+    }
+    URL.revokeObjectURL(form.imagePreview); // Revoke the object URL to prevent memory leaks
   };
 
   const handleDelete = (id) => {
     const currentUserId = authUser?.id || null;
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      dispatch(deleteAboutThunk({ id: id, user_id: currentUserId })).then(
-        () => {
-          showSuccess("About entry deleted successfully");
-          dispatch(fetchAbouts());
-        },
-      );
-    }
+
+    dispatch(deleteAboutThunk({ id: id, user_id: currentUserId })).then(() => {
+      showSuccess("About entry deleted successfully");
+      dispatch(fetchAbouts());
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -254,6 +263,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <div className="w-full">
                 <input
                   type="file"
+                  ref={fileInputRef}
                   name="image"
                   accept="image/*"
                   onChange={handleChange}
@@ -261,7 +271,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   className="w-full text-sm text-gray-600 border border-gray-300 rounded cursor-pointer bg-gray-50 file:mr-4 file:py-1 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
                 />
               </div>
-              {/* {form.imagePreview && (
+              {form.imagePreview && (
                 <div className="mt-2">
                   <img
                     src={form.imagePreview}
@@ -269,7 +279,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     className="h-20 w-auto object-cover rounded border border-gray-300"
                   />
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* IMAGE ALT */}

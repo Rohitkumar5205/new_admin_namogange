@@ -19,7 +19,7 @@ export const getAllAchievements = createAsyncThunk(
 export const createAchievement = createAsyncThunk(
   "achievements/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -57,7 +57,7 @@ export const createAchievement = createAsyncThunk(
 export const updateAchievement = createAsyncThunk(
   "achievements/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -94,7 +94,7 @@ export const updateAchievement = createAsyncThunk(
 export const deleteAchievement = createAsyncThunk(
   "achievements/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

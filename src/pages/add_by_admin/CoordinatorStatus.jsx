@@ -14,7 +14,7 @@ import { PageNames } from "../../utils/constants";
 const CoordinatorStatus = () => {
   const dispatch = useDispatch();
   const { list, loading } = useSelector((state) => state.coordinatorStatus);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const [formData, setFormData] = useState({
     _id: null,
     title: "",

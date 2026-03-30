@@ -13,7 +13,7 @@ export const registerAdmin = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 // =========================
@@ -28,7 +28,7 @@ export const loginAdmin = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 // =========================
@@ -43,7 +43,7 @@ export const getAllAdmins = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 // =========================
@@ -58,7 +58,7 @@ export const updateAdmin = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 // =========================
@@ -73,7 +73,7 @@ export const deleteAdmin = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 // =========================
@@ -94,7 +94,7 @@ const adminSlice = createSlice({
     logout: (state) => {
       state.currentAdmin = null;
       state.token = null;
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
     },
   },
 
@@ -124,7 +124,7 @@ const adminSlice = createSlice({
         state.currentAdmin = action.payload.admin;
         state.token = action.payload.token;
 
-        localStorage.setItem("token", action.payload.token);
+        sessionStorage.setItem("token", action.payload.token);
       })
       .addCase(loginAdmin.rejected, (state, action) => {
         state.loading = false;
@@ -153,7 +153,7 @@ const adminSlice = createSlice({
       })
       .addCase(updateAdmin.fulfilled, (state, action) => {
         state.admins = state.admins.map((a) =>
-          a._id === action.payload._id ? action.payload : a
+          a._id === action.payload._id ? action.payload : a,
         );
       })
       .addCase(updateAdmin.rejected, (state, action) => {

@@ -33,7 +33,7 @@ const Designation = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 10;

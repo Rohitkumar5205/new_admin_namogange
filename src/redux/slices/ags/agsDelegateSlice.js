@@ -12,14 +12,14 @@ export const fetchAgsDelegates = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // Create a new AGS delegate
 export const createAgsDelegate = createAsyncThunk(
   "agsDelegates/createAgsDelegate",
-  async (formData, {dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+  async (formData, { dispatch, rejectWithValue }) => {
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -31,7 +31,12 @@ export const createAgsDelegate = createAsyncThunk(
         },
       });
       const userId = formData.get("user_id");
-              console.log("Dispatching activity log for user ID:", userId, "with formData:", formData);
+      console.log(
+        "Dispatching activity log for user ID:",
+        userId,
+        "with formData:",
+        formData,
+      );
 
       if (userId) {
         console.log("Dispatching activity log for user ID:", userId);
@@ -41,14 +46,14 @@ export const createAgsDelegate = createAsyncThunk(
             message: "AGS Delegate created",
             link: `${import.meta.env.VITE_API_FRONT_URL}/ags-delegates/list`,
             section: "AGS Delegates",
-          })
+          }),
         );
       }
       return response.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // Fetch a single AGS delegate by ID
@@ -61,14 +66,14 @@ export const getAgsDelegateById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // Update an AGS delegate
 export const updateAgsDelegate = createAsyncThunk(
   "agsDelegates/updateAgsDelegate",
-  async ({ id, formData }, {dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+  async ({ id, formData }, { dispatch, rejectWithValue }) => {
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -87,21 +92,21 @@ export const updateAgsDelegate = createAsyncThunk(
             message: "AGS Delegate updated",
             link: `${import.meta.env.VITE_API_FRONT_URL}/ags-delegates/list`,
             section: "AGS Delegates",
-          })
+          }),
         );
       }
       return response.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // Delete an AGS delegate
 export const deleteAgsDelegate = createAsyncThunk(
   "agsDelegates/deleteAgsDelegate",
-  async ({id, user_id}, {dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");    
+  async ({ id, user_id }, { dispatch, rejectWithValue }) => {
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -118,14 +123,14 @@ export const deleteAgsDelegate = createAsyncThunk(
             message: "AGS Delegate deleted",
             link: `${import.meta.env.VITE_API_FRONT_URL}/ags-delegates/list`,
             section: "AGS Delegates",
-          })
+          }),
         );
       }
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 const agsDelegateSlice = createSlice({
@@ -189,7 +194,7 @@ const agsDelegateSlice = createSlice({
       .addCase(updateAgsDelegate.fulfilled, (state, action) => {
         state.loading = false;
         state.delegates = state.delegates.map((delegate) =>
-          delegate._id === action.payload._id ? action.payload : delegate
+          delegate._id === action.payload._id ? action.payload : delegate,
         );
       })
       .addCase(updateAgsDelegate.rejected, (state, action) => {
@@ -203,7 +208,7 @@ const agsDelegateSlice = createSlice({
       .addCase(deleteAgsDelegate.fulfilled, (state, action) => {
         state.loading = false;
         state.delegates = state.delegates.filter(
-          (delegate) => delegate._id !== action.payload
+          (delegate) => delegate._id !== action.payload,
         );
       })
       .addCase(deleteAgsDelegate.rejected, (state, action) => {

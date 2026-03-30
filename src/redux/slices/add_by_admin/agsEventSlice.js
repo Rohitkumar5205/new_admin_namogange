@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createAGSEvent = createAsyncThunk(
   "agsEvent/create",
   async (data, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createAGSEvent = createAsyncThunk(
           message: "AGS Event created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-events`,
           section: " AGS Event",
-        })
+        }),
       );
 
       return res.data.data; // ✅ VERY IMPORTANT
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllAGSEvents = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getAGSEventById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getAGSEventById = createAsyncThunk(
 export const updateAGSEvent = createAsyncThunk(
   "agsEvent/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateAGSEvent = createAsyncThunk(
           message: "Event updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-events`,
           section: "Event",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateAGSEvent = createAsyncThunk(
 export const deleteAGSEvent = createAsyncThunk(
   "agsEvent/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,14 +121,14 @@ export const deleteAGSEvent = createAsyncThunk(
           message: "Event deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/ags-events`,
           section: "Event",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -188,14 +188,16 @@ const agsEventSlice = createSlice({
       .addCase(updateAGSEvent.fulfilled, (state, action) => {
         state.loading = false;
         state.agsEvents = state.agsEvents.map((e) =>
-          e._id === action.payload._id ? action.payload : e
+          e._id === action.payload._id ? action.payload : e,
         );
       })
 
       /* DELETE */
       .addCase(deleteAGSEvent.fulfilled, (state, action) => {
         state.loading = false;
-        state.agsEvents = state.agsEvents.filter((e) => e._id !== action.payload);
+        state.agsEvents = state.agsEvents.filter(
+          (e) => e._id !== action.payload,
+        );
       });
   },
 });

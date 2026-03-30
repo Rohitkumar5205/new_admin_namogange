@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createMember = createAsyncThunk(
   "member/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -25,13 +25,13 @@ export const createMember = createAsyncThunk(
           message: "New member created",
           section: "Member Management",
           link: `${import.meta.env.VITE_API_FRONT_URL}/member/member-create`,
-        })
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -46,7 +46,7 @@ export const getAllMembers = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -61,7 +61,7 @@ export const getMemberById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -70,7 +70,7 @@ export const getMemberById = createAsyncThunk(
 export const updateMember = createAsyncThunk(
   "member/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -87,13 +87,13 @@ export const updateMember = createAsyncThunk(
           message: "Member updated",
           section: "Member Management",
           link: `${import.meta.env.VITE_API_FRONT_URL}/member/edit-member/${id}`,
-        })
+        }),
       );
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -102,7 +102,7 @@ export const updateMember = createAsyncThunk(
 export const deleteMember = createAsyncThunk(
   "member/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -116,13 +116,13 @@ export const deleteMember = createAsyncThunk(
           message: "Member deleted",
           section: "Member Management",
           link: `${import.meta.env.VITE_API_FRONT_URL}/member/member-list`,
-        })
+        }),
       );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -194,7 +194,7 @@ const memberSlice = createSlice({
       .addCase(updateMember.fulfilled, (state, action) => {
         state.loading = false;
         state.members = state.members.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
       .addCase(updateMember.rejected, (state, action) => {
@@ -209,7 +209,7 @@ const memberSlice = createSlice({
       .addCase(deleteMember.fulfilled, (state, action) => {
         state.loading = false;
         state.members = state.members.filter(
-          (item) => item._id !== action.payload
+          (item) => item._id !== action.payload,
         );
       })
       .addCase(deleteMember.rejected, (state, action) => {
@@ -219,7 +219,6 @@ const memberSlice = createSlice({
   },
 });
 
-export const { clearMemberError, clearSingleMember } =
-  memberSlice.actions;
+export const { clearMemberError, clearSingleMember } = memberSlice.actions;
 
 export default memberSlice.reducer;

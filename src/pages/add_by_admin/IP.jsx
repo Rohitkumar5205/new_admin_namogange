@@ -31,7 +31,7 @@ const IP = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [search, setSearch] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const currentUserId = authUser?._id || authUser?.id || null;
 
   /* ===== FETCH DATA ===== */

@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createNewsLetter = createAsyncThunk(
   "newsletter/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -75,7 +75,7 @@ export const getNewsLetterById = createAsyncThunk(
 export const updateNewsLetter = createAsyncThunk(
   "newsletter/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -112,7 +112,7 @@ export const updateNewsLetter = createAsyncThunk(
 export const deleteNewsLetter = createAsyncThunk(
   "newsletter/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {

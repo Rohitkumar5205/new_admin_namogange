@@ -15,7 +15,7 @@ const Published = () => {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { list, loading } = useSelector((state) => state.published);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     _id: null,

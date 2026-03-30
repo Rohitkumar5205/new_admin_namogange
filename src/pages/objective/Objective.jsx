@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,8 +22,6 @@ const Objective = () => {
     imagePreview: "",
     logo: null,
     logoPreview: "",
-    meta_keywords: "",
-    meta_desc: "",
     desc: "",
     image_alt: "",
     logo_alt: "",
@@ -35,7 +33,9 @@ const Objective = () => {
   // redux logic
   const { data, loading } = useSelector((state) => state.objectives);
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
+  const imageInputRef = useRef(null);
+  const logoInputRef = useRef(null);
   // const currentUserId = authUser?.id || null;
   // const currentUserName = authUser?.username || "";
 
@@ -80,16 +80,39 @@ const Objective = () => {
         .replace(/^-+|-+$/g, "");
       setFormData((prev) => ({ ...prev, title: value, slug: slug }));
     } else if (files) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
-        [name]: files[0],
-        [`Preview`]: URL.createObjectURL(files[0]),
+        [name]: files[0], // Set the file object
+        [`${name}Preview`]: URL.createObjectURL(files[0]), // Set the preview URL
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
     }
   };
   const resetForm = () => {
+    // Clear file input fields
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+    if (logoInputRef.current) {
+      logoInputRef.current.value = "";
+    }
+
+    // Revoke object URLs to prevent memory leaks
+    if (formData.imagePreview) {
+      URL.revokeObjectURL(formData.imagePreview);
+    }
+    if (formData.logoPreview) {
+      URL.revokeObjectURL(formData.logoPreview);
+    }
     setFormData({
       _id: null,
       title: "",
@@ -98,8 +121,7 @@ const Objective = () => {
       imagePreview: "",
       logo: null,
       logoPreview: "",
-      meta_keywords: "",
-      meta_desc: "",
+
       desc: "",
       image_alt: "",
       logo_alt: "",
@@ -110,7 +132,6 @@ const Objective = () => {
 
     setIsEdit(false);
   };
-
   const handleCancel = () => {
     resetForm();
   };
@@ -154,8 +175,6 @@ const Objective = () => {
     dataToSend.append("title", formData.title);
     dataToSend.append("slug", formData.slug);
     dataToSend.append("status", formData.status);
-    dataToSend.append("meta_keywords", formData.meta_keywords);
-    dataToSend.append("meta_desc", formData.meta_desc);
     dataToSend.append("desc", formData?.desc);
 
     if (formData.image instanceof File) {
@@ -260,7 +279,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Objective Title (H1) <span className="text-red-500">*</span>
+                Objective Title <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -296,6 +315,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (size:1440x250)
               </label>
               <input
+                ref={imageInputRef}
                 key={formData._id || "new"}
                 type="file"
                 name="image"
@@ -303,15 +323,21 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
-              {formData.imagePreview && (
-                <div className="mt-2">
-                  <img
-                    src={formData.imagePreview}
-                    alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
-                  />
-                </div>
-              )}
+              {/* Image Preview Section */}
+              {formData.imagePreview &&
+                typeof formData.imagePreview === "string" && (
+                  <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                    <img
+                      src={formData.imagePreview}
+                      alt="Image Preview"
+                      className="h-24 w-auto object-cover rounded"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.png";
+                      }}
+                    />
+                  </div>
+                )}
             </div>
             {/* IMAGE ALT TEXT  */}
             <div>
@@ -336,6 +362,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Logo (size: 90x90)
               </label>
               <input
+                ref={logoInputRef}
                 key={formData._id || "new"}
                 type="file"
                 name="logo"
@@ -343,15 +370,21 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               />
-              {formData.logoPreview && (
-                <div className="mt-2">
-                  <img
-                    src={formData.logoPreview}
-                    alt="Logo Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
-                  />
-                </div>
-              )}
+              {/* Logo Preview Section */}
+              {formData.logoPreview &&
+                typeof formData.logoPreview === "string" && (
+                  <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                    <img
+                      src={formData.logoPreview}
+                      alt="Logo Preview"
+                      className="h-24 w-auto object-cover rounded"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.png";
+                      }}
+                    />
+                  </div>
+                )}
             </div>
             {/* LOGO ALT TEXT  */}
             <div>
@@ -386,21 +419,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 <option value="Inactive">Inactive</option>
               </select>
             </div>
-            {/* META KEYWORD */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Keyword
-              </label>
-              <input
-                type="text"
-                name="meta_keywords"
-                value={formData.meta_keywords}
-                onChange={handleChange}
-                placeholder="Enter meta keywords"
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                disabled={isFormDisabled}
-              />
-            </div>
 
             {/* DESCRIPTION */}
             <div className="md:col-span-3">
@@ -414,21 +432,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   setFormData((prev) => ({ ...prev, desc: html }))
                 }
                 isReadOnly={isFormDisabled}
-              />
-            </div>
-            {/* META DESCRIPTION */}
-            <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Description
-              </label>
-              <textarea
-                name="meta_desc"
-                value={formData.meta_desc}
-                onChange={handleChange}
-                placeholder="Enter meta description"
-                rows={2}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                disabled={isFormDisabled}
               />
             </div>
 
@@ -548,10 +551,8 @@ hover:after:w-full"
                                   slug: item.slug,
                                   image: item.image,
                                   imagePreview: item.image,
-                                  logo: item.logo,
-                                  logoPreview: item.logo,
-                                  meta_keywords: item.meta_keywords,
-                                  meta_desc: item.meta_desc,
+                                  logo: item.logo, // Keep the existing logo URL for preview
+                                  logoPreview: item.logo, // Keep the existing logo URL for preview
                                   desc: item.desc,
                                   image_alt: item.image_alt || "",
                                   logo_alt: item.logo_alt || "",

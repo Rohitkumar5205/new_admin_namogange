@@ -21,7 +21,7 @@ const EMPLOYEE_LIST = [
 const Target = () => {
   const dispatch = useDispatch();
   const { list, loading } = useSelector((state) => state.callTarget);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({

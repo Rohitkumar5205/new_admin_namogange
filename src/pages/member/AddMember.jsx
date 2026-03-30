@@ -91,7 +91,7 @@ const AddMember = () => {
       });
 
       // Add user_id for activity log
-      const authUser = JSON.parse(localStorage.getItem("user"));
+      const authUser = JSON.parse(sessionStorage.getItem("user"));
       if (authUser?.id) {
         data.append("user_id", authUser.id);
       }

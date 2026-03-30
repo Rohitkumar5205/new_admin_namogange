@@ -94,7 +94,7 @@ export default function Notification() {
   useEffect(() => {
     const loadNotifications = () => {
       try {
-        const data = localStorage.getItem("notifications");
+        const data = sessionStorage.getItem("notifications");
         if (data) {
           const parsed = JSON.parse(data);
           setNotifications(parsed.map(convertToUINotification));
@@ -102,7 +102,7 @@ export default function Notification() {
           // Initialize with dummy data if empty
           const initialData = generateNotifications();
           setNotifications(initialData.map(convertToUINotification));
-          localStorage.setItem("notifications", JSON.stringify(initialData));
+          sessionStorage.setItem("notifications", JSON.stringify(initialData));
         }
       } catch (error) {
         console.error("Error loading notifications:", error);
@@ -243,8 +243,8 @@ export default function Notification() {
     }
   };
 
-  const updateLocalStorage = (newNotifications) => {
-    localStorage.setItem("notifications", JSON.stringify(newNotifications));
+  const updatesessionStorage = (newNotifications) => {
+    sessionStorage.setItem("notifications", JSON.stringify(newNotifications));
   };
 
   const markAsRead = (id) => {
@@ -252,13 +252,13 @@ export default function Notification() {
       notif.id === id ? { ...notif, isRead: true } : notif,
     );
     setNotifications(updated);
-    updateLocalStorage(updated);
+    updatesessionStorage(updated);
   };
 
   // const markAllAsRead = () => {
   //   const updated = notifications.map((notif) => ({ ...notif, isRead: true }));
   //   setNotifications(updated);
-  //   updateLocalStorage(updated);
+  //   updatesessionStorage(updated);
   // };
 
   const archiveNotification = (id) => {
@@ -266,13 +266,13 @@ export default function Notification() {
       notif.id === id ? { ...notif, archived: true } : notif,
     );
     setNotifications(updated);
-    updateLocalStorage(updated);
+    updatesessionStorage(updated);
   };
 
   const deleteNotification = (id) => {
     const updated = notifications.filter((notif) => notif.id !== id);
     setNotifications(updated);
-    updateLocalStorage(updated);
+    updatesessionStorage(updated);
   };
 
   const filteredNotifications = notifications.filter((notif) => {
@@ -390,7 +390,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-<h2 className="text-xl font-semibold text-white">                  Notifications
+                <h2 className="text-xl font-semibold text-white">
+                  {" "}
+                  Notifications
                 </h2>
                 <span className="px-2 py-0.5 bg-white/20 text-white text-xs rounded-full">
                   Admin Panel
@@ -473,7 +475,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             <div className="p-2 bg-pink-50 text-pink-600 rounded-full">
               <MdCalendarToday size={20} />
             </div>
-              <div className="text-center">
+            <div className="text-center">
               <p className="text-xs font-medium text-gray-700 uppercase tracking-wider">
                 This Week
               </p>
@@ -538,7 +540,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
 
               <button
                 onClick={() => {
-                  const data = localStorage.getItem("notifications");
+                  const data = sessionStorage.getItem("notifications");
                   if (data) {
                     const allNotifications = JSON.parse(data);
                     setNotifications(

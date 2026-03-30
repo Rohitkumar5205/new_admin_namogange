@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createUniversity = createAsyncThunk(
   "university/create",
   async (data, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createUniversity = createAsyncThunk(
           message: "University created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/universities`,
           section: "University",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllUniversities = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getUniversityById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getUniversityById = createAsyncThunk(
 export const updateUniversity = createAsyncThunk(
   "university/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateUniversity = createAsyncThunk(
           message: "University updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/universities`,
           section: "University",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateUniversity = createAsyncThunk(
 export const deleteUniversity = createAsyncThunk(
   "university/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,14 +121,14 @@ export const deleteUniversity = createAsyncThunk(
           message: "University deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/universities`,
           section: "University",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -179,14 +179,14 @@ const universitySlice = createSlice({
       /* UPDATE */
       .addCase(updateUniversity.fulfilled, (state, action) => {
         state.universities = state.universities.map((u) =>
-          u._id === action.payload._id ? action.payload : u
+          u._id === action.payload._id ? action.payload : u,
         );
       })
 
       /* DELETE */
       .addCase(deleteUniversity.fulfilled, (state, action) => {
         state.universities = state.universities.filter(
-          (u) => u._id !== action.payload
+          (u) => u._id !== action.payload,
         );
       });
   },

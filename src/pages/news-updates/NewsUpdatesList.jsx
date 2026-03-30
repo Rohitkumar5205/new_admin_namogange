@@ -16,7 +16,7 @@ const NewsUpdatesList = () => {
   const { recentUpdates, loading } = useSelector(
     (state) => state.recentUpdate || {},
   );
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -95,7 +95,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-3 p-5">
         {/* ================= TABLE ================= */}
         <div className="relative overflow-x-auto bg-white shadow-sm rounded-lg border border-gray-200">

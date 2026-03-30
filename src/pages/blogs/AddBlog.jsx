@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import TiptapEditor from "../../components/TiptapEditor";
@@ -14,7 +14,7 @@ const AddBlog = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const { categories } = useSelector((state) => state.category);
 
   // Check if we are in edit mode
@@ -22,6 +22,7 @@ const AddBlog = () => {
   const blogToEdit = location.state?.blog;
 
   const [formData, setFormData] = useState({
+    _id: null, // Add _id to formData for consistency with other forms
     title: "",
     category: "",
     author: "",
@@ -30,15 +31,15 @@ const AddBlog = () => {
     image_alt: "",
     content: "",
     status: "Active",
-    meta_keyword: "",
-    meta_description: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { isFormDisabled } = useRoleRights(PageNames.ADD_BLOG);
 
   useEffect(() => {
+    // Clear file input on mount/unmount to prevent stale state
     dispatch(getAllCategories());
   }, [dispatch]);
 
@@ -46,6 +47,7 @@ const AddBlog = () => {
     if (isEdit && blogToEdit) {
       setFormData({
         title: blogToEdit.title || "",
+        _id: blogToEdit._id, // Set _id for editing
         category: blogToEdit.category || "",
         author: blogToEdit.author || "",
         image: null,
@@ -53,15 +55,23 @@ const AddBlog = () => {
         image_alt: blogToEdit.image_alt || "",
         content: blogToEdit.description || "",
         status: blogToEdit.status || "Active",
-        meta_keyword: blogToEdit.meta_keyword || "",
-        meta_description: blogToEdit.meta_description || "",
       });
     }
   }, [isEdit, blogToEdit]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "image" && files && files[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input UI
+        setFormData((prev) => ({ ...prev, image: null, imagePreview: "" }));
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
         image: files[0],
@@ -70,6 +80,20 @@ const AddBlog = () => {
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      category: "",
+      author: "",
+      image: null,
+      imagePreview: "",
+      image_alt: "",
+      content: "",
+      status: "Active",
+    });
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e) => {
@@ -93,9 +117,8 @@ const AddBlog = () => {
     dataToSend.append("author", formData.author);
     dataToSend.append("description", formData.content);
     dataToSend.append("status", formData.status);
-    dataToSend.append("user_id", authUser?.id);
-    dataToSend.append("meta_keyword", formData.meta_keyword);
-    dataToSend.append("meta_description", formData.meta_description);
+    dataToSend.append("user_id", authUser?.id); // Assuming authUser.id is available
+
     dataToSend.append("image_alt", formData.image_alt);
 
     if (formData.image instanceof File) {
@@ -106,11 +129,12 @@ const AddBlog = () => {
       if (isEdit) {
         await dispatch(
           updateBlog({ id: blogToEdit._id, formData: dataToSend }),
-        ).unwrap();
+        ).unwrap(); // Use blogToEdit._id for update
         showSuccess("Blog updated successfully");
       } else {
         await dispatch(createBlog(dataToSend)).unwrap();
         showSuccess("Blog created successfully");
+        resetForm(); // Reset form after successful creation
       }
       navigate("/blogs/blog-list");
     } catch (error) {
@@ -215,6 +239,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   Image (Size: 438*232) <span className="text-red-500">*</span>
                 </label>
                 <input
+                  ref={fileInputRef}
                   type="file"
                   name="image"
                   onChange={handleChange}
@@ -223,15 +248,16 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                   disabled={isFormDisabled}
                 />
-                {/* {formData.imagePreview && (
-                  <div className="mt-2">
+                {/* Image Preview Section */}
+                {formData.imagePreview && (
+                  <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                     <img
                       src={formData.imagePreview}
                       alt="Preview"
                       className="h-20 w-auto object-cover rounded border border-gray-300"
                     />
                   </div>
-                )} */}
+                )}
               </div>
             </div>
 
@@ -264,35 +290,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Meta Keyword
-                </label>
-                <input
-                  type="text"
-                  name="meta_keyword"
-                  placeholder="Enter meta keyword"
-                  value={formData.meta_keyword}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                  disabled={isFormDisabled}
-                />
-              </div>
-              <div className="col-span-1 ">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Meta Description
-                </label>
-                <textarea
-                  name="meta_description"
-                  placeholder="Enter meta description"
-                  value={formData.meta_description}
-                  onChange={handleChange}
-                  rows={1}
-                  className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-                  disabled={isFormDisabled}
-                />
               </div>
             </div>
 

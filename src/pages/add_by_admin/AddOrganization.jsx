@@ -25,7 +25,7 @@ const AddOrganization = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isEdit, setIsEdit] = useState(false);
 
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== FETCH DATA ===== */
   useEffect(() => {

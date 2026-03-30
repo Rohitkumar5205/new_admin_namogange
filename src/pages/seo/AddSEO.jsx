@@ -31,7 +31,7 @@ const AddSEO = () => {
     status: "Active",
   });
 
-  const authUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const authUser = JSON.parse(sessionStorage.getItem("user") || "{}");
   const currentUserId = authUser?._id || authUser?.id || null;
   const currentUserName = authUser?.username || "";
 

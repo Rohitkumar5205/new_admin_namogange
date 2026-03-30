@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createVolunteer = createAsyncThunk(
   "volunteer/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -29,7 +29,7 @@ export const createVolunteer = createAsyncThunk(
             message: "New volunteer created",
             section: "Volunteer Management",
             link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/add-volunteer`,
-          })
+          }),
         );
       }
 
@@ -37,7 +37,7 @@ export const createVolunteer = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -52,7 +52,7 @@ export const getAllVolunteers = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -67,7 +67,7 @@ export const getVolunteerById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -76,7 +76,7 @@ export const getVolunteerById = createAsyncThunk(
 export const updateVolunteer = createAsyncThunk(
   "volunteer/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -97,7 +97,7 @@ export const updateVolunteer = createAsyncThunk(
             message: "Volunteer updated",
             section: "Volunteer Management",
             link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/edit-volunteer/${id}`,
-          })
+          }),
         );
       }
 
@@ -105,7 +105,7 @@ export const updateVolunteer = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -114,7 +114,7 @@ export const updateVolunteer = createAsyncThunk(
 export const deleteVolunteer = createAsyncThunk(
   "volunteer/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -131,7 +131,7 @@ export const deleteVolunteer = createAsyncThunk(
             message: "Volunteer deleted",
             section: "Volunteer Management",
             link: `${import.meta.env.VITE_API_FRONT_URL}/volunteer/volunteer-list`,
-          })
+          }),
         );
       }
 
@@ -139,7 +139,7 @@ export const deleteVolunteer = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===============================
@@ -211,7 +211,7 @@ const volunteerSlice = createSlice({
       .addCase(updateVolunteer.fulfilled, (state, action) => {
         state.loading = false;
         state.volunteers = state.volunteers.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
       .addCase(updateVolunteer.rejected, (state, action) => {
@@ -226,7 +226,7 @@ const volunteerSlice = createSlice({
       .addCase(deleteVolunteer.fulfilled, (state, action) => {
         state.loading = false;
         state.volunteers = state.volunteers.filter(
-          (item) => item._id !== action.payload
+          (item) => item._id !== action.payload,
         );
       })
       .addCase(deleteVolunteer.rejected, (state, action) => {
@@ -236,9 +236,7 @@ const volunteerSlice = createSlice({
   },
 });
 
-export const {
-  clearVolunteerError,
-  clearSingleVolunteer,
-} = volunteerSlice.actions;
+export const { clearVolunteerError, clearSingleVolunteer } =
+  volunteerSlice.actions;
 
 export default volunteerSlice.reducer;

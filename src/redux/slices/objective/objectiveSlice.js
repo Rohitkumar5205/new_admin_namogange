@@ -19,7 +19,7 @@ export const fetchObjectives = createAsyncThunk(
 export const createObjectiveThunk = createAsyncThunk(
   "objectives/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -57,7 +57,7 @@ export const createObjectiveThunk = createAsyncThunk(
 export const updateObjectiveThunk = createAsyncThunk(
   "objectives/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -94,7 +94,7 @@ export const updateObjectiveThunk = createAsyncThunk(
 export const deleteObjectiveThunk = createAsyncThunk(
   "objectives/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

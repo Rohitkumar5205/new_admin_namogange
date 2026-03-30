@@ -9,7 +9,7 @@ export const createRecentUpdate = createAsyncThunk(
   "recentUpdate/create",
   async (payload, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
       const res = await api.post("/recent-updates", payload, {
@@ -62,7 +62,7 @@ export const updateRecentUpdate = createAsyncThunk(
   "recentUpdate/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
       const res = await api.put(`/recent-updates/${id}`, data, {
@@ -100,7 +100,7 @@ export const deleteRecentUpdate = createAsyncThunk(
   "recentUpdate/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
       await api.delete(`/recent-updates/${id}`, {

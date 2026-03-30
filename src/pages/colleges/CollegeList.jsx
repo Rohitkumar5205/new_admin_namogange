@@ -30,7 +30,7 @@ const CollegeList = () => {
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    const authUser = user || JSON.parse(localStorage.getItem("user"));
+    const authUser = user || JSON.parse(sessionStorage.getItem("user"));
     const userId = authUser?._id || authUser?.id;
     try {
       await dispatch(deleteCollege({ id, user_id: userId })).unwrap();

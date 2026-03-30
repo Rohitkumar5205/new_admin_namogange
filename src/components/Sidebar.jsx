@@ -98,8 +98,8 @@ export default function Sidebar() {
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
     navigate("/");
   };
   /* ======================
@@ -355,7 +355,7 @@ export default function Sidebar() {
   const processSidebarData = () => {
     if (!sidebars || sidebars.length === 0) return [];
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(sessionStorage.getItem("user"));
     const userRole = user?.role;
 
     let allowedPages = null;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import useRoleRights from "../../hooks/useRoleRights";
@@ -16,7 +16,8 @@ const Hero = () => {
   const { heroes, loading } = useSelector((state) => state.hero);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
+  const fileInputRef = useRef(null);
 
   const [form, setForm] = useState({
     _id: null,
@@ -82,10 +83,19 @@ const Hero = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
       setForm((prev) => ({
         ...prev,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]),
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
@@ -105,6 +115,9 @@ const Hero = () => {
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Clear the file input field
+    }
   };
 
   const handleDelete = (id) => {
@@ -246,7 +259,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title (H1) <span className="text-red-500">*</span>
+                Title <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -296,6 +309,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 <input
                   type="file"
                   name="image"
+                  ref={fileInputRef}
                   accept="image/*"
                   onChange={handleChange}
                   disabled={isFormDisabled}
@@ -313,6 +327,16 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       disabled:opacity-50
     "
                 />
+                {/* ✅ FIXED: Image Preview Section */}
+                {form.imagePreview && (
+                  <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                    <img
+                      src={form.imagePreview}
+                      alt="Preview"
+                      className="h-24 w-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             {/* ALT TEXT  */}
@@ -432,7 +456,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                       {item?.link}
                     </td>
                     {/* ✅ FIXED: Description cell with proper text */}
-                    {getPlainText(item?.description, 50)}
+                    <td className="px-4 py-3">
+                      {getPlainText(item?.description, 50)}
+                    </td>
                     <td className="px-4 py-3">
                       <img
                         src={item?.image || "/placeholder.png"}

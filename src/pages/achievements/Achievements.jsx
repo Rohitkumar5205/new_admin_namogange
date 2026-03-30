@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import adminBanner from "../../assets/banners/bg.jpg";
@@ -23,8 +23,6 @@ const Achievements = () => {
     image: null,
     imagePreview: "",
     image_alt: "",
-    meta_tag: "",
-    meta_desc: "",
     desc: "",
     created_by: "",
     updated_by: "",
@@ -32,7 +30,8 @@ const Achievements = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
+  const fileInputRef = useRef(null);
   const { achievements, loading } = useSelector((state) => state.achievements);
 
   /* ===== FETCH DATA ===== */
@@ -62,10 +61,19 @@ const Achievements = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // UI clear karne ke liye
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]),
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       }));
     } else if (name === "title") {
       const slug = value
@@ -89,14 +97,15 @@ const Achievements = () => {
       image: null,
       imagePreview: "",
       image_alt: "",
-      meta_tag: "",
-      meta_desc: "",
       desc: "",
       created_by: "",
       updated_by: "",
       status: "Active",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleCancel = () => {
@@ -131,8 +140,6 @@ const Achievements = () => {
     dataToSend.append("slug", formData.slug);
     dataToSend.append("link", formData.link);
     dataToSend.append("status", formData.status);
-    dataToSend.append("meta_tag", formData.meta_tag);
-    dataToSend.append("meta_desc", formData.meta_desc);
     dataToSend.append("desc", formData.desc);
     dataToSend.append("image_alt", formData.image_alt);
 
@@ -224,7 +231,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Achievements Title (H1) <span className="text-red-500">*</span>
+                Achievements Title <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -275,23 +282,25 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (Size: 650x300) <span className="text-red-500">*</span>
               </label>
               <input
-                key={formData._id || "new"}
+                ref={fileInputRef}
                 type="file"
                 name="image"
+                accept="image/*"
                 onChange={handleChange}
                 disabled={isFormDisabled}
                 required={!isEdit}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
-              {/* {formData.imagePreview && (
-                <div className="mt-2">
+              {/* Image Preview Section */}
+              {formData.imagePreview && (
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                   <img
                     src={formData.imagePreview}
                     alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                    className="h-24 w-auto object-cover rounded"
                   />
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* Image Alt Text */}
@@ -310,37 +319,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               />
             </div>
 
-            {/* META KEYWORD */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Keyword
-              </label>
-              <input
-                type="text"
-                name="meta_tag"
-                value={formData.meta_tag}
-                onChange={handleChange}
-                placeholder="Enter meta keywords"
-                disabled={isFormDisabled}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* META DESCRIPTION */}
-            <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Meta Description
-              </label>
-              <textarea
-                name="meta_desc"
-                value={formData.meta_desc}
-                onChange={handleChange}
-                placeholder="Enter meta description"
-                rows={1}
-                disabled={isFormDisabled}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
             {/* STATUS */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -478,8 +456,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                                   image: null,
                                   imagePreview: item.image || "",
                                   image_alt: item.image_alt || "",
-                                  meta_tag: item.meta_tag || "",
-                                  meta_desc: item.meta_desc || "",
                                   desc: item.desc || "",
                                   created_by: item.created_by,
                                   updated_by: item.updated_by,

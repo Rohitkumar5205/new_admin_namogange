@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createBank = createAsyncThunk(
   "bank/create",
   async (payload, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createBank = createAsyncThunk(
           message: "Bank created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
           section: "Bank",
-        })
+        }),
       );
 
       return res.data.data; // 👈 VERY IMPORTANT
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllBanks = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getBankById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getBankById = createAsyncThunk(
 export const updateBank = createAsyncThunk(
   "bank/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -90,14 +90,14 @@ export const updateBank = createAsyncThunk(
           message: "Bank updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
           section: "Bank",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -106,7 +106,7 @@ export const updateBank = createAsyncThunk(
 export const deleteBank = createAsyncThunk(
   "bank/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -123,14 +123,14 @@ export const deleteBank = createAsyncThunk(
           message: "Bank deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/banks`,
           section: "Bank",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -186,7 +186,7 @@ const bankSlice = createSlice({
       .addCase(updateBank.fulfilled, (state, action) => {
         state.loading = false;
         state.banks = state.banks.map((b) =>
-          b._id === action.payload._id ? action.payload : b
+          b._id === action.payload._id ? action.payload : b,
         );
       })
 

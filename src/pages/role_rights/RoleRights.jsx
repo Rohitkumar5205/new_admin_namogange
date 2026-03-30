@@ -19,7 +19,7 @@ const RoleRights = () => {
   const { sidebars } = useSelector((state) => state.sidebar || {});
   const allRolesList = allRoles?.filter((role) => role.status === "Active");
 
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     _id: null,

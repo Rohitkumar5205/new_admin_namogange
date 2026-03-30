@@ -66,7 +66,7 @@ export const updateSupport = createAsyncThunk(
 export const deleteSupport = createAsyncThunk(
   "support/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
     try {
       await api.delete(`/support/${id}`, {

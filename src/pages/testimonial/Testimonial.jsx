@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -29,7 +29,8 @@ const Testimonial = () => {
   // redux logic
   const { data, loading } = useSelector((state) => state.testimonials);
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const fileInputRef = useRef(null);
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   /* ===== PAGINATION STATE ===== */
   const itemsPerPage = 5;
@@ -50,13 +51,24 @@ const Testimonial = () => {
   useEffect(() => {
     dispatch(fetchTestimonials());
   }, [dispatch]);
+
   const { canRead, canWrite, canDelete, isFormDisabled } = useRoleRights(
     PageNames.TESTIMONIAL,
   );
   /* ===== HANDLERS ===== */
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "image" && files && files[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
       setFormData({
         ...formData,
         image: files[0],
@@ -68,6 +80,11 @@ const Testimonial = () => {
   };
   const resetForm = () => {
     setFormData({
+      // Revoke the object URL to prevent memory leaks
+      ...(formData.imagePreview && URL.revokeObjectURL(formData.imagePreview)),
+      // Clear the file input field
+      ...(fileInputRef.current && (fileInputRef.current.value = "")),
+
       _id: null,
       name: "",
       image: null,
@@ -241,6 +258,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (Size: 219x224) <span className="text-red-500">*</span>
               </label>
               <input
+                ref={fileInputRef}
                 key={formData._id || "new"}
                 type="file"
                 name="image"
@@ -251,11 +269,15 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
               {formData.imagePreview && (
-                <div className="mt-2">
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                   <img
                     src={formData.imagePreview}
                     alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                    className="h-24 w-auto object-cover rounded"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.png";
+                    }}
                   />
                 </div>
               )}

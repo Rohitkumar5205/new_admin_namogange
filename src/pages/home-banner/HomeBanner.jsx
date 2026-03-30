@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllBanners,
@@ -15,6 +15,7 @@ const HomeBanner = () => {
   const dispatch = useDispatch();
   const { banners, loading } = useSelector((state) => state.banner);
   // console.log("banners", banners);
+  const fileInputRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   /* ===== FORM STATE ===== */
   const [formData, setFormData] = useState({
@@ -36,9 +37,8 @@ const HomeBanner = () => {
   });
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
-  // const currentUserId = authUser?.id || null;
-  // const currentUserName = authUser?.username || "";
+  const [error, setError] = useState("");
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   const handleScheduleChange = (e) => {
     const { name, value } = e.target;
@@ -87,10 +87,24 @@ const HomeBanner = () => {
     const { name, value, files } = e.target;
 
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+
+      const maxSize = 100 * 1024;
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        setError("Image must be less than 100KB");
+        e.target.value = "";
+        setFormData({ ...formData, image: null, imagePreview: "" });
+        return;
+      } else {
+        setError("");
+      }
+
       setFormData({
         ...formData,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]), // 👈
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -117,6 +131,9 @@ const HomeBanner = () => {
       endTime: "",
     });
     setIsEdit(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleDelete = (id) => {
@@ -294,6 +311,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <div className="w-full">
                 <input
                   type="file"
+                  ref={fileInputRef}
                   name="image"
                   onChange={handleChange}
                   disabled={isFormDisabled}
@@ -311,6 +329,18 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
       disabled:opacity-50
     "
                 />
+                {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+
+                {/* Image Preview Section */}
+                {formData.imagePreview && (
+                  <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
+                    <img
+                      src={formData.imagePreview}
+                      alt="Preview"
+                      className="h-24 w-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -374,7 +404,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 {isSubmitting
                   ? "Processing..."
                   : isEdit
-                    ? "Update Banner"
+                    ? "Update "
                     : "Add Banner"}{" "}
               </button>
 

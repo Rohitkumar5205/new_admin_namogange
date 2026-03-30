@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +29,8 @@ const AddTrustBodies = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
+  const fileInputRef = useRef(null);
 
   const { isFormDisabled } = useRoleRights(PageNames.ADD_TRUST_BODIES);
 
@@ -52,10 +53,20 @@ const AddTrustBodies = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Input field clear karne ke liye
+        setFormData({ ...formData, image: null, imagePreview: "" });
+        return;
+      }
+
       setFormData({
         ...formData,
-        image: files[0],
-        imagePreview: URL.createObjectURL(files[0]),
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       });
     } else {
       setFormData({ ...formData, [name]: files ? files[0] : value });
@@ -181,7 +192,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* NAME */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name (H1) <span className="text-red-500">*</span>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -236,22 +247,25 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (Size: 389x187) <span className="text-red-500">*</span>
               </label>
               <input
+                ref={fileInputRef}
                 type="file"
                 name="image"
+                accept="image/*"
                 onChange={handleChange}
                 disabled={isFormDisabled}
                 required={!isEdit}
                 className="w-full border border-gray-300 rounded px-3 py-1 text-sm outline-none focus:ring-1 focus:ring-blue-500"
               />
-              {/* {formData.imagePreview && (
-                <div className="mt-2">
+              {/* Image Preview Section */}
+              {formData.imagePreview && (
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                   <img
                     src={formData.imagePreview}
                     alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                    className="h-24 w-auto object-cover rounded"
                   />
                 </div>
-              )} */}
+              )}
             </div>
 
             {/* Image Alt Text */}
@@ -312,10 +326,15 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     designation: "",
                     slug: "",
                     image: "",
+                    imagePreview: "",
+                    image_alt: "",
                     status: "Active",
                     description: "",
                   });
                   setIsEdit(false);
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
                 }}
                 disabled={isFormDisabled}
                 className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"

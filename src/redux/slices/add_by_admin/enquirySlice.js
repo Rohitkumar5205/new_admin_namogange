@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createEnquiry = createAsyncThunk(
   "enquiry/create",
   async (data, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -26,14 +26,14 @@ export const createEnquiry = createAsyncThunk(
           message: "Enquiry created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
           section: "Enquiry",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -48,7 +48,7 @@ export const getAllEnquiries = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -63,7 +63,7 @@ export const getEnquiryById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -72,7 +72,7 @@ export const getEnquiryById = createAsyncThunk(
 export const updateEnquiry = createAsyncThunk(
   "enquiry/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -89,14 +89,14 @@ export const updateEnquiry = createAsyncThunk(
           message: "Enquiry updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
           section: "Enquiry",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -105,7 +105,7 @@ export const updateEnquiry = createAsyncThunk(
 export const deleteEnquiry = createAsyncThunk(
   "enquiry/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,14 +121,14 @@ export const deleteEnquiry = createAsyncThunk(
           message: "Enquiry deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/enquiries`,
           section: "Enquiry",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -180,7 +180,7 @@ const enquirySlice = createSlice({
       .addCase(updateEnquiry.fulfilled, (state, action) => {
         state.loading = false;
         state.enquiries = state.enquiries.map((e) =>
-          e._id === action.payload._id ? action.payload : e
+          e._id === action.payload._id ? action.payload : e,
         );
       })
 
@@ -188,7 +188,7 @@ const enquirySlice = createSlice({
       .addCase(deleteEnquiry.fulfilled, (state, action) => {
         state.loading = false;
         state.enquiries = state.enquiries.filter(
-          (e) => e._id !== action.payload
+          (e) => e._id !== action.payload,
         );
       });
   },

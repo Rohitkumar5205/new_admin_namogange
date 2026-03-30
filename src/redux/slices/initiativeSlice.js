@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 export const createInitiative = createAsyncThunk(
   "initiative/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -76,7 +76,7 @@ export const getInitiativeById = createAsyncThunk(
 export const updateInitiative = createAsyncThunk(
   "initiative/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -116,7 +116,7 @@ export const updateInitiative = createAsyncThunk(
 export const deleteInitiative = createAsyncThunk(
   "initiative/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }

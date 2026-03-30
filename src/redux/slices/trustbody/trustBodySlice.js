@@ -9,13 +9,12 @@ export const createTrustBody = createAsyncThunk(
   "trustBody/create",
   async (formData, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token provided");
 
       const res = await api.post("/trust-bodies/create", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-      
         },
       });
 
@@ -30,14 +29,14 @@ export const createTrustBody = createAsyncThunk(
             entity: "Trust Body",
             new_data: res.data.data,
           },
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -52,7 +51,7 @@ export const getAllTrustBodies = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -62,7 +61,7 @@ export const updateTrustBody = createAsyncThunk(
   "trustBody/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token provided");
 
       const res = await api.put(`/trust-bodies/${id}`, data, {
@@ -82,14 +81,14 @@ export const updateTrustBody = createAsyncThunk(
             entity: "Trust Body",
             new_data: res.data.data,
           },
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -99,7 +98,7 @@ export const deleteTrustBody = createAsyncThunk(
   "trustBody/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) throw new Error("No token provided");
 
       await api.delete(`/trust-bodies/${id}`, {
@@ -117,14 +116,14 @@ export const deleteTrustBody = createAsyncThunk(
             entity: "Trust Body",
             deleted_data: id,
           },
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================

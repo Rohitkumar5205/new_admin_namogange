@@ -6,7 +6,7 @@ import { createActivityLogThunk } from "./activityLog/activityLogSlice";
 export const createGalleryVideo = createAsyncThunk(
   "galleryVideo/create",
   async (videoData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
     try {
       const res = await api.post("/gallery-video/create", videoData, {
@@ -18,13 +18,13 @@ export const createGalleryVideo = createAsyncThunk(
           message: "Gallery Video created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
           section: "Gallery Video",
-        })
+        }),
       );
       return res.data.video;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===========================
@@ -40,7 +40,7 @@ export const getAllGalleryVideos = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===========================
@@ -56,14 +56,14 @@ export const getGalleryVideoById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // UPDATE
 export const updateGalleryVideo = createAsyncThunk(
   "galleryVideo/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
     try {
       const res = await api.put(`/gallery-video/${id}`, formData, {
@@ -75,20 +75,20 @@ export const updateGalleryVideo = createAsyncThunk(
           message: "Gallery Video updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
           section: "Gallery Video",
-        })
+        }),
       );
       return res.data.video;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // DELETE
 export const deleteGalleryVideo = createAsyncThunk(
   "galleryVideo/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
     try {
       await api.delete(`/gallery-video/${id}`, {
@@ -100,13 +100,13 @@ export const deleteGalleryVideo = createAsyncThunk(
           message: "Gallery Video deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/galleryVideo`,
           section: "Gallery Video",
-        })
+        }),
       );
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 /* ===========================
@@ -157,7 +157,7 @@ const galleryVideoSlice = createSlice({
       .addCase(updateGalleryVideo.fulfilled, (state, action) => {
         state.loading = false;
         state.videos = state.videos.map((v) =>
-          v._id === action.payload._id ? action.payload : v
+          v._id === action.payload._id ? action.payload : v,
         );
       })
       .addCase(deleteGalleryVideo.fulfilled, (state, action) => {

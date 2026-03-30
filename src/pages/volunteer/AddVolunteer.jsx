@@ -115,7 +115,7 @@ const AddVolunteer = () => {
       });
 
       // Add user_id for activity log
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(sessionStorage.getItem("user"));
       if (user?._id) {
         data.append("user_id", user._id);
       }

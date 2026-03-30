@@ -8,7 +8,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createBanner = createAsyncThunk(
   "banner/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -77,7 +77,7 @@ export const getBannerById = createAsyncThunk(
 export const updateBanner = createAsyncThunk(
   "banner/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -115,7 +115,7 @@ export const updateBanner = createAsyncThunk(
 // export const deleteBanner = createAsyncThunk(
 //   "banner/delete",
 //   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-//     const token = localStorage.getItem("token");
+//     const token = sessionStorage.getItem("token");
 //     if (!token) {
 //       return rejectWithValue("No token provided");
 //     }
@@ -148,7 +148,7 @@ export const updateBanner = createAsyncThunk(
 export const deleteBanner = createAsyncThunk(
   "banner/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
@@ -171,14 +171,14 @@ export const deleteBanner = createAsyncThunk(
             entity: "HomeBanner",
             deleted_data: res.data.data || null,
           },
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
-  }
+  },
 );
 
 // ==============================

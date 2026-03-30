@@ -5,7 +5,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createData = createAsyncThunk(
   "data/create",
   async (payload, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -22,14 +22,14 @@ export const createData = createAsyncThunk(
           message: "Data created",
           link: `${import.meta.env.VITE_API_FRONT_URL}/data`,
           section: "Data",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 export const getAllData = createAsyncThunk(
@@ -41,7 +41,7 @@ export const getAllData = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 export const getDataById = createAsyncThunk(
@@ -53,13 +53,13 @@ export const getDataById = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 export const updateData = createAsyncThunk(
   "data/update",
   async ({ id, data }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -76,20 +76,20 @@ export const updateData = createAsyncThunk(
           message: "Data updated",
           link: `${import.meta.env.VITE_API_FRONT_URL}/data`,
           section: "Data",
-        })
+        }),
       );
 
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 export const deleteData = createAsyncThunk(
   "data/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -105,14 +105,14 @@ export const deleteData = createAsyncThunk(
           message: "Data deleted",
           link: `${import.meta.env.VITE_API_FRONT_URL}/data`,
           section: "Data",
-        })
+        }),
       );
 
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
-  }
+  },
 );
 
 /* ==============================
@@ -164,7 +164,7 @@ const dataSlice = createSlice({
       .addCase(updateData.fulfilled, (state, action) => {
         state.loading = false;
         state.list = state.list.map((item) =>
-          item._id === action.payload._id ? action.payload : item
+          item._id === action.payload._id ? action.payload : item,
         );
       })
 

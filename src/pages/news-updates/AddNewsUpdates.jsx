@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TiptapEditor from "../../components/TiptapEditor";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,8 +33,9 @@ const AddNewsUpdates = () => {
     (state) => state.recentUpdate || {},
   );
   console.log("recentUpdates...", recentUpdates);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
   const [isEdit, setIsEdit] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { isFormDisabled } = useRoleRights(PageNames.ADD_NEWS_UPDATES);
 
@@ -64,6 +65,16 @@ const AddNewsUpdates = () => {
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files && files[0]) {
+      const file = files[0];
+      const maxSize = 100 * 1024; // 100KB
+
+      if (file.size > maxSize) {
+        showError("Image size must be less than 100KB");
+        e.target.value = ""; // Clear the input UI
+        setFormData({ ...formData, image: null, imagePreview: "" });
+        return;
+      }
+
       setFormData({
         ...formData,
         image: files[0],
@@ -213,7 +224,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 Image (size: 432x180) <span className="text-red-500">*</span>
               </label>
               <input
-                key={formData._id || "new"}
+                ref={fileInputRef}
                 type="file"
                 name="image"
                 onChange={handleChange}
@@ -223,11 +234,11 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 disabled={isFormDisabled}
               />
               {formData.imagePreview && (
-                <div className="mt-2">
+                <div className="mt-3 p-1 border rounded bg-gray-50 inline-block shadow-sm">
                   <img
                     src={formData.imagePreview}
                     alt="Preview"
-                    className="h-20 w-auto object-cover rounded border border-gray-300"
+                    className="h-24 w-auto object-cover rounded"
                   />
                 </div>
               )}
@@ -295,6 +306,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                     description: "",
                   });
                   setIsEdit(false);
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
                 }}
                 className="px-5 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
               >

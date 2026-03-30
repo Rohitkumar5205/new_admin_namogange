@@ -11,7 +11,7 @@ const BlogList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { blogs, loading } = useSelector((state) => state.blog);
-  const authUser = JSON.parse(localStorage.getItem("user"));
+  const authUser = JSON.parse(sessionStorage.getItem("user"));
 
   // Pagination
   const itemsPerPage = 10;

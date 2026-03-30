@@ -7,7 +7,7 @@ import { createActivityLogThunk } from "../activityLog/activityLogSlice";
 export const createSeo = createAsyncThunk(
   "seo/create",
   async (formData, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -50,7 +50,7 @@ export const createSeo = createAsyncThunk(
 export const updateSeo = createAsyncThunk(
   "seo/update",
   async ({ id, formData }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return rejectWithValue("No token provided");
 
     try {
@@ -121,7 +121,7 @@ export const getSeoById = createAsyncThunk(
 export const deleteSeo = createAsyncThunk(
   "seo/delete",
   async ({ id, user_id }, { dispatch, rejectWithValue }) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       return rejectWithValue("No token provided");
     }
