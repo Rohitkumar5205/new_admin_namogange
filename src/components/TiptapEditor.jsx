@@ -9,7 +9,7 @@ import { TextAlign } from "@tiptap/extension-text-align";
 import { Link } from "@tiptap/extension-link";
 import { Image } from "@tiptap/extension-image";
 
-const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
+const TiptapEditor = ({ value, onChange, isReadOnly = false, max_char = null }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -34,6 +34,14 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
     content: value,
     editable: !isReadOnly,
     onUpdate: ({ editor }) => {
+      if (max_char != null) {
+        const text = editor.getText();
+
+        if (text.length > max_char) {
+          editor.commands.setContent(text.substring(0, max_char));
+          return;
+        }
+      }
       onChange(editor.getHTML());
     },
   });
@@ -69,10 +77,9 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
   if (!editor) return null;
 
   const btn = (isActive) =>
-    `w-8 h-8 flex items-center justify-center text-sm border rounded-md transition-all ${
-      isActive
-        ? "bg-blue-500 text-white border-blue-600 shadow-sm"
-        : "bg-white hover:bg-gray-100 border-gray-300"
+    `w-8 h-8 flex items-center justify-center text-sm border rounded-md transition-all ${isActive
+      ? "bg-blue-500 text-white border-blue-600 shadow-sm"
+      : "bg-white hover:bg-gray-100 border-gray-300"
     }`;
 
   const handleHeadingChange = (val) => {
@@ -236,8 +243,13 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
           className={btn(editor.isActive("bulletList"))}
           title="Bullet List"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2zM2 6h1v1H2V6zm0 5h1v1H2v-1zm0 5h1v1H2v-1z" />
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="4" cy="6" r="1.5" />
+            <circle cx="4" cy="12" r="1.5" />
+            <circle cx="4" cy="18" r="1.5" />
+            <rect x="8" y="5" width="13" height="2" />
+            <rect x="8" y="11" width="13" height="2" />
+            <rect x="8" y="17" width="13" height="2" />
           </svg>
         </button>
 
@@ -247,8 +259,13 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
           className={btn(editor.isActive("orderedList"))}
           title="Numbered List"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M2 5h1v2H2V5zm2 0h18v2H4V5zm-2 6h1v2H2v-2zm2 0h18v2H4v-2zm-2 6h1v2H2v-2zm2 0h18v2H4v-2zM3 2h1v1H3V2zm0 3h1v1H3V5zm0 3h1v1H3V8z" />
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <text x="2" y="8" fontSize="6">1</text>
+            <text x="2" y="14" fontSize="6">2</text>
+            <text x="2" y="20" fontSize="6">3</text>
+            <rect x="8" y="5" width="13" height="2" />
+            <rect x="8" y="11" width="13" height="2" />
+            <rect x="8" y="17" width="13" height="2" />
           </svg>
         </button>
 
@@ -288,11 +305,22 @@ const TiptapEditor = ({ value, onChange, isReadOnly = false }) => {
             .ProseMirror h5 { font-size: 1.25em; margin: 0.5em 0; font-weight: medium; }
             .ProseMirror h6 { font-size: 1em; margin: 0.5em 0; font-weight: bold; }
             .ProseMirror p { font-size: 15px; margin: 0.5em 0; }
-            .ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
+            .ProseMirror ul { list-style-type: disc; padding-left: 1.5rem; }
+            .ProseMirror ol { list-style-type: decimal; padding-left: 1.5rem; }
             .ProseMirror blockquote { border-left: 4px solid #e5e7eb; padding-left: 1em; margin: 1em 0; }
             .ProseMirror a { color: #2563eb; text-decoration: underline; cursor: pointer; }
           `}</style>
         <EditorContent editor={editor} />
+        {max_char != null && (
+          // <div className="text-xs text-gray-500 text-right mt-1">
+          // {editor?.getText().length || 0} / {max_char} characters
+          // </div>
+          <div className="sticky bottom-2 bg-white/95 backdrop-blur-sm px-3 py-2 z-10">
+            <div className="text-xs text-gray-500 text-right">
+              {editor?.getText().length || 0} / {max_char} max characters
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
