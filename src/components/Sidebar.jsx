@@ -15,6 +15,7 @@ import {
   MdCategory,
   MdCardMembership,
   MdOutlineVolunteerActivism,
+  MdAdsClick,
 } from "react-icons/md";
 import { FaChevronDown, FaChevronUp, FaRegBuilding } from "react-icons/fa";
 import { GoPersonFill } from "react-icons/go";
@@ -68,6 +69,7 @@ const iconMap = {
   FaTheaterMasks,
   IoIosInformationCircle,
   SlSupport,
+  MdAdsClick,
 };
 
 const SECTION_ORDER = [

@@ -22,7 +22,8 @@ const AddSEOCode = () => {
 
   const [formData, setFormData] = useState({
     _id: null,
-    seo_code: "",
+    seo_header_code: "",
+    seo_footer_code: "",
     google_search_console: null,
     report: null,
     sitemap: null,
@@ -39,7 +40,8 @@ const AddSEOCode = () => {
     setIsEdit(false);
     setFormData({
       _id: null,
-      seo_code: "",
+      seo_header_code: "",
+      seo_footer_code: "",
       google_search_console: null,
       report: null,
       sitemap: null,
@@ -52,7 +54,8 @@ const AddSEOCode = () => {
     setIsEdit(true);
     setFormData({
       _id: item._id,
-      seo_code: item.seo_code || "",
+      seo_header_code: item.seo_header_code || "",
+      seo_footer_code: item.seo_footer_code || "",
       status: item.status || "Active",
       google_search_console: null,
       report: null,
@@ -130,7 +133,8 @@ const AddSEOCode = () => {
     e.preventDefault();
 
     const submitData = new FormData();
-    submitData.append("seo_code", formData.seo_code);
+    submitData.append("seo_header_code", formData.seo_header_code);
+    submitData.append("seo_footer_code", formData.seo_footer_code);
     submitData.append("status", formData.status);
     submitData.append("section", "SEO Code");
     submitData.append(
@@ -249,17 +253,27 @@ const AddSEOCode = () => {
 
               <div className="col-span-3">
                 <label className="block text-sm font-medium text-gray-700 py-2 px-3 bg-gray-50 border-b">
-                  Add SEO Code
+                  Add SEO Header Scripts (Inside &lt;head&gt;)
                 </label>
                 <TiptapEditor
-                  value={formData.seo_code}
+                  value={formData.seo_header_code}
                   onChange={(html) =>
-                    setFormData((prev) => ({ ...prev, seo_code: html }))
+                    setFormData((prev) => ({ ...prev, seo_header_code: html }))
                   }
                 />
               </div>
             </div>
-
+            <div className="col-span-3">
+              <label className="block text-sm font-medium text-gray-700 py-2 px-3 bg-gray-50 border-b">
+                Add SEO Footer Scripts (Before &lt;/body&gt;)
+              </label>
+              <TiptapEditor
+                value={formData.seo_footer_code}
+                onChange={(html) =>
+                  setFormData((prev) => ({ ...prev, seo_footer_code: html }))
+                }
+              />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -287,11 +301,10 @@ const AddSEOCode = () => {
                 <button
                   type="submit"
                   disabled={loading || reduxLoading}
-                  className={`px-6 py-1.5 rounded-md text-white text-sm flex items-center gap-2 transition-all ${
-                    loading || reduxLoading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700 hover:shadow-md"
-                  }`}
+                  className={`px-6 py-1.5 rounded-md text-white text-sm flex items-center gap-2 transition-all ${loading || reduxLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 hover:shadow-md"
+                    }`}
                 >
                   {(loading || reduxLoading) && (
                     <svg
@@ -380,11 +393,10 @@ const AddSEOCode = () => {
                       <td className="px-6 py-4">{index + 1}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            item.status === "Active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${item.status === "Active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {item.status}
                         </span>

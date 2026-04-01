@@ -97,6 +97,7 @@ import SocialMedia from "./pages/seo/SocialMedia";
 import Job from "./pages/job/Job";
 import ClickAnalytics from "./pages/clickAnalytics/ClickAnalytics";
 import ApplyJob from "./pages/job/ApplyJob";
+import ClickAnalytics from "./pages/click-analytics/ClickAnalytics";
 
 function App() {
   return (
@@ -290,6 +291,7 @@ function App() {
             <Route path="/click/click-analytics" element={<ClickAnalytics />} />
             <Route path="/job/add-job" element={<Job />} />
             <Route path="/job/apply-job" element={<ApplyJob />} />
+            <Route path="/click/click-analytics" element={<ClickAnalytics />} />
           </Route>
         </Route>
       </Routes>
