@@ -25,10 +25,8 @@ const VideosGallery = () => {
   const [formData, setFormData] = useState({
     _id: null,
     title: "",
-    date: "",
     category: "",
     orderBy: "",
-    location: "",
     video_link: "",
     status: "Active",
   });
@@ -58,10 +56,10 @@ const VideosGallery = () => {
     setFormData({
       _id: null,
       title: "",
-      date: "",
+
       category: "",
       orderBy: "",
-      location: "",
+
       video_link: "",
       status: "Active",
     });
@@ -74,10 +72,10 @@ const VideosGallery = () => {
 
     const dataToSend = {
       title: formData.title,
-      date: formData.date,
+
       category: formData.category,
       orderBy: formData.orderBy,
-      location: formData.location,
+
       video_link: formData.video_link,
       status: formData.status,
       user_id: authUser?.id || null,
@@ -178,21 +176,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               />
             </div>
 
-            {/* DATE */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-                disabled={isFormDisabled}
-              />
-            </div>
-
             {/* CATEGORY */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -235,22 +218,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               </select>
             </div>
 
-            {/* LOCATION */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                placeholder="Enter location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
-                disabled={isFormDisabled}
-              />
-            </div>
-
             {/* VIDEO LINK */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -286,7 +253,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="md:col-span-2 flex justify-end gap-3 mt-6">
+            <div className="md:col-span-1 flex justify-end gap-3 mt-6">
               <button
                 type="button"
                 onClick={resetForm}
@@ -336,10 +303,10 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
               <tr>
                 <th className="px-4 py-3 font-medium">S.No</th>
                 <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Date</th>
+                {/* <th className="px-4 py-3 font-medium">Date</th> */}
                 <th className="px-4 py-3 font-medium">Category</th>
                 <th className="px-4 py-3 font-medium">Order</th>
-                <th className="px-4 py-3 font-medium">Location</th>
+                {/* <th className="px-4 py-3 font-medium">Location</th> */}
                 <th className="px-4 py-3 font-medium">Video Link</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 {(canWrite || canDelete) && (
@@ -363,14 +330,14 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   >
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{item.title}</td>
-                    <td className="px-4 py-3">
+                    {/* <td className="px-4 py-3">
                       {item.date
                         ? new Date(item.date).toLocaleDateString("en-GB")
                         : ""}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-3">{item.category}</td>
                     <td className="px-4 py-3">{item.orderBy}</td>
-                    <td className="px-4 py-3">{item.location}</td>
+                    {/* <td className="px-4 py-3">{item.location}</td> */}
                     <td className="px-4 py-3">
                       {item.video_link ? (
                         <div className="group relative w-20 aspect-video rounded-lg overflow-hidden border border-gray-200 bg-black shadow-sm hover:shadow-lg transition">
@@ -425,12 +392,12 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                                 setFormData({
                                   _id: item._id,
                                   title: item.title,
-                                  date: item.date
-                                    ? item.date.split("T")[0]
-                                    : "",
+                                  // date: item.date
+                                  //   ? item.date.split("T")[0]
+                                  //   : "",
                                   category: item.category,
                                   orderBy: item.orderBy,
-                                  location: item.location,
+                                  // location: item.location,
                                   video_link: item.video_link,
                                   status: item.status,
                                 });
@@ -446,11 +413,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                             <button
                               className="text-red-600"
                               onClick={() => {
-                                if (
-                                  window.confirm(
-                                    "Are you sure you want to delete this video?",
-                                  )
-                                ) {
+                                {
                                   const currentUserId = authUser?.id || null;
                                   dispatch(
                                     deleteGalleryVideo({

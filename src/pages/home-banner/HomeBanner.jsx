@@ -89,10 +89,10 @@ const HomeBanner = () => {
     if (name === "image" && files?.[0]) {
       const file = files[0];
 
-      const maxSize = 100 * 1024;
+      const maxSize = 10 * 1024 * 1024;
 
       if (file.size > maxSize) {
-        showError("Image size must be less than 100KB");
+        showError("Image size must be less than 10MB");
         setError("Image must be less than 100KB");
         e.target.value = "";
         setFormData({ ...formData, image: null, imagePreview: "" });

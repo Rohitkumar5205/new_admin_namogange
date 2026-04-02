@@ -75,10 +75,10 @@ const Initiatives = () => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
       const file = files[0];
-      const maxSize = 100 * 1024; // 100KB
+      const maxSize = 10 * 1024 * 1024; // 10MB
 
       if (file.size > maxSize) {
-        showError("Image size must be less than 100KB");
+        showError("Image size must be less than 10MB");
         e.target.value = ""; // Clear the input
         setFormData((prev) => ({ ...prev, image: null, imagePreview: "" }));
         return;
