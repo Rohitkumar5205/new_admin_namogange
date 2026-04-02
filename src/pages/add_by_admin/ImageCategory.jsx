@@ -209,7 +209,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* TITLE */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title <span className="text-red-500">*</span>
+                Event Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -226,7 +226,7 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
             {/* CATEGORY */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category <span className="text-red-500">*</span>
+                Initiatives <span className="text-red-500">*</span>
               </label>
               <select
                 name="category"
@@ -254,7 +254,6 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                 name="order_by"
                 value={formData.order_by}
                 onChange={handleChange}
-                required
                 className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-blue-500"
                 disabled={isFormDisabled}
               >
