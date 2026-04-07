@@ -83,7 +83,7 @@ export const updateEvent = createAsyncThunk(
     try {
       const res = await api.put(`/events/${id}`, data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
