@@ -54,6 +54,7 @@ import socialMediaReducer from "../redux/slices/seo/socialMediaSlice";
 import jobReducer from "../redux/slices/job/jobSlice";
 import jobApplyReducer from "../redux/slices/job/jobApplySlice";
 import clickAnalyticsReducer from "../redux/slices/click-analytics/clickAnalyticsSlice";
+import donationReducer from "../redux/slices/donation/donationSlice";
 
 const store = configureStore({
   reducer: {
@@ -112,6 +113,7 @@ const store = configureStore({
     job: jobReducer,
     jobApply: jobApplyReducer,
     clickAnalytics: clickAnalyticsReducer,
+    donation: donationReducer,
   },
 });
 

@@ -4,6 +4,9 @@ import { showSuccess, showError } from "../../utils/toastService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createSeo, updateSeo } from "../../redux/slices/seo/seoSlice";
+import { getAllBlogs } from "../../redux/slices/blog/blogSlice";
+import { fetchObjectives } from "../../redux/slices/objective/objectiveSlice";
+import { getAllInitiatives } from "../../redux/slices/initiativeSlice";
 import { PAGES_LIST } from "../../utils/pagesList";
 
 const AddSEO = () => {
@@ -11,6 +14,9 @@ const AddSEO = () => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.seo || {});
+  const { blogs } = useSelector((state) => state.blog || { blogs: [] });
+  const { data: objectives } = useSelector((state) => state.objectives || { data: [] });
+  const { initiatives } = useSelector((state) => state.initiative || { initiatives: [] });
 
   const [isEdit, setIsEdit] = useState(false);
   const [showHomeFields, setShowHomeFields] = useState(false);
@@ -34,6 +40,36 @@ const AddSEO = () => {
   const authUser = JSON.parse(sessionStorage.getItem("user") || "{}");
   const currentUserId = authUser?._id || authUser?.id || null;
   const currentUserName = authUser?.username || "";
+
+  useEffect(() => {
+    dispatch(getAllBlogs());
+    dispatch(fetchObjectives());
+    dispatch(getAllInitiatives());
+  }, [dispatch]);
+
+  const combinedPages = [
+    ...PAGES_LIST,
+    ...(blogs || [])
+      .filter((blog) => blog.status === "Active")
+      .map((blog) => ({
+        name: `Blog: ${blog.title}`,
+        path: `/communication/blog/${blog.slug}`,
+      })),
+    ...(objectives || [])
+      .filter((obj) => obj && obj.status === "Active")
+      .map((obj) => ({
+        name: `Objective: ${obj.title}`,
+        path: `/objectives/${obj.slug}`,
+      })),
+    ...(initiatives || [])
+      .filter((initiative) => initiative && initiative.status === "Active"
+        // && (initiative?.page_description && initiative?.page_description !== "")
+      )
+      .map((initiative) => ({
+        name: `Initiative: ${initiative.title}`,
+        path: `/initiatives/${initiative.slug}`,
+      })),
+  ];
 
   useEffect(() => {
     if (state) {
@@ -224,7 +260,7 @@ const AddSEO = () => {
                   name="page_path"
                   value={formData.page_path}
                   onChange={(e) => {
-                    const selected = PAGES_LIST.find(
+                    const selected = combinedPages.find(
                       (p) => p.path === e.target.value,
                     );
                     const isHome = e.target.value === "/";
@@ -240,7 +276,7 @@ const AddSEO = () => {
                   disabled={isEdit}
                 >
                   <option value="">Select Page</option>
-                  {PAGES_LIST.map((p) => (
+                  {combinedPages.map((p) => (
                     <option key={p.path} value={p.path}>
                       {p.name}
                     </option>
@@ -438,11 +474,10 @@ const AddSEO = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-6 py-1 rounded text-white text-sm flex items-center gap-2 transition ${
-                  loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
+                className={`px-6 py-1 rounded text-white text-sm flex items-center gap-2 transition ${loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+                  }`}
               >
                 {loading && (
                   <svg
