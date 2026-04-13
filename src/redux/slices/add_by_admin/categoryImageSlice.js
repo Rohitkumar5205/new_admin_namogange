@@ -24,7 +24,7 @@ export const createCategoryImage = createAsyncThunk(
           },
         }),
       );
-      return res.data.data;
+      return res.data.categoryImage;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }

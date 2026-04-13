@@ -389,7 +389,9 @@ bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-300"
                   </td>
                 </tr>
               ) : (
-                currentData.map((item, index) => (
+                currentData
+                  ?.filter((item) => item)
+                  .map((item, index) => (
                   <tr
                     key={item._id}
                     className="border-b border-gray-200 hover:bg-gray-50"
